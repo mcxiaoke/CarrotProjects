@@ -11,9 +11,9 @@ using GenshinNotifier.Net;
 
 namespace GenshinNotifier {
     public partial class CookieDialog : Form {
-        private string savedCookie;
+        private string OldCookie;
 
-        private static string COOKIE_GUIDE = 
+        private static string COOKIE_GUIDE =
             @"使用说明：
 1. 打开 http://bbs.mihoyo.com/ys/ 并进行登录操作；
 2. 新建标签页，打开 http://user.mihoyo.com/ 并进行登录操作；
@@ -21,14 +21,16 @@ namespace GenshinNotifier {
 4. 控制台输入 document.cookie 复制出现的字符串；
 5. 将复制好的Cookie字符串粘贴到输入框，点击保存";
 
+        public event EventHandler Handlers;
+
         public CookieDialog() {
             InitializeComponent();
-            savedCookie = DataController.Default.Cookie;
-            this.CookieTextBox.Text = savedCookie;
+            OldCookie = DataController.Default.Cookie;
+            this.CookieTextBox.Text = OldCookie;
             this.CookieLabel.Text = COOKIE_GUIDE;
         }
 
-        private void showToolTip(string message, int duration = 3000) {
+        private void ShowToolTip(string message, int duration = 3000) {
             new ToolTip().Show(message, CookieTextBox, 240, 120, duration);
         }
 
@@ -40,29 +42,34 @@ namespace GenshinNotifier {
             Close();
         }
 
+        private bool valiteCookieFields(string value) {
+            var cookieDict = Utility.ParseCookieString(value);
+            var validKeys = new string[] { "cookie_token", "account_id", "login_ticket"};
+            return validKeys.All(it => cookieDict.ContainsKey(it));
+        }
+
         private async void YesButton_Click(object sender, EventArgs e) {
             var tempCookie = CookieTextBox.Text?.Trim().Replace("\"", "").Replace("'", "");
-            Logger.Info(tempCookie);
+            Logger.Info($"YesButton_Click");
             if (String.IsNullOrEmpty(tempCookie)) {
-                showToolTip("Cookie不能为空");
+                ShowToolTip("Cookie不能为空");
+                return;
+            }
+            if (!valiteCookieFields(tempCookie)) {
+                ShowToolTip("Cookie无效：缺少必须字段");
+                return;
+            }
+            if (tempCookie == OldCookie) {
+                Close();
+                return;
+            }
+            var user = await DataController.ValidateCookie(tempCookie);
+            Logger.Info($"CookieValidateButton_Click {user?.GameUid}");
+            if (user?.GameUid != null) {
+                Handlers?.Invoke(this, new SimpleEventArgs(tempCookie));
+                Close();
             } else {
-                var cookieDict = Utility.ParseCookieString(tempCookie);
-                if (!cookieDict.ContainsKey("login_ticket")) {
-                    showToolTip("Cookie无效：不包含login_ticket字段");
-                } else {
-                    var user = await DataController.ValidateCookie(tempCookie);
-                    Logger.Info($"CookieValidateButton_Click {user}");
-                    showToolTip(user?.GameUid != null ? "Cookie有效，已保存" : "Cookie无效，请检查");
-                    if (user?.GameUid != null) {
-                        // save cookie to settings
-                        DataController.Default.Cookie = tempCookie;
-                        Properties.Settings.Default.MihoyoCookie = tempCookie;
-                        Properties.Settings.Default.Save();
-                        DataController.Default.Cookie = tempCookie;
-                        Close();
-                    }
-                }
-
+                ShowToolTip("Cookie验证失败，请检查");
             }
         }
 
@@ -71,5 +78,10 @@ namespace GenshinNotifier {
             System.Diagnostics.Process.Start(e.LinkText);
         }
 
+        private void CookieDialog_FormClosing(object sender, FormClosingEventArgs e) {
+            foreach (EventHandler d in Handlers.GetInvocationList()) {
+                Handlers -= d;
+            }
+        }
     }
 }

@@ -58,5 +58,29 @@ namespace GenshinNotifier.Properties {
                 this["RefreshInterval"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MihoyoUser {
+            get {
+                return ((string)(this["MihoyoUser"]));
+            }
+            set {
+                this["MihoyoUser"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string MihoyoDailyNote {
+            get {
+                return ((string)(this["MihoyoDailyNote"]));
+            }
+            set {
+                this["MihoyoDailyNote"] = value;
+            }
+        }
     }
 }

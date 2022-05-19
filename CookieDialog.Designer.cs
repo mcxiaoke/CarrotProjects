@@ -74,7 +74,6 @@
             // CookieTextBox
             // 
             this.CookieTextBox.Location = new System.Drawing.Point(20, 35);
-            this.CookieTextBox.Margin = new System.Windows.Forms.Padding(8);
             this.CookieTextBox.Multiline = true;
             this.CookieTextBox.Name = "CookieTextBox";
             this.CookieTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -107,10 +106,12 @@
             this.Controls.Add(this.YesButton);
             this.Controls.Add(this.NoButton);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MaximizeBox = false;
             this.Name = "CookieDialog";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "设置Cookie";
             this.TopMost = true;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.CookieDialog_FormClosing);
             this.Shown += new System.EventHandler(this.CookieDialog_Shown);
             this.CookieTextGroup.ResumeLayout(false);
             this.CookieTextGroup.PerformLayout();

@@ -9,6 +9,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GenshinNotifier.Net;
+using System.Configuration;
 
 namespace GenshinNotifier {
     public partial class MainForm : Form {
@@ -17,53 +18,68 @@ namespace GenshinNotifier {
             InitializeComponent();
         }
 
-
-        private void MainForm_Load(object sender, EventArgs e) {
+        private void OnFormLoad(object sender, EventArgs e) {
             var am = AssemblyName.GetAssemblyName("GenshinNotifier.exe");
-            this.Text = $"{am.Name} v{am.Version}";
-            this.Shown += OnFormShow;
-            this.RefreshButton.Click += OnRefershButtonClicked;
-            this.OptionButton.Click += OnOptionButtonClicked;
-            this.RefreshButton.Enabled = false;
+            this.Text = $"{am.Name} {am.Version}";
         }
 
         async void OnFormShow(object sender, EventArgs e) {
-            await DataController.Default.Initialize();
-            Logger.Info($"OnFormShow {DataController.Default.Cookie}");
+            var user=await DataController.Default.Initialize();
+            Logger.Info($"OnFormShow user={user?.GameUid}");
             Logger.Info(DataController.Default.Ready ? "Ready" : "NotReady");
             if (DataController.Default.Ready) {
-                //await RefreshDailyNote(sender, e);
-                this.RefreshButton.Enabled = true;
+                await RefreshDailyNote(sender, e);
+                //this.RefreshButton.Enabled = true;
             } else {
-                //AccountValueL.Text = "提示：请进入选项界面设置Cookie后使用";
-                //AccountValueL.ForeColor = Color.Red;
-                ShowCookieDialog();
+                AccountValueL.Text = "当前Cookie为空或已失效，请设置Cookie后使用";
+                AccountValueL.ForeColor = Color.Red;
+                //ShowCookieDialog();
             }
         }
 
         void ShowCookieDialog() {
-            var cd = new CookieDialog();
-            cd.FormClosed += async (fo, fe) => {
-                Logger.Info($"ShowCookieDialog {DataController.Default.CookieChanged}");
-                if (DataController.Default.CookieChanged) {
-                    await DataController.Default.Initialize();
-                    await RefreshDailyNote(null, null);
-                }
+            var cd = new CookieDialog {
+                Location = new Point(this.Location.X + 160, this.Location.Y + 80)
             };
-            cd.Location = new Point(this.Location.X + 160, this.Location.Y + 80);
+            cd.Handlers += OnCookieChanged;
+            //cd.FormClosed += (fo, fe) => cd.Handlers -= OnCookieChanged;
             cd.ShowDialog();
+        }
+
+        async void OnCookieChanged(object sender, EventArgs e) {
+            var evt = e as SimpleEventArgs;
+            var newCookie = evt.Value;
+            var oldCookie = DataController.Default.Cookie;
+            if (newCookie != oldCookie) {
+                Logger.Debug($"OnCookieChanged newCookie={newCookie}");
+                DataController.Default.Cookie = newCookie;
+                Properties.Settings.Default.MihoyoCookie = newCookie;
+                Properties.Settings.Default.Save();
+                await DataController.Default.Initialize();
+                await RefreshDailyNote(null, null);
+            } else {
+                Logger.Debug($"OnCookieChanged not change");
+            }
+
         }
 
         async void OnRefershButtonClicked(object sender, EventArgs e) {
             await RefreshDailyNote(sender, e);
         }
 
+        void OnCookieButtonClicked(object sender, EventArgs e) {
+            ShowCookieDialog();
+        }
+
         void OnOptionButtonClicked(object sender, EventArgs e) {
+        }
+
+        void OnAboutButtonClicked(object sender, EventArgs e) {
         }
 
         void UpdateRefreshState(bool loading) {
             this.RefreshButton.Enabled = !loading;
-            this.RefreshButton.Text = loading ? "更新中..." : "刷新数据";
+            this.CookieButton.Enabled = !loading;
             this.OptionButton.Enabled = !loading;
             this.LoadingPic.Visible = loading;
         }

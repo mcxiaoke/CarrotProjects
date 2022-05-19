@@ -228,6 +228,7 @@ namespace GenshinNotifier.Net {
                 dynamic jsonObj = JsonConvert.DeserializeObject(json);
                 JObject o = jsonObj.data;
                 data = o.ToObject<DailyNote>();
+                data.CreatedAt = DateTime.Now;
             } catch (Exception ex) {
                 error = ex;
             }
@@ -255,10 +256,6 @@ namespace GenshinNotifier.Net {
                 //Console.WriteLine(o);
                 // https://www.newtonsoft.com/json/help/html/SerializingJSONFragments.htm
                 data = o.ToObject<UserGameRole>();
-                if (data != null) {
-                    // update user info
-                    this.User = data;
-                }
             } catch (Exception ex) {
                 error = ex;
             }

@@ -47,6 +47,7 @@
             this.OptionButton = new System.Windows.Forms.Button();
             this.RefreshButton = new System.Windows.Forms.Button();
             this.LoadingPic = new System.Windows.Forms.PictureBox();
+            this.CookieButton = new System.Windows.Forms.Button();
             this.MainLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LoadingPic)).BeginInit();
             this.SuspendLayout();
@@ -342,37 +343,41 @@
             // 
             this.IntroButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.IntroButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.IntroButton.Location = new System.Drawing.Point(504, 563);
+            this.IntroButton.Location = new System.Drawing.Point(534, 565);
             this.IntroButton.Margin = new System.Windows.Forms.Padding(8, 3, 3, 3);
             this.IntroButton.Name = "IntroButton";
-            this.IntroButton.Padding = new System.Windows.Forms.Padding(10);
-            this.IntroButton.Size = new System.Drawing.Size(140, 61);
+            this.IntroButton.Padding = new System.Windows.Forms.Padding(8);
+            this.IntroButton.Size = new System.Drawing.Size(110, 61);
             this.IntroButton.TabIndex = 2;
-            this.IntroButton.Text = "使用说明";
+            this.IntroButton.Text = "关于";
             this.IntroButton.UseVisualStyleBackColor = true;
+            this.IntroButton.Click += new System.EventHandler(this.OnAboutButtonClicked);
             // 
             // OptionButton
             // 
             this.OptionButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.OptionButton.Location = new System.Drawing.Point(353, 563);
+            this.OptionButton.Location = new System.Drawing.Point(413, 565);
             this.OptionButton.Margin = new System.Windows.Forms.Padding(8, 3, 3, 3);
             this.OptionButton.Name = "OptionButton";
-            this.OptionButton.Padding = new System.Windows.Forms.Padding(10);
-            this.OptionButton.Size = new System.Drawing.Size(140, 61);
+            this.OptionButton.Padding = new System.Windows.Forms.Padding(8);
+            this.OptionButton.Size = new System.Drawing.Size(110, 61);
             this.OptionButton.TabIndex = 3;
             this.OptionButton.Text = "选项";
             this.OptionButton.UseVisualStyleBackColor = true;
+            this.OptionButton.Click += new System.EventHandler(this.OnOptionButtonClicked);
             // 
             // RefreshButton
             // 
+            this.RefreshButton.Enabled = false;
             this.RefreshButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.RefreshButton.Location = new System.Drawing.Point(202, 563);
+            this.RefreshButton.Location = new System.Drawing.Point(171, 565);
             this.RefreshButton.Name = "RefreshButton";
-            this.RefreshButton.Padding = new System.Windows.Forms.Padding(10);
-            this.RefreshButton.Size = new System.Drawing.Size(140, 61);
+            this.RefreshButton.Padding = new System.Windows.Forms.Padding(8);
+            this.RefreshButton.Size = new System.Drawing.Size(110, 61);
             this.RefreshButton.TabIndex = 4;
-            this.RefreshButton.Text = "刷新数据";
+            this.RefreshButton.Text = "刷新";
             this.RefreshButton.UseVisualStyleBackColor = true;
+            this.RefreshButton.Click += new System.EventHandler(this.OnRefershButtonClicked);
             // 
             // LoadingPic
             // 
@@ -385,22 +390,38 @@
             this.LoadingPic.TabStop = false;
             this.LoadingPic.Visible = false;
             // 
+            // CookieButton
+            // 
+            this.CookieButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.CookieButton.Location = new System.Drawing.Point(292, 565);
+            this.CookieButton.Margin = new System.Windows.Forms.Padding(8, 3, 3, 3);
+            this.CookieButton.Name = "CookieButton";
+            this.CookieButton.Padding = new System.Windows.Forms.Padding(0, 8, 0, 8);
+            this.CookieButton.Size = new System.Drawing.Size(110, 61);
+            this.CookieButton.TabIndex = 6;
+            this.CookieButton.Text = "Cookie";
+            this.CookieButton.UseVisualStyleBackColor = true;
+            this.CookieButton.Click += new System.EventHandler(this.OnCookieButtonClicked);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(654, 649);
+            this.Controls.Add(this.CookieButton);
             this.Controls.Add(this.LoadingPic);
             this.Controls.Add(this.RefreshButton);
             this.Controls.Add(this.OptionButton);
             this.Controls.Add(this.IntroButton);
             this.Controls.Add(this.MainLayout);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
+            this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Padding = new System.Windows.Forms.Padding(10);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Load += new System.EventHandler(this.MainForm_Load);
+            this.Load += new System.EventHandler(this.OnFormLoad);
+            this.Shown += new System.EventHandler(this.OnFormShow);
             this.MainLayout.ResumeLayout(false);
             this.MainLayout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LoadingPic)).EndInit();
@@ -434,6 +455,7 @@
         private System.Windows.Forms.Button OptionButton;
         private System.Windows.Forms.Button RefreshButton;
         private System.Windows.Forms.PictureBox LoadingPic;
+        private System.Windows.Forms.Button CookieButton;
     }
 }
 

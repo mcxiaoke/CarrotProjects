@@ -161,6 +161,12 @@ namespace GenshinNotifier.Net {
         }
 
         /// <summary>
+        /// 数据更新时间
+        /// </summary>
+        [JsonProperty("created_at")]
+        public DateTime CreatedAt { get; set; }
+
+        /// <summary>
         /// 当前树脂
         /// </summary>
         [JsonProperty("current_resin")]
