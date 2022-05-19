@@ -13,47 +13,70 @@ using GenshinNotifier.Net;
 namespace GenshinNotifier {
     public partial class MainForm : Form {
 
-        private readonly DataController _controller;
-        private readonly string _defaultTitle;
-
         public MainForm() {
             InitializeComponent();
-            _controller = new DataController();
-            _defaultTitle = this.Text;
-            this.Shown += OnFormShow;
-            this.RefershButton.Click += OnRefershButtonClicked;
+        }
+
+
+        private void MainForm_Load(object sender, EventArgs e) {
             var am = AssemblyName.GetAssemblyName("GenshinNotifier.exe");
-            Logger.Info(am.Name);
-            this.Text = $"{_defaultTitle} v{am.Version}";
+            this.Text = $"{am.Name} v{am.Version}";
+            this.Shown += OnFormShow;
+            this.RefreshButton.Click += OnRefershButtonClicked;
+            this.OptionButton.Click += OnOptionButtonClicked;
+            this.RefreshButton.Enabled = false;
         }
 
         async void OnFormShow(object sender, EventArgs e) {
-            await RefreshDailyNote(sender, e);
+            await DataController.Default.Initialize();
+            Logger.Info($"OnFormShow {DataController.Default.Cookie}");
+            Logger.Info(DataController.Default.Ready ? "Ready" : "NotReady");
+            if (DataController.Default.Ready) {
+                //await RefreshDailyNote(sender, e);
+                this.RefreshButton.Enabled = true;
+            } else {
+                //AccountValueL.Text = "提示：请进入选项界面设置Cookie后使用";
+                //AccountValueL.ForeColor = Color.Red;
+                ShowCookieDialog();
+            }
+        }
+
+        void ShowCookieDialog() {
+            var cd = new CookieDialog();
+            cd.FormClosed += async (fo, fe) => {
+                Logger.Info($"ShowCookieDialog {DataController.Default.CookieChanged}");
+                if (DataController.Default.CookieChanged) {
+                    await DataController.Default.Initialize();
+                    await RefreshDailyNote(null, null);
+                }
+            };
+            cd.Location = new Point(this.Location.X + 160, this.Location.Y + 80);
+            cd.ShowDialog();
         }
 
         async void OnRefershButtonClicked(object sender, EventArgs e) {
             await RefreshDailyNote(sender, e);
         }
 
+        void OnOptionButtonClicked(object sender, EventArgs e) {
+        }
+
         void UpdateRefreshState(bool loading) {
-            this.RefershButton.Enabled = !loading;
-            this.RefershButton.Text = loading ? "更新中..." : "立即更新";
-            this.CookieButton.Enabled = !loading;
+            this.RefreshButton.Enabled = !loading;
+            this.RefreshButton.Text = loading ? "更新中..." : "刷新数据";
+            this.OptionButton.Enabled = !loading;
             this.LoadingPic.Visible = loading;
         }
 
         async Task RefreshDailyNote(object sender, EventArgs e) {
-            Logger.Debug("RefreshDailyNote begin");
             UpdateRefreshState(true);
-            var (user, note) = await _controller.FetchData();
-            this.RefershButton.Enabled = true;
-            Logger.Info($"RefreshDailyNote\nuser={user.GameUid}\nnote={note.CurrentResin}");
+            var (user, note) = await DataController.Default.GetDailyNote();
+            this.RefreshButton.Enabled = true;
             if (user == null || note == null) {
                 UpdateRefreshState(false);
                 return;
             }
-
-            Logger.Debug("RefreshDailyNote data");
+            Logger.Info($"RefreshDailyNote\nuser={user?.GameUid}\nnote={note?.CurrentResin}");
             AccountValueL.Text = $"{user.Nickname} {user.Level}级 / {user.RegionName}({user.Server}) / {user.GameUid}";
             AccountValueL.ForeColor = Color.Blue;
 
@@ -91,7 +114,6 @@ namespace GenshinNotifier {
             TransformerValueL.ForeColor = (transformerReady ? Color.Red : Control.DefaultForeColor);
 
             UpdatedValueL.Text = DateTime.Now.ToString("T");
-            Logger.Debug("RefreshDailyNote end");
             UpdateRefreshState(false);
         }
     }

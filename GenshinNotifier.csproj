@@ -240,10 +240,19 @@
     <Compile Include="Net\API.cs" />
     <Compile Include="Net\Const.cs" />
     <Compile Include="Net\Utility.cs" />
+    <Compile Include="CookieDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="CookieDialog.Designer.cs">
+      <DependentUpon>CookieDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CookieDialog.resx">
+      <DependentUpon>CookieDialog.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -256,17 +265,18 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="app.manifest" />
+    <None Include=".gitignore" />
     <None Include="packages.config" />
-    <None Include="Properties\Settings.settings">
+    <EmbeddedResource Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
+    </EmbeddedResource>
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="vscodesign.pfx" />
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="App.config" />

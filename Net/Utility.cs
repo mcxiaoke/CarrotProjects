@@ -10,7 +10,7 @@ namespace GenshinNotifier.Net {
 
         public static Random GlobalRandom = new Random();
 
-        public static string GetRandomString2(int length) {
+        public static string GetRandomString2() {
             return GlobalRandom.Next(100000, 200000).ToString();
         }
 

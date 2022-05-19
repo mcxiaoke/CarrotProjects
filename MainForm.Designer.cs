@@ -44,8 +44,8 @@
             this.ResinNameL = new System.Windows.Forms.Label();
             this.AccountValueL = new System.Windows.Forms.Label();
             this.IntroButton = new System.Windows.Forms.Button();
-            this.CookieButton = new System.Windows.Forms.Button();
-            this.RefershButton = new System.Windows.Forms.Button();
+            this.OptionButton = new System.Windows.Forms.Button();
+            this.RefreshButton = new System.Windows.Forms.Button();
             this.LoadingPic = new System.Windows.Forms.PictureBox();
             this.MainLayout.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LoadingPic)).BeginInit();
@@ -340,7 +340,6 @@
             // 
             // IntroButton
             // 
-            this.IntroButton.AutoSize = true;
             this.IntroButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.IntroButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.IntroButton.Location = new System.Drawing.Point(504, 563);
@@ -352,30 +351,28 @@
             this.IntroButton.Text = "使用说明";
             this.IntroButton.UseVisualStyleBackColor = true;
             // 
-            // CookieButton
+            // OptionButton
             // 
-            this.CookieButton.AutoSize = true;
-            this.CookieButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.CookieButton.Location = new System.Drawing.Point(322, 563);
-            this.CookieButton.Margin = new System.Windows.Forms.Padding(8, 3, 3, 3);
-            this.CookieButton.Name = "CookieButton";
-            this.CookieButton.Padding = new System.Windows.Forms.Padding(10);
-            this.CookieButton.Size = new System.Drawing.Size(171, 61);
-            this.CookieButton.TabIndex = 3;
-            this.CookieButton.Text = "设置";
-            this.CookieButton.UseVisualStyleBackColor = true;
+            this.OptionButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.OptionButton.Location = new System.Drawing.Point(353, 563);
+            this.OptionButton.Margin = new System.Windows.Forms.Padding(8, 3, 3, 3);
+            this.OptionButton.Name = "OptionButton";
+            this.OptionButton.Padding = new System.Windows.Forms.Padding(10);
+            this.OptionButton.Size = new System.Drawing.Size(140, 61);
+            this.OptionButton.TabIndex = 3;
+            this.OptionButton.Text = "选项";
+            this.OptionButton.UseVisualStyleBackColor = true;
             // 
-            // RefershButton
+            // RefreshButton
             // 
-            this.RefershButton.AutoSize = true;
-            this.RefershButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.RefershButton.Location = new System.Drawing.Point(140, 563);
-            this.RefershButton.Name = "RefershButton";
-            this.RefershButton.Padding = new System.Windows.Forms.Padding(10);
-            this.RefershButton.Size = new System.Drawing.Size(171, 61);
-            this.RefershButton.TabIndex = 4;
-            this.RefershButton.Text = "更新数据";
-            this.RefershButton.UseVisualStyleBackColor = true;
+            this.RefreshButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.RefreshButton.Location = new System.Drawing.Point(202, 563);
+            this.RefreshButton.Name = "RefreshButton";
+            this.RefreshButton.Padding = new System.Windows.Forms.Padding(10);
+            this.RefreshButton.Size = new System.Drawing.Size(140, 61);
+            this.RefreshButton.TabIndex = 4;
+            this.RefreshButton.Text = "刷新数据";
+            this.RefreshButton.UseVisualStyleBackColor = true;
             // 
             // LoadingPic
             // 
@@ -395,15 +392,15 @@
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(654, 649);
             this.Controls.Add(this.LoadingPic);
-            this.Controls.Add(this.RefershButton);
-            this.Controls.Add(this.CookieButton);
+            this.Controls.Add(this.RefreshButton);
+            this.Controls.Add(this.OptionButton);
             this.Controls.Add(this.IntroButton);
             this.Controls.Add(this.MainLayout);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Name = "MainForm";
             this.Padding = new System.Windows.Forms.Padding(10);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "原神小助手";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.MainLayout.ResumeLayout(false);
             this.MainLayout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LoadingPic)).EndInit();
@@ -434,8 +431,8 @@
         private System.Windows.Forms.Label ResinRecValueL;
         private System.Windows.Forms.Label ResinRecNameL;
         private System.Windows.Forms.Button IntroButton;
-        private System.Windows.Forms.Button CookieButton;
-        private System.Windows.Forms.Button RefershButton;
+        private System.Windows.Forms.Button OptionButton;
+        private System.Windows.Forms.Button RefreshButton;
         private System.Windows.Forms.PictureBox LoadingPic;
     }
 }

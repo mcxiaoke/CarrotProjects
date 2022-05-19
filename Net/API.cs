@@ -70,7 +70,7 @@ namespace GenshinNotifier.Net {
         private HttpClientHandler handler = null;
         private HttpClient client = null;
 
-        public API() {
+        public API() : this(null) {
         }
 
         public API(string cookie) {
@@ -83,17 +83,14 @@ namespace GenshinNotifier.Net {
         public bool Ready => Cookie != null && User != null;
 
 
-        private async Task CheckReady(bool doPrepare = true) {
+        private void CheckReady(bool checkUser = false) {
             if (Cookie == null) {
                 throw new ArgumentException("Cookie Not Found");
             }
             if (!Cookie.Contains("login_ticket")) {
                 throw new ArgumentException("Invalid Cookie");
             }
-            if (!Ready && doPrepare) {
-                await Prepare();
-            }
-            if (User == null) {
+            if (checkUser && User == null) {
                 throw new ArgumentException("UserGameRole Not Found");
             }
         }
@@ -144,23 +141,23 @@ namespace GenshinNotifier.Net {
                 this.User = data;
                 Logger.Debug($"Prepare {User}");
             } else {
-                Logger.Error("Prepare",error);
+                Logger.Error("Prepare", error);
             }
             return this.User;
         }
 
         public async Task<(string, Exception)> PostSignReward() {
-            await CheckReady(true);
-            Logger.Debug($"PostSignReward with {User}");
-            var url = $"{Const.TAKUMI_API}/event/bbs_sign_reward/sign";
-            var body = new Dictionary<string, string>() {
+            string data = null;
+            Exception error = null;
+            try {
+                CheckReady(true);
+                Logger.Debug($"PostSignReward with {User}");
+                var url = $"{Const.TAKUMI_API}/event/bbs_sign_reward/sign";
+                var body = new Dictionary<string, string>() {
                 { "act_id","e202009291139501"},
                 {"region",User.Region},
                 {"uid",User.GameUid}
             };
-            string data = null;
-            Exception error = null;
-            try {
                 var response = await PostAsync(url, null, body, false);
                 response.EnsureSuccessStatusCode();
                 data = await response.Content.ReadAsStringAsync();
@@ -172,17 +169,17 @@ namespace GenshinNotifier.Net {
         }
 
         public async Task<(string, Exception)> GetSignReward() {
-            await CheckReady(true);
-            Logger.Debug($"GetSignReward with {User}");
-            var url = $"{Const.TAKUMI_API}/event/bbs_sign_reward/info";
-            var query = new Dictionary<string, string>() {
+            string data = null;
+            Exception error = null;
+            try {
+                CheckReady(true);
+                Logger.Debug($"GetSignReward with {User}");
+                var url = $"{Const.TAKUMI_API}/event/bbs_sign_reward/info";
+                var query = new Dictionary<string, string>() {
                 {"region",User.Region},
                 {"uid",User.GameUid},
                 { "act_id","e202009291139501"}
             };
-            string data = null;
-            Exception error = null;
-            try {
                 var response = await GetAsync(url, query);
                 response.EnsureSuccessStatusCode();
                 data = await response.Content.ReadAsStringAsync();
@@ -193,17 +190,17 @@ namespace GenshinNotifier.Net {
         }
 
         public async Task<(string, Exception)> GetMonthInfo() {
-            await CheckReady(true);
-            Logger.Debug($"GetMonthInfo with {User}");
-            var url = $"{Const.HK4E_APK}/event/ys_ledger/monthInfo";
-            var query = new Dictionary<string, string>() {
+            string data = null;
+            Exception error = null;
+            try {
+                CheckReady(true);
+                Logger.Debug($"GetMonthInfo with {User}");
+                var url = $"{Const.HK4E_APK}/event/ys_ledger/monthInfo";
+                var query = new Dictionary<string, string>() {
                 {"bind_region",User.Region},
                 {"bind_uid",User.GameUid},
                 { "month","0"}
             };
-            string data = null;
-            Exception error = null;
-            try {
                 var response = await GetAsync(url, query);
                 response.EnsureSuccessStatusCode();
                 data = await response.Content.ReadAsStringAsync();
@@ -214,16 +211,16 @@ namespace GenshinNotifier.Net {
         }
 
         public async Task<(DailyNote, Exception)> GetDailyNote() {
-            await CheckReady(true);
-            Logger.Debug($"GetDailyNote for {User.GameUid}");
-            var url = $"{Const.TAKUMI_RECORD_API}/game_record/app/genshin/api/dailyNote";
-            var query = new Dictionary<string, string>() {
-                {"server",User.Region},
-                {"role_id",User.GameUid},
-            };
             DailyNote data = null;
             Exception error = null;
             try {
+                CheckReady(true);
+                Logger.Debug($"GetDailyNote for {User.GameUid}");
+                var url = $"{Const.TAKUMI_RECORD_API}/game_record/app/genshin/api/dailyNote";
+                var query = new Dictionary<string, string>() {
+                {"server",User.Region},
+                {"role_id",User.GameUid},
+            };
                 var response = await GetAsync(url, query);
                 response.EnsureSuccessStatusCode();
                 string json = await response.Content.ReadAsStringAsync();
@@ -240,14 +237,15 @@ namespace GenshinNotifier.Net {
 
         // base user info, prepare for other request
         public async Task<(UserGameRole, Exception)> GetGameRoleInfo() {
-            Logger.Debug($"GetGameRoleInfo with cookie");
-            var url = $"{Const.TAKUMI_API}/binding/api/getUserGameRolesByCookie";
-            var query = new Dictionary<string, string>() {
-                {"game_biz","hk4e_cn"},
-            };
             UserGameRole data = null;
             Exception error = null;
             try {
+                CheckReady(false);
+                Logger.Debug($"GetGameRoleInfo with cookie");
+                var url = $"{Const.TAKUMI_API}/binding/api/getUserGameRolesByCookie";
+                var query = new Dictionary<string, string>() {
+                {"game_biz","hk4e_cn"},
+            };
                 var response = await GetAsync(url, query);
                 response.EnsureSuccessStatusCode();
                 string json = await response.Content.ReadAsStringAsync();
@@ -257,6 +255,10 @@ namespace GenshinNotifier.Net {
                 //Console.WriteLine(o);
                 // https://www.newtonsoft.com/json/help/html/SerializingJSONFragments.htm
                 data = o.ToObject<UserGameRole>();
+                if (data != null) {
+                    // update user info
+                    this.User = data;
+                }
             } catch (Exception ex) {
                 error = ex;
             }
