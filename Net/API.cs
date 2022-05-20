@@ -111,7 +111,7 @@ namespace GenshinNotifier.Net {
             if (String.IsNullOrEmpty(Cookie)) {
                 throw new ArgumentException("未设置Cookie");
             }
-            if (!Cookie.Contains("login_ticket")) {
+            if (!Utility.ValiteCookieFields(Cookie)) {
                 throw new ArgumentException("错误的Cookie");
             }
             if (checkUser && User == null) {

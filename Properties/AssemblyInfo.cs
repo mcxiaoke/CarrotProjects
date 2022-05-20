@@ -1,6 +1,5 @@
 ﻿using System.Resources;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // 有关程序集的一般信息由以下
@@ -11,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("CatCastle")]
 [assembly: AssemblyProduct("GenshinNotifier")]
-[assembly: AssemblyCopyright("Copyright ©  2022")]
+[assembly: AssemblyCopyright("Copyright © CatCastle 2022")]
 [assembly: AssemblyTrademark("CatCastle")]
 [assembly: AssemblyCulture("")]
 

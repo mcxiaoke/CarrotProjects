@@ -44,7 +44,7 @@ namespace GenshinNotifier {
                 var json = await Task.Run(() => File.ReadAllText(path));
                 return JsonConvert.DeserializeObject<T>(json);
             } catch (Exception ex) {
-                Logger.Error($"LoadCache {key} error={ex.Message}");
+                Logger.Error($"LoadCache {key}", ex);
                 return default;
             }
         }
@@ -60,7 +60,7 @@ namespace GenshinNotifier {
                 var json = await Task.Run(() => File.ReadAllText(path));
                 return JsonConvert.DeserializeObject<T>(json);
             } catch (Exception ex) {
-                Logger.Error($"LoadCache {key} error={ex.Message}");
+                Logger.Error($"LoadCache {key}", ex);
                 return default;
             }
         }
@@ -72,7 +72,7 @@ namespace GenshinNotifier {
                 var json = JsonConvert.SerializeObject(data);
                 await Task.Run(() => File.WriteAllText(path, json));
             } catch (Exception ex) {
-                Logger.Error($"SaveCache {key} error={ex.Message}");
+                Logger.Error($"SaveCache {key}", ex);
 
             }
         }
@@ -85,7 +85,7 @@ namespace GenshinNotifier {
                 var json = JsonConvert.SerializeObject(data);
                 await Task.Run(() => File.WriteAllText(path, json));
             } catch (Exception ex) {
-                Logger.Error($"SaveCache {key} error={ex.Message}");
+                Logger.Error($"SaveCache {key}", ex);
 
             }
         }

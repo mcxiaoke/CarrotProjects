@@ -19,7 +19,7 @@ namespace GenshinNotifier {
             this.OptionAutoStart.Checked = settings.OptionAutoStart;
             this.OptionHideToTray.Checked = settings.OptionHideToTray;
             this.OptionCloseToTray.Checked = settings.OptionCloseToTray;
-            this.OptionRefreshOnStart.Checked = settings.RefreshOnStart;
+            this.OptionRefreshOnStart.Checked = settings.OptionRefreshOnStart;
             this.OptionCheckinOnStart.Checked = settings.OptionCheckinOnStart;
             this.OptionRemindResin.Checked = settings.OptionRemindResin;
             this.OptionRemindCoin.Checked = settings.OptionRemindCoin;
@@ -34,7 +34,7 @@ namespace GenshinNotifier {
             settings.OptionAutoStart = this.OptionAutoStart.Checked;
             settings.OptionHideToTray = this.OptionHideToTray.Checked;
             settings.OptionCloseToTray = this.OptionCloseToTray.Checked;
-            settings.RefreshOnStart = this.OptionRefreshOnStart.Checked;
+            settings.OptionRefreshOnStart = this.OptionRefreshOnStart.Checked;
             settings.OptionCheckinOnStart = this.OptionCheckinOnStart.Checked;
             settings.OptionRemindResin = this.OptionRemindResin.Checked;
             settings.OptionRemindCoin = this.OptionRemindCoin.Checked;

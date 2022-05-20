@@ -28,6 +28,7 @@ namespace GenshinNotifier {
             OldCookie = DataController.Default.Cookie;
             this.CookieTextBox.Text = OldCookie;
             this.CookieLabel.Text = COOKIE_GUIDE;
+            Logger.Debug("CookieDialog.InitializeComponent");
         }
 
         private void ShowToolTip(string message, int duration = 3000) {
@@ -44,7 +45,7 @@ namespace GenshinNotifier {
 
         private async void YesButton_Click(object sender, EventArgs e) {
             var tempCookie = CookieTextBox.Text?.Trim().Replace("\"", "").Replace("'", "");
-            Logger.Info($"YesButton_Click");
+            Logger.Debug($"YesButton_Click tempCookie: {tempCookie}");
             if (String.IsNullOrEmpty(tempCookie)) {
                 ShowToolTip("Cookie不能为空");
                 return;
@@ -73,7 +74,9 @@ namespace GenshinNotifier {
         }
 
         private void CookieDialog_FormClosing(object sender, FormClosingEventArgs e) {
+            Logger.Debug("CookieDialog_FormClosing");
             foreach (EventHandler d in Handlers.GetInvocationList()) {
+                Logger.Debug("CookieDialog_FormClosing -Handlers");
                 Handlers -= d;
             }
         }

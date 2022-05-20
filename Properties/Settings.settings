@@ -5,12 +5,6 @@
     <Setting Name="MihoyoCookie" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="RefreshOnStart" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">True</Value>
-    </Setting>
-    <Setting Name="RefreshInterval" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">3600</Value>
-    </Setting>
     <Setting Name="MihoyoUser" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>

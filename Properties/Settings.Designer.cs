@@ -37,30 +37,6 @@ namespace GenshinNotifier.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool RefreshOnStart {
-            get {
-                return ((bool)(this["RefreshOnStart"]));
-            }
-            set {
-                this["RefreshOnStart"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("3600")]
-        public int RefreshInterval {
-            get {
-                return ((int)(this["RefreshInterval"]));
-            }
-            set {
-                this["RefreshInterval"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string MihoyoUser {
             get {

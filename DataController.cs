@@ -66,6 +66,9 @@ namespace GenshinNotifier {
 
         public async Task<(UserGameRole, Exception)> Initialize() {
             try {
+                if (String.IsNullOrEmpty(Cookie)) {
+                    throw new TokenException("No Cookie");
+                }
                 var user = await Api.GetGameRoleInfo();
                 Logger.Info($"Initialize uid={user?.GameUid}");
                 if (user != null) {

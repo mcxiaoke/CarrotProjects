@@ -1,41 +1,41 @@
 ﻿using System;
+using Serilog;
+using Serilog.Events;
 
 namespace GenshinNotifier {
-    public enum LoggerLevel {
-        Verbose,
-        Debug,
-        Info,
-        Warning,
-        Error,
-        Fatal,
-    }
 
     public interface ILogger {
-        int Level { get; set; }
-        void Log(LoggerLevel lv, string message);
+        void Log(LogEventLevel lv, string message);
+        void Error(string message, Exception error);
 
     }
 
     public abstract class BaseLogger : ILogger {
-        protected int _level = (int)LoggerLevel.Info;
-        public int Level {
-            get => _level;
-            set => _level = value;
-        }
 
-        public virtual void Log(LoggerLevel lv, string message) {
+        public virtual void Log(LogEventLevel lv, string message) {
         }
+        public virtual void Error(string message, Exception error) { }
     }
 
     public sealed class DummyLogger : BaseLogger {
     }
 
-    public sealed class ConsoleLogger : BaseLogger {
+    public sealed class SeriLogger : BaseLogger {
+        private readonly Serilog.ILogger _logger;
 
-        public override void Log(LoggerLevel lv, string message) {
-            if ((int)lv >= (int)Level) {
-                Console.WriteLine($"[{lv}] {message}");
-            }
+        public SeriLogger() {
+            _logger = new LoggerConfiguration()
+                .MinimumLevel.Verbose()
+                .WriteTo.Console()
+                .CreateLogger();
+        }
+
+        public override void Log(LogEventLevel lv, string message) {
+            _logger.Write(lv, message);
+        }
+
+        public override void Error(string message, Exception error) {
+            _logger.Error(error, message);
         }
     }
 }
