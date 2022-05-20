@@ -14,26 +14,37 @@ using System.Configuration;
 namespace GenshinNotifier {
     public partial class MainForm : Form {
 
+        private bool IsRefreshingData;
+
         public MainForm() {
             InitializeComponent();
         }
 
-        private void OnFormLoad(object sender, EventArgs e) {
-            var am = AssemblyName.GetAssemblyName("GenshinNotifier.exe");
-            this.Text = $"{am.Name} {am.Version}";
+        private async void OnFormLoad(object sender, EventArgs e) {
+            this.Text = $"{Application.ProductName} {Application.ProductVersion}";
+            var cache =  DataController.Default.Cache;
+            var user = await cache.LoadCache2<UserGameRole>();
+            var note = await cache.LoadCache2<DailyNote>();
+            Logger.Debug($"OnFormLoad uid={user?.GameUid} resin={note?.CurrentResin}");
+            UpdateUIControls(user, note);
         }
 
         async void OnFormShow(object sender, EventArgs e) {
-            var user=await DataController.Default.Initialize();
-            Logger.Info($"OnFormShow user={user?.GameUid}");
-            Logger.Info(DataController.Default.Ready ? "Ready" : "NotReady");
+            var (user, error) = await DataController.Default.Initialize();
+            Logger.Debug($"OnFormShow uid={user?.GameUid} error={error?.Message}");
+            Logger.Debug(DataController.Default.Ready ? "Ready" : "NotReady");
             if (DataController.Default.Ready) {
                 await RefreshDailyNote(sender, e);
-                //this.RefreshButton.Enabled = true;
             } else {
                 AccountValueL.Text = "当前Cookie为空或已失效，请设置Cookie后使用";
                 AccountValueL.ForeColor = Color.Red;
                 //ShowCookieDialog();
+                if (error != null) {
+#if DEBUG
+                    MessageBox.Show(error.ToString());
+#endif
+                }
+
             }
         }
 
@@ -68,35 +79,43 @@ namespace GenshinNotifier {
         }
 
         void OnCookieButtonClicked(object sender, EventArgs e) {
+            if (IsRefreshingData)
+                return;
             ShowCookieDialog();
         }
 
         void OnOptionButtonClicked(object sender, EventArgs e) {
+            if (IsRefreshingData)
+                return;
         }
 
         void OnAboutButtonClicked(object sender, EventArgs e) {
+            if (IsRefreshingData)
+                return;
         }
 
         void UpdateRefreshState(bool loading) {
+            IsRefreshingData = loading;
             this.RefreshButton.Enabled = !loading;
-            this.CookieButton.Enabled = !loading;
-            this.OptionButton.Enabled = !loading;
+            //this.CookieButton.Enabled = !loading;
             this.LoadingPic.Visible = loading;
         }
+
 
         async Task RefreshDailyNote(object sender, EventArgs e) {
             UpdateRefreshState(true);
             var (user, note) = await DataController.Default.GetDailyNote();
-            this.RefreshButton.Enabled = true;
+            Logger.Info($"RefreshDailyNote\nuser={user?.GameUid}\resin={note?.CurrentResin}");
+            UpdateUIControls(user, note);
+            UpdateRefreshState(false);
+        }
+
+        void UpdateUIControls(UserGameRole user, DailyNote note) {
             if (user == null || note == null) {
-                UpdateRefreshState(false);
                 return;
             }
-            Logger.Info($"RefreshDailyNote\nuser={user?.GameUid}\nnote={note?.CurrentResin}");
             AccountValueL.Text = $"{user.Nickname} {user.Level}级 / {user.RegionName}({user.Server}) / {user.GameUid}";
             AccountValueL.ForeColor = Color.Blue;
-
-
             var resinMayFull = note.CurrentResin >= note.MaxResin - 2;
             ResinValueL.Text = $"{note.CurrentResin}/{note.MaxResin}";
             ResinValueL.ForeColor = resinMayFull ? Color.Red : Color.Green;
@@ -129,8 +148,8 @@ namespace GenshinNotifier {
             TransformerValueL.Text = $"{note.Transformer.RecoveryTime.TimeFormatted}";
             TransformerValueL.ForeColor = (transformerReady ? Color.Red : Control.DefaultForeColor);
 
-            UpdatedValueL.Text = DateTime.Now.ToString("T");
-            UpdateRefreshState(false);
+            UpdatedValueL.Text = note.CreatedAt.ToString("T");
         }
+
     }
 }

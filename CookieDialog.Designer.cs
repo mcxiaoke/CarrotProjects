@@ -41,7 +41,7 @@
             this.YesButton.Padding = new System.Windows.Forms.Padding(8);
             this.YesButton.Size = new System.Drawing.Size(129, 57);
             this.YesButton.TabIndex = 2;
-            this.YesButton.Text = "确定";
+            this.YesButton.Text = "保存";
             this.YesButton.UseVisualStyleBackColor = true;
             this.YesButton.Click += new System.EventHandler(this.YesButton_Click);
             // 

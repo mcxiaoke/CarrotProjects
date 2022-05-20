@@ -18,7 +18,7 @@ namespace GenshinNotifier {
         public static void Error(string message, Exception e) {
             var sb = new StringBuilder();
             sb.AppendLine(message);
-            sb.AppendLine(e.ToString());
+            sb.AppendLine(e.Message);
             Default.Log(LoggerEvent.Error, sb.ToString());
         }
     }

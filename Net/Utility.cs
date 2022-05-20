@@ -29,6 +29,12 @@ namespace GenshinNotifier.Net {
             return JsonConvert.SerializeObject(value, jst);
         }
 
+        public static bool ValiteCookieFields(string value) {
+            var cookieDict = ParseCookieString(value);
+            var validKeys = new string[] { "cookie_token", "account_id", "login_ticket" };
+            return validKeys.All(it => cookieDict.ContainsKey(it));
+        }
+
         public static Dictionary<string, string> ParseCookieString(string str) {
             var cookieDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 

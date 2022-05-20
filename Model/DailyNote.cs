@@ -195,8 +195,8 @@ namespace GenshinNotifier.Net {
                 var Hour = int.Parse(ResinRecoveryTime) / 3600;
                 var Minute = int.Parse(ResinRecoveryTime) % 3600 / 60;
                 return new StringBuilder()
-                    .AppendIf(Hour > 0, $"{Hour}时")
-                    .AppendIf(Minute > 0, $"{Minute}分")
+                    .AppendIf(Hour > 0, $"{Hour}小时")
+                    .AppendIf(Minute > 0, $"{Minute}分钟")
                     .ToString();
             }
         }

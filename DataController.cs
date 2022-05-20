@@ -11,43 +11,16 @@ using Newtonsoft.Json;
 
 namespace GenshinNotifier {
     internal class DataController {
-
-        public static string GetDailyNoteCacheName(string uid) {
-            var root = Application.UserAppDataPath;
-            var path= Path.Combine(root, $"{uid}-dailyNote-cache.json");
-            Logger.Debug($"GetDailyNoteCacheName {path}");
-            return path;
-        }
-
-        public static async Task<DailyNote> GetDailyNoteCache(string uid) {
-            try {
-                var path = GetDailyNoteCacheName(uid);
-                if (!File.Exists(path)) {
-                    return null;
-                }
-                var json = await Task.Run(() => File.ReadAllText(path));
-                return JsonConvert.DeserializeObject<DailyNote>(json);
-            } catch (Exception ex) {
-                Logger.Error($"GetDailyNoteCache {uid} error={ex.Message}");
-                return null;
-            }
-        }
-
-        public static async Task SetDailyNoteCache(string uid, DailyNote note) {
-            Logger.Debug($"SetDailyNoteCache for {uid}");
-            try {
-                var path = GetDailyNoteCacheName(uid);
-                await Task.Run(() => File.WriteAllText(path, note.ToString()));
-            } catch (Exception ex) {
-                Logger.Error($"SetDailyNoteCache {uid} error={ex.Message}");
-
-            }
-        }
-
-
         public static DataController Default = new DataController();
 
         private readonly API Api;
+        public readonly CacheManager Cache;
+
+        private string _uid;
+        public string UID {
+            get { return User?.GameUid ?? _uid; }
+            set => _uid = value;
+        }
 
         public string Cookie {
             get { return Api.Cookie; }
@@ -62,40 +35,51 @@ namespace GenshinNotifier {
         public bool Ready { get { return this.Api.Ready; } }
 
         private DataController() {
-            this.Api = new API();
+            var cookie = Properties.Settings.Default.MihoyoCookie;
+            var uid = Properties.Settings.Default.MihoyoUserID;
+            this.Api = new API(cookie);
+            this.Cache = new CacheManager(uid);
+            this.UID = uid;
         }
 
-        public void ClearCookie() {
-            Logger.Info("ClearCookie");
+        public void ClearUserData() {
+            Logger.Info("ClearUserData");
             this.Cookie = null;
             this.User = null;
+            this.Cache.Name = null;
             Properties.Settings.Default.MihoyoCookie = null;
+            Properties.Settings.Default.MihoyoUserID = null;
             Properties.Settings.Default.MihoyoUser = null;
             Properties.Settings.Default.Save();
         }
 
-        public void SaveCookie(string cookie, UserGameRole user) {
-            Logger.Info($"SaveCookie for {user.GameUid}");
+        public void SaveUserData(string cookie, UserGameRole user) {
+            Logger.Info($"SaveUserData for {user.GameUid}");
             this.Cookie = cookie;
             this.User = user;
+            this.Cache.Name = user.GameUid;
             Properties.Settings.Default.MihoyoCookie = cookie;
+            Properties.Settings.Default.MihoyoUserID = user.GameUid;
             Properties.Settings.Default.MihoyoUser = user.ToString();
             Properties.Settings.Default.Save();
         }
 
-        public async Task<UserGameRole> Initialize() {
-            this.Cookie = Properties.Settings.Default.MihoyoCookie;
+        public async Task<(UserGameRole, Exception)> Initialize() {
             try {
-                var (user, error) = await Api.GetGameRoleInfo();
-                Logger.Info($"GetGameRoleInfo data={user?.GameUid} error={error?.Message}");
+                var user = await Api.GetGameRoleInfo();
+                Logger.Info($"Initialize uid={user?.GameUid}");
                 if (user != null) {
-                    SaveCookie(this.Cookie, user);
+                    await Cache.SaveCache2(user);
+                    SaveUserData(this.Cookie, user);
                 }
-                return user;
+                return (user, null);
+            } catch (TokenException ex) {
+                Logger.Error("Initialize", ex);
+                ClearUserData();
+                return (null, ex);
             } catch (Exception ex) {
-                Logger.Error("GetGameRoleInfo", ex);
-                ClearCookie();
-                return null;
+                Logger.Error("Initialize", ex);
+                return (null, ex);
             }
         }
 
@@ -105,12 +89,16 @@ namespace GenshinNotifier {
                 var (note, error) = await Api.GetDailyNote();
                 Logger.Info($"GetDailyNote resin={note?.CurrentResin} error={error?.Message}");
                 if (note != null) {
-                    await SetDailyNoteCache(this.User.GameUid, note);
+                    await Cache.SaveCache2(note);
                 }
                 return (this.User, note);
+            } catch (TokenException ex) {
+                Logger.Error("GetDailyNote", ex);
+                ClearUserData();
+                return (this.User, null);
             } catch (Exception ex) {
                 Logger.Error("GetDailyNote", ex);
-                return (null, null);
+                return (this.User, null);
             }
         }
 
@@ -118,8 +106,8 @@ namespace GenshinNotifier {
             // use temp api instance to verify cookie
             API tempApi = new API(tempCookie);
             try {
-                var (user, error) = await tempApi.GetGameRoleInfo();
-                Logger.Info($"ValidateCookie uid={user.GameUid} error={error?.Message}");
+                var user = await tempApi.GetGameRoleInfo();
+                Logger.Info($"ValidateCookie uid={user.GameUid}");
                 return user;
             } catch (Exception ex) {
                 Logger.Error("ValidateCookie", ex);

@@ -42,12 +42,6 @@ namespace GenshinNotifier {
             Close();
         }
 
-        private bool valiteCookieFields(string value) {
-            var cookieDict = Utility.ParseCookieString(value);
-            var validKeys = new string[] { "cookie_token", "account_id", "login_ticket"};
-            return validKeys.All(it => cookieDict.ContainsKey(it));
-        }
-
         private async void YesButton_Click(object sender, EventArgs e) {
             var tempCookie = CookieTextBox.Text?.Trim().Replace("\"", "").Replace("'", "");
             Logger.Info($"YesButton_Click");
@@ -55,7 +49,7 @@ namespace GenshinNotifier {
                 ShowToolTip("Cookie不能为空");
                 return;
             }
-            if (!valiteCookieFields(tempCookie)) {
+            if (!Utility.ValiteCookieFields(tempCookie)) {
                 ShowToolTip("Cookie无效：缺少必须字段");
                 return;
             }
@@ -64,7 +58,7 @@ namespace GenshinNotifier {
                 return;
             }
             var user = await DataController.ValidateCookie(tempCookie);
-            Logger.Info($"CookieValidateButton_Click {user?.GameUid}");
+            Logger.Info($"YesButton_Click uid={user?.GameUid}");
             if (user?.GameUid != null) {
                 Handlers?.Invoke(this, new SimpleEventArgs(tempCookie));
                 Close();

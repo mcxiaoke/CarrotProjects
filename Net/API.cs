@@ -66,6 +66,30 @@ namespace GenshinNotifier.Net {
         }
     }
 
+    public class TokenException : Exception {
+        public TokenException(string message) : base(message) {
+        }
+
+        public TokenException(string message, Exception innerException) : base(message, innerException) {
+        }
+    }
+
+    public class ServerException : Exception {
+        public ServerException(string message) : base(message) {
+        }
+
+        public ServerException(string message, Exception innerException) : base(message, innerException) {
+        }
+    }
+
+    public class ClientException : Exception {
+        public ClientException(string message) : base(message) {
+        }
+
+        public ClientException(string message, Exception innerException) : base(message, innerException) {
+        }
+    }
+
     public class API {
         private HttpClientHandler handler = null;
         private HttpClient client = null;
@@ -84,24 +108,25 @@ namespace GenshinNotifier.Net {
 
 
         private void CheckReady(bool checkUser = false) {
-            if (Cookie == null) {
-                throw new ArgumentException("Cookie Not Found");
+            if (String.IsNullOrEmpty(Cookie)) {
+                throw new ArgumentException("未设置Cookie");
             }
             if (!Cookie.Contains("login_ticket")) {
-                throw new ArgumentException("Invalid Cookie");
+                throw new ArgumentException("错误的Cookie");
             }
             if (checkUser && User == null) {
-                throw new ArgumentException("UserGameRole Not Found");
+                throw new ArgumentException("未找到角色信息");
             }
         }
 
         private void SetupHttpClient() {
-            handler = new HttpClientHandler() { UseCookies = false };
-            handler.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
+            handler = new HttpClientHandler {
+                UseCookies = false, AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            };
             client = new HttpClient(handler);
         }
 
-        async Task<HttpResponseMessage> SendRequestAsync(HttpMethod method,
+        async Task<string> SendRequestAsync(HttpMethod method,
            string url,
            IDictionary<string, string> queryDict,
            object bodyObj,
@@ -119,31 +144,35 @@ namespace GenshinNotifier.Net {
                     request.Content = new StringContent(Utility.Stringify(bodyObj), Encoding.UTF8, "application/json");
                     Logger.Debug($"SendRequestAsync data={Utility.Stringify(bodyObj)}");
                 }
-                return await client.SendAsync(request);
+                var response = await client.SendAsync(request);
+                var json = await response.Content.ReadAsStringAsync();
+                if ((int)response.StatusCode >= 500) {
+                    throw new ServerException($"Server Error {response.StatusCode}");
+                } else if ((int)response.StatusCode >= 400) {
+                    throw new ClientException(json);
+                } else if (response.IsSuccessStatusCode) {
+                    dynamic jsonObj = JsonConvert.DeserializeObject(json);
+                    if (jsonObj["retcode"] == 0) {
+                        return json;
+                    } else {
+                        throw new TokenException(json);
+                    }
+                } else {
+                    throw new ClientException(json);
+                }
             }
         }
 
-        async Task<HttpResponseMessage> GetAsync(string url,
+        async Task<string> GetAsync(string url,
            IDictionary<string, string> queryDict, bool newDS = true) {
             return await SendRequestAsync(HttpMethod.Get, url, queryDict, null, newDS);
         }
 
-        async Task<HttpResponseMessage> PostAsync(string url,
+        async Task<string> PostAsync(string url,
            IDictionary<string, string> queryDict,
            object bodyObj,
            bool newDS = true) {
             return await SendRequestAsync(HttpMethod.Post, url, queryDict, bodyObj, newDS);
-        }
-
-        public async Task<UserGameRole> Prepare() {
-            var (data, error) = await GetGameRoleInfo();
-            if (data != null && error == null) {
-                this.User = data;
-                Logger.Debug($"Prepare {User}");
-            } else {
-                Logger.Error("Prepare", error);
-            }
-            return this.User;
         }
 
         public async Task<(string, Exception)> PostSignReward() {
@@ -158,9 +187,7 @@ namespace GenshinNotifier.Net {
                 {"region",User.Region},
                 {"uid",User.GameUid}
             };
-                var response = await PostAsync(url, null, body, false);
-                response.EnsureSuccessStatusCode();
-                data = await response.Content.ReadAsStringAsync();
+                data = await PostAsync(url, null, body, false);
             } catch (Exception ex) {
                 error = ex;
             }
@@ -180,9 +207,7 @@ namespace GenshinNotifier.Net {
                 {"uid",User.GameUid},
                 { "act_id","e202009291139501"}
             };
-                var response = await GetAsync(url, query);
-                response.EnsureSuccessStatusCode();
-                data = await response.Content.ReadAsStringAsync();
+                data = await GetAsync(url, query);
             } catch (Exception ex) {
                 error = ex;
             }
@@ -201,9 +226,7 @@ namespace GenshinNotifier.Net {
                 {"bind_uid",User.GameUid},
                 { "month","0"}
             };
-                var response = await GetAsync(url, query);
-                response.EnsureSuccessStatusCode();
-                data = await response.Content.ReadAsStringAsync();
+                data = await GetAsync(url, query);
             } catch (Exception ex) {
                 error = ex;
             }
@@ -221,10 +244,7 @@ namespace GenshinNotifier.Net {
                 {"server",User.Region},
                 {"role_id",User.GameUid},
             };
-                var response = await GetAsync(url, query);
-                response.EnsureSuccessStatusCode();
-                string json = await response.Content.ReadAsStringAsync();
-                //Console.WriteLine(json);
+                var json = await GetAsync(url, query);
                 dynamic jsonObj = JsonConvert.DeserializeObject(json);
                 JObject o = jsonObj.data;
                 data = o.ToObject<DailyNote>();
@@ -237,31 +257,21 @@ namespace GenshinNotifier.Net {
         }
 
         // base user info, prepare for other request
-        public async Task<(UserGameRole, Exception)> GetGameRoleInfo() {
-            UserGameRole data = null;
-            Exception error = null;
-            try {
-                CheckReady(false);
-                Logger.Debug($"GetGameRoleInfo with cookie");
-                var url = $"{Const.TAKUMI_API}/binding/api/getUserGameRolesByCookie";
-                var query = new Dictionary<string, string>() {
+        public async Task<UserGameRole> GetGameRoleInfo() {
+            CheckReady(false);
+            Logger.Debug($"GetGameRoleInfo with cookie");
+            var url = $"{Const.TAKUMI_API}/binding/api/getUserGameRolesByCookie";
+            var query = new Dictionary<string, string>() {
                 {"game_biz","hk4e_cn"},
             };
-                var response = await GetAsync(url, query);
-                response.EnsureSuccessStatusCode();
-                string json = await response.Content.ReadAsStringAsync();
-                dynamic jsonObj = JsonConvert.DeserializeObject(json);
-                //Console.WriteLine(jsonObj);
-                JObject o = jsonObj.data.list[0];
-                //Console.WriteLine(o);
-                // https://www.newtonsoft.com/json/help/html/SerializingJSONFragments.htm
-                data = o.ToObject<UserGameRole>();
-            } catch (Exception ex) {
-                error = ex;
-            }
-            //Console.WriteLine($"GetGameRoleInfo data={data}");
-            //Console.WriteLine($"GetGameRoleInfo error={error}");
-            return (data, error);
+            var json = await GetAsync(url, query);
+            //Console.WriteLine(json);
+            dynamic jsonObj = JsonConvert.DeserializeObject(json);
+            //Console.WriteLine(jsonObj);
+            JObject o = jsonObj.data.list[0];
+            //Console.WriteLine(o);
+            // https://www.newtonsoft.com/json/help/html/SerializingJSONFragments.htm
+            return o.ToObject<UserGameRole>();
         }
     }
 }

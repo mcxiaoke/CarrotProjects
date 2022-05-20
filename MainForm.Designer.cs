@@ -368,7 +368,6 @@
             // 
             // RefreshButton
             // 
-            this.RefreshButton.Enabled = false;
             this.RefreshButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.RefreshButton.Location = new System.Drawing.Point(171, 565);
             this.RefreshButton.Name = "RefreshButton";
