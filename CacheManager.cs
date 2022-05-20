@@ -30,7 +30,7 @@ namespace GenshinNotifier {
                 Directory.CreateDirectory(dir);
             }
             var path = Path.Combine(dir, $"{key}.json");
-            Logger.Debug($"GetCachePath {path}");
+            //Logger.Debug($"GetCachePath {path}");
             return path;
         }
 

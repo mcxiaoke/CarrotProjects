@@ -15,9 +15,6 @@ namespace GenshinNotifier {
         static void Main() {
 #if DEBUG
             NativeHelper.AllocConsole();
-            Logger.Default = new ConsoleLogger();
-#else
-            Logger.Default = new DummyLogger();
 #endif
             if (Properties.Settings.Default.UpgradeRequired) {
                 Properties.Settings.Default.Upgrade();

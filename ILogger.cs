@@ -1,33 +1,41 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
 
 namespace GenshinNotifier {
-    public enum LoggerEvent {
+    public enum LoggerLevel {
         Verbose,
         Debug,
         Info,
         Warning,
         Error,
+        Fatal,
     }
 
     public interface ILogger {
-        void Log(LoggerEvent loggerEvent, string message);
-        
+        int Level { get; set; }
+        void Log(LoggerLevel lv, string message);
+
     }
 
-    public sealed class DummyLogger : ILogger {
-        public void Log(LoggerEvent loggerEvent, string message) { }
+    public abstract class BaseLogger : ILogger {
+        protected int _level = (int)LoggerLevel.Info;
+        public int Level {
+            get => _level;
+            set => _level = value;
+        }
+
+        public virtual void Log(LoggerLevel lv, string message) {
+        }
     }
 
-    public sealed class ConsoleLogger : ILogger {
+    public sealed class DummyLogger : BaseLogger {
+    }
 
-        public void Log(LoggerEvent loggerEvent, string message) {
-            Console.WriteLine($"[{loggerEvent}] {message}");
+    public sealed class ConsoleLogger : BaseLogger {
+
+        public override void Log(LoggerLevel lv, string message) {
+            if ((int)lv >= (int)Level) {
+                Console.WriteLine($"[{lv}] {message}");
+            }
         }
     }
 }

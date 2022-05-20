@@ -38,11 +38,8 @@ namespace GenshinNotifier {
             } else {
                 AccountValueL.Text = "当前Cookie为空或已失效，请设置Cookie后使用";
                 AccountValueL.ForeColor = Color.Red;
-                //ShowCookieDialog();
                 if (error != null) {
-#if DEBUG
-                    MessageBox.Show(error.ToString());
-#endif
+                    Logger.Error("OnFormShow", error);
                 }
 
             }
