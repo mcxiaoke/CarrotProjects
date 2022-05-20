@@ -106,5 +106,149 @@ namespace GenshinNotifier.Properties {
                 this["MihoyoUserID"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OptionAutoStart {
+            get {
+                return ((bool)(this["OptionAutoStart"]));
+            }
+            set {
+                this["OptionAutoStart"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OptionHideToTray {
+            get {
+                return ((bool)(this["OptionHideToTray"]));
+            }
+            set {
+                this["OptionHideToTray"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OptionCloseToTray {
+            get {
+                return ((bool)(this["OptionCloseToTray"]));
+            }
+            set {
+                this["OptionCloseToTray"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OptionRefreshOnStart {
+            get {
+                return ((bool)(this["OptionRefreshOnStart"]));
+            }
+            set {
+                this["OptionRefreshOnStart"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OptionCheckinOnStart {
+            get {
+                return ((bool)(this["OptionCheckinOnStart"]));
+            }
+            set {
+                this["OptionCheckinOnStart"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OptionRemindResin {
+            get {
+                return ((bool)(this["OptionRemindResin"]));
+            }
+            set {
+                this["OptionRemindResin"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OptionRemindCoin {
+            get {
+                return ((bool)(this["OptionRemindCoin"]));
+            }
+            set {
+                this["OptionRemindCoin"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OptionRemindTask {
+            get {
+                return ((bool)(this["OptionRemindTask"]));
+            }
+            set {
+                this["OptionRemindTask"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OptionRemindDiscount {
+            get {
+                return ((bool)(this["OptionRemindDiscount"]));
+            }
+            set {
+                this["OptionRemindDiscount"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OptionRemindExpedition {
+            get {
+                return ((bool)(this["OptionRemindExpedition"]));
+            }
+            set {
+                this["OptionRemindExpedition"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OptionRemindTransformer {
+            get {
+                return ((bool)(this["OptionRemindTransformer"]));
+            }
+            set {
+                this["OptionRemindTransformer"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool 设置 {
+            get {
+                return ((bool)(this["设置"]));
+            }
+            set {
+                this["设置"] = value;
+            }
+        }
     }
 }

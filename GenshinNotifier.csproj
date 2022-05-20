@@ -294,6 +294,7 @@
     <EmbeddedResource Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\carrot_512.ico" />
     <Content Include="Assets\loading.gif" />
     <Content Include="FodyWeavers.xml" />
     <None Include="Assets\loading_100.gif" />

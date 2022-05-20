@@ -35,11 +35,11 @@
             // 
             this.YesButton.AutoSize = true;
             this.YesButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.YesButton.Location = new System.Drawing.Point(577, 603);
-            this.YesButton.Margin = new System.Windows.Forms.Padding(10);
+            this.YesButton.Location = new System.Drawing.Point(581, 601);
+            this.YesButton.Margin = new System.Windows.Forms.Padding(8);
             this.YesButton.Name = "YesButton";
             this.YesButton.Padding = new System.Windows.Forms.Padding(8);
-            this.YesButton.Size = new System.Drawing.Size(129, 57);
+            this.YesButton.Size = new System.Drawing.Size(130, 61);
             this.YesButton.TabIndex = 2;
             this.YesButton.Text = "保存";
             this.YesButton.UseVisualStyleBackColor = true;
@@ -49,11 +49,11 @@
             // 
             this.NoButton.AutoSize = true;
             this.NoButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.NoButton.Location = new System.Drawing.Point(726, 603);
-            this.NoButton.Margin = new System.Windows.Forms.Padding(10);
+            this.NoButton.Location = new System.Drawing.Point(727, 601);
+            this.NoButton.Margin = new System.Windows.Forms.Padding(8);
             this.NoButton.Name = "NoButton";
             this.NoButton.Padding = new System.Windows.Forms.Padding(8);
-            this.NoButton.Size = new System.Drawing.Size(129, 57);
+            this.NoButton.Size = new System.Drawing.Size(130, 61);
             this.NoButton.TabIndex = 1;
             this.NoButton.Text = "取消";
             this.NoButton.UseVisualStyleBackColor = true;

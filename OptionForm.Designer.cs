@@ -24,19 +24,21 @@
         /// </summary>
         private void InitializeComponent() {
             this.CommonGroup = new System.Windows.Forms.GroupBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.OptionCloseToTray = new System.Windows.Forms.CheckBox();
+            this.OptionHideToTray = new System.Windows.Forms.CheckBox();
+            this.OptionAutoStart = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.checkBox4 = new System.Windows.Forms.CheckBox();
-            this.checkBox5 = new System.Windows.Forms.CheckBox();
-            this.checkBox6 = new System.Windows.Forms.CheckBox();
-            this.checkBox7 = new System.Windows.Forms.CheckBox();
-            this.checkBox8 = new System.Windows.Forms.CheckBox();
-            this.checkBox9 = new System.Windows.Forms.CheckBox();
+            this.OptionRemindTransformer = new System.Windows.Forms.CheckBox();
+            this.OptionRemindDiscount = new System.Windows.Forms.CheckBox();
+            this.OptionRemindCoin = new System.Windows.Forms.CheckBox();
+            this.OptionRemindExpedition = new System.Windows.Forms.CheckBox();
+            this.OptionRemindTask = new System.Windows.Forms.CheckBox();
+            this.OptionRemindResin = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.checkBox10 = new System.Windows.Forms.CheckBox();
-            this.checkBox11 = new System.Windows.Forms.CheckBox();
+            this.OptionCheckinOnStart = new System.Windows.Forms.CheckBox();
+            this.OptionRefreshOnStart = new System.Windows.Forms.CheckBox();
+            this.ProjectLabel = new System.Windows.Forms.LinkLabel();
+            this.CloseButton = new System.Windows.Forms.Button();
             this.CommonGroup.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -45,181 +47,210 @@
             // CommonGroup
             // 
             this.CommonGroup.AutoSize = true;
-            this.CommonGroup.Controls.Add(this.checkBox3);
-            this.CommonGroup.Controls.Add(this.checkBox2);
-            this.CommonGroup.Controls.Add(this.checkBox1);
+            this.CommonGroup.Controls.Add(this.OptionCloseToTray);
+            this.CommonGroup.Controls.Add(this.OptionHideToTray);
+            this.CommonGroup.Controls.Add(this.OptionAutoStart);
             this.CommonGroup.Location = new System.Drawing.Point(13, 13);
             this.CommonGroup.Name = "CommonGroup";
-            this.CommonGroup.Size = new System.Drawing.Size(284, 223);
+            this.CommonGroup.Size = new System.Drawing.Size(335, 223);
             this.CommonGroup.TabIndex = 0;
             this.CommonGroup.TabStop = false;
             this.CommonGroup.Text = "通用";
             // 
-            // checkBox1
+            // OptionCloseToTray
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(11, 43);
-            this.checkBox1.Margin = new System.Windows.Forms.Padding(8);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(190, 35);
-            this.checkBox1.TabIndex = 0;
-            this.checkBox1.Text = "跟随系统启动";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.OptionCloseToTray.AutoSize = true;
+            this.OptionCloseToTray.Location = new System.Drawing.Point(11, 145);
+            this.OptionCloseToTray.Margin = new System.Windows.Forms.Padding(8);
+            this.OptionCloseToTray.Name = "OptionCloseToTray";
+            this.OptionCloseToTray.Size = new System.Drawing.Size(238, 35);
+            this.OptionCloseToTray.TabIndex = 2;
+            this.OptionCloseToTray.Text = "关闭到任系统托盘";
+            this.OptionCloseToTray.UseVisualStyleBackColor = true;
             // 
-            // checkBox2
+            // OptionHideToTray
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Location = new System.Drawing.Point(11, 94);
-            this.checkBox2.Margin = new System.Windows.Forms.Padding(8);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(238, 35);
-            this.checkBox2.TabIndex = 1;
-            this.checkBox2.Text = "最小化到系统托盘";
-            this.checkBox2.UseVisualStyleBackColor = true;
+            this.OptionHideToTray.AutoSize = true;
+            this.OptionHideToTray.Location = new System.Drawing.Point(11, 94);
+            this.OptionHideToTray.Margin = new System.Windows.Forms.Padding(8);
+            this.OptionHideToTray.Name = "OptionHideToTray";
+            this.OptionHideToTray.Size = new System.Drawing.Size(238, 35);
+            this.OptionHideToTray.TabIndex = 1;
+            this.OptionHideToTray.Text = "最小化到系统托盘";
+            this.OptionHideToTray.UseVisualStyleBackColor = true;
             // 
-            // checkBox3
+            // OptionAutoStart
             // 
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(11, 145);
-            this.checkBox3.Margin = new System.Windows.Forms.Padding(8);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(238, 35);
-            this.checkBox3.TabIndex = 2;
-            this.checkBox3.Text = "关闭到任系统托盘";
-            this.checkBox3.UseVisualStyleBackColor = true;
+            this.OptionAutoStart.AutoSize = true;
+            this.OptionAutoStart.Location = new System.Drawing.Point(11, 43);
+            this.OptionAutoStart.Margin = new System.Windows.Forms.Padding(8);
+            this.OptionAutoStart.Name = "OptionAutoStart";
+            this.OptionAutoStart.Size = new System.Drawing.Size(190, 35);
+            this.OptionAutoStart.TabIndex = 0;
+            this.OptionAutoStart.Text = "跟随系统启动";
+            this.OptionAutoStart.UseVisualStyleBackColor = true;
             // 
             // groupBox1
             // 
             this.groupBox1.AutoSize = true;
-            this.groupBox1.Controls.Add(this.checkBox9);
-            this.groupBox1.Controls.Add(this.checkBox8);
-            this.groupBox1.Controls.Add(this.checkBox7);
-            this.groupBox1.Controls.Add(this.checkBox6);
-            this.groupBox1.Controls.Add(this.checkBox5);
-            this.groupBox1.Controls.Add(this.checkBox4);
-            this.groupBox1.Location = new System.Drawing.Point(304, 13);
+            this.groupBox1.Controls.Add(this.OptionRemindTransformer);
+            this.groupBox1.Controls.Add(this.OptionRemindDiscount);
+            this.groupBox1.Controls.Add(this.OptionRemindCoin);
+            this.groupBox1.Controls.Add(this.OptionRemindExpedition);
+            this.groupBox1.Controls.Add(this.OptionRemindTask);
+            this.groupBox1.Controls.Add(this.OptionRemindResin);
+            this.groupBox1.Location = new System.Drawing.Point(354, 13);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(346, 223);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "提醒";
             // 
-            // checkBox4
+            // OptionRemindTransformer
             // 
-            this.checkBox4.AutoSize = true;
-            this.checkBox4.Location = new System.Drawing.Point(11, 43);
-            this.checkBox4.Margin = new System.Windows.Forms.Padding(8);
-            this.checkBox4.Name = "checkBox4";
-            this.checkBox4.Size = new System.Drawing.Size(142, 35);
-            this.checkBox4.TabIndex = 0;
-            this.checkBox4.Text = "原粹树脂";
-            this.checkBox4.UseVisualStyleBackColor = true;
+            this.OptionRemindTransformer.AutoSize = true;
+            this.OptionRemindTransformer.Location = new System.Drawing.Point(169, 145);
+            this.OptionRemindTransformer.Margin = new System.Windows.Forms.Padding(8);
+            this.OptionRemindTransformer.Name = "OptionRemindTransformer";
+            this.OptionRemindTransformer.Size = new System.Drawing.Size(166, 35);
+            this.OptionRemindTransformer.TabIndex = 5;
+            this.OptionRemindTransformer.Text = "参量质变仪";
+            this.OptionRemindTransformer.UseVisualStyleBackColor = true;
             // 
-            // checkBox5
+            // OptionRemindDiscount
             // 
-            this.checkBox5.AutoSize = true;
-            this.checkBox5.Location = new System.Drawing.Point(11, 94);
-            this.checkBox5.Margin = new System.Windows.Forms.Padding(8);
-            this.checkBox5.Name = "checkBox5";
-            this.checkBox5.Size = new System.Drawing.Size(142, 35);
-            this.checkBox5.TabIndex = 1;
-            this.checkBox5.Text = "每日委托";
-            this.checkBox5.UseVisualStyleBackColor = true;
+            this.OptionRemindDiscount.AutoSize = true;
+            this.OptionRemindDiscount.Location = new System.Drawing.Point(169, 94);
+            this.OptionRemindDiscount.Margin = new System.Windows.Forms.Padding(8);
+            this.OptionRemindDiscount.Name = "OptionRemindDiscount";
+            this.OptionRemindDiscount.Size = new System.Drawing.Size(142, 35);
+            this.OptionRemindDiscount.TabIndex = 4;
+            this.OptionRemindDiscount.Text = "减半周本";
+            this.OptionRemindDiscount.UseVisualStyleBackColor = true;
             // 
-            // checkBox6
+            // OptionRemindCoin
             // 
-            this.checkBox6.AutoSize = true;
-            this.checkBox6.Location = new System.Drawing.Point(11, 145);
-            this.checkBox6.Margin = new System.Windows.Forms.Padding(8);
-            this.checkBox6.Name = "checkBox6";
-            this.checkBox6.Size = new System.Drawing.Size(142, 35);
-            this.checkBox6.TabIndex = 2;
-            this.checkBox6.Text = "探索派遣";
-            this.checkBox6.UseVisualStyleBackColor = true;
+            this.OptionRemindCoin.AutoSize = true;
+            this.OptionRemindCoin.Location = new System.Drawing.Point(169, 43);
+            this.OptionRemindCoin.Margin = new System.Windows.Forms.Padding(8);
+            this.OptionRemindCoin.Name = "OptionRemindCoin";
+            this.OptionRemindCoin.Size = new System.Drawing.Size(142, 35);
+            this.OptionRemindCoin.TabIndex = 3;
+            this.OptionRemindCoin.Text = "洞天宝钱";
+            this.OptionRemindCoin.UseVisualStyleBackColor = true;
             // 
-            // checkBox7
+            // OptionRemindExpedition
             // 
-            this.checkBox7.AutoSize = true;
-            this.checkBox7.Location = new System.Drawing.Point(169, 43);
-            this.checkBox7.Margin = new System.Windows.Forms.Padding(8);
-            this.checkBox7.Name = "checkBox7";
-            this.checkBox7.Size = new System.Drawing.Size(142, 35);
-            this.checkBox7.TabIndex = 3;
-            this.checkBox7.Text = "洞天宝钱";
-            this.checkBox7.UseVisualStyleBackColor = true;
+            this.OptionRemindExpedition.AutoSize = true;
+            this.OptionRemindExpedition.Location = new System.Drawing.Point(11, 145);
+            this.OptionRemindExpedition.Margin = new System.Windows.Forms.Padding(8);
+            this.OptionRemindExpedition.Name = "OptionRemindExpedition";
+            this.OptionRemindExpedition.Size = new System.Drawing.Size(142, 35);
+            this.OptionRemindExpedition.TabIndex = 2;
+            this.OptionRemindExpedition.Text = "探索派遣";
+            this.OptionRemindExpedition.UseVisualStyleBackColor = true;
             // 
-            // checkBox8
+            // OptionRemindTask
             // 
-            this.checkBox8.AutoSize = true;
-            this.checkBox8.Location = new System.Drawing.Point(169, 94);
-            this.checkBox8.Margin = new System.Windows.Forms.Padding(8);
-            this.checkBox8.Name = "checkBox8";
-            this.checkBox8.Size = new System.Drawing.Size(142, 35);
-            this.checkBox8.TabIndex = 4;
-            this.checkBox8.Text = "减半周本";
-            this.checkBox8.UseVisualStyleBackColor = true;
+            this.OptionRemindTask.AutoSize = true;
+            this.OptionRemindTask.Location = new System.Drawing.Point(11, 94);
+            this.OptionRemindTask.Margin = new System.Windows.Forms.Padding(8);
+            this.OptionRemindTask.Name = "OptionRemindTask";
+            this.OptionRemindTask.Size = new System.Drawing.Size(142, 35);
+            this.OptionRemindTask.TabIndex = 1;
+            this.OptionRemindTask.Text = "每日委托";
+            this.OptionRemindTask.UseVisualStyleBackColor = true;
             // 
-            // checkBox9
+            // OptionRemindResin
             // 
-            this.checkBox9.AutoSize = true;
-            this.checkBox9.Location = new System.Drawing.Point(169, 145);
-            this.checkBox9.Margin = new System.Windows.Forms.Padding(8);
-            this.checkBox9.Name = "checkBox9";
-            this.checkBox9.Size = new System.Drawing.Size(166, 35);
-            this.checkBox9.TabIndex = 5;
-            this.checkBox9.Text = "参量质变仪";
-            this.checkBox9.UseVisualStyleBackColor = true;
+            this.OptionRemindResin.AutoSize = true;
+            this.OptionRemindResin.Location = new System.Drawing.Point(11, 43);
+            this.OptionRemindResin.Margin = new System.Windows.Forms.Padding(8);
+            this.OptionRemindResin.Name = "OptionRemindResin";
+            this.OptionRemindResin.Size = new System.Drawing.Size(142, 35);
+            this.OptionRemindResin.TabIndex = 0;
+            this.OptionRemindResin.Text = "原粹树脂";
+            this.OptionRemindResin.UseVisualStyleBackColor = true;
             // 
             // groupBox2
             // 
             this.groupBox2.AutoSize = true;
-            this.groupBox2.Controls.Add(this.checkBox11);
-            this.groupBox2.Controls.Add(this.checkBox10);
+            this.groupBox2.Controls.Add(this.OptionCheckinOnStart);
+            this.groupBox2.Controls.Add(this.OptionRefreshOnStart);
             this.groupBox2.Location = new System.Drawing.Point(13, 243);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(637, 240);
+            this.groupBox2.Size = new System.Drawing.Size(676, 172);
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "其它";
             // 
-            // checkBox10
+            // OptionCheckinOnStart
             // 
-            this.checkBox10.AutoSize = true;
-            this.checkBox10.Location = new System.Drawing.Point(11, 43);
-            this.checkBox10.Margin = new System.Windows.Forms.Padding(8);
-            this.checkBox10.Name = "checkBox10";
-            this.checkBox10.Size = new System.Drawing.Size(262, 35);
-            this.checkBox10.TabIndex = 0;
-            this.checkBox10.Text = "打开时自动刷新数据";
-            this.checkBox10.UseVisualStyleBackColor = true;
+            this.OptionCheckinOnStart.AutoSize = true;
+            this.OptionCheckinOnStart.Location = new System.Drawing.Point(11, 94);
+            this.OptionCheckinOnStart.Margin = new System.Windows.Forms.Padding(8);
+            this.OptionCheckinOnStart.Name = "OptionCheckinOnStart";
+            this.OptionCheckinOnStart.Size = new System.Drawing.Size(262, 35);
+            this.OptionCheckinOnStart.TabIndex = 1;
+            this.OptionCheckinOnStart.Text = "每天米游社自动签到";
+            this.OptionCheckinOnStart.UseVisualStyleBackColor = true;
             // 
-            // checkBox11
+            // OptionRefreshOnStart
             // 
-            this.checkBox11.AutoSize = true;
-            this.checkBox11.Location = new System.Drawing.Point(11, 94);
-            this.checkBox11.Margin = new System.Windows.Forms.Padding(8);
-            this.checkBox11.Name = "checkBox11";
-            this.checkBox11.Size = new System.Drawing.Size(262, 35);
-            this.checkBox11.TabIndex = 1;
-            this.checkBox11.Text = "每天米游社自动签到";
-            this.checkBox11.UseVisualStyleBackColor = true;
+            this.OptionRefreshOnStart.AutoSize = true;
+            this.OptionRefreshOnStart.Location = new System.Drawing.Point(11, 43);
+            this.OptionRefreshOnStart.Margin = new System.Windows.Forms.Padding(8);
+            this.OptionRefreshOnStart.Name = "OptionRefreshOnStart";
+            this.OptionRefreshOnStart.Size = new System.Drawing.Size(262, 35);
+            this.OptionRefreshOnStart.TabIndex = 0;
+            this.OptionRefreshOnStart.Text = "打开时自动刷新数据";
+            this.OptionRefreshOnStart.UseVisualStyleBackColor = true;
+            // 
+            // ProjectLabel
+            // 
+            this.ProjectLabel.Location = new System.Drawing.Point(7, 426);
+            this.ProjectLabel.Margin = new System.Windows.Forms.Padding(3);
+            this.ProjectLabel.Name = "ProjectLabel";
+            this.ProjectLabel.Padding = new System.Windows.Forms.Padding(6);
+            this.ProjectLabel.Size = new System.Drawing.Size(682, 43);
+            this.ProjectLabel.TabIndex = 0;
+            this.ProjectLabel.TabStop = true;
+            this.ProjectLabel.Text = "下载最新版";
+            this.ProjectLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.ProjectLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ProjectLabel_LinkClicked);
+            // 
+            // CloseButton
+            // 
+            this.CloseButton.Location = new System.Drawing.Point(547, 491);
+            this.CloseButton.Margin = new System.Windows.Forms.Padding(8);
+            this.CloseButton.Name = "CloseButton";
+            this.CloseButton.Padding = new System.Windows.Forms.Padding(8);
+            this.CloseButton.Size = new System.Drawing.Size(130, 61);
+            this.CloseButton.TabIndex = 3;
+            this.CloseButton.Text = "关闭";
+            this.CloseButton.UseVisualStyleBackColor = true;
+            this.CloseButton.Click += new System.EventHandler(this.CloseButton_Click);
             // 
             // OptionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 31F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(662, 529);
+            this.ClientSize = new System.Drawing.Size(694, 569);
+            this.Controls.Add(this.CloseButton);
             this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.ProjectLabel);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.CommonGroup);
             this.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "OptionForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "选项";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OptionForm_FormClosing);
+            this.Load += new System.EventHandler(this.OptionForm_Load);
             this.CommonGroup.ResumeLayout(false);
             this.CommonGroup.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -234,18 +265,20 @@
         #endregion
 
         private System.Windows.Forms.GroupBox CommonGroup;
-        private System.Windows.Forms.CheckBox checkBox3;
-        private System.Windows.Forms.CheckBox checkBox2;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox OptionCloseToTray;
+        private System.Windows.Forms.CheckBox OptionHideToTray;
+        private System.Windows.Forms.CheckBox OptionAutoStart;
         private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.CheckBox checkBox6;
-        private System.Windows.Forms.CheckBox checkBox5;
-        private System.Windows.Forms.CheckBox checkBox4;
-        private System.Windows.Forms.CheckBox checkBox9;
-        private System.Windows.Forms.CheckBox checkBox8;
-        private System.Windows.Forms.CheckBox checkBox7;
+        private System.Windows.Forms.CheckBox OptionRemindExpedition;
+        private System.Windows.Forms.CheckBox OptionRemindTask;
+        private System.Windows.Forms.CheckBox OptionRemindResin;
+        private System.Windows.Forms.CheckBox OptionRemindTransformer;
+        private System.Windows.Forms.CheckBox OptionRemindDiscount;
+        private System.Windows.Forms.CheckBox OptionRemindCoin;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.CheckBox checkBox11;
-        private System.Windows.Forms.CheckBox checkBox10;
+        private System.Windows.Forms.CheckBox OptionCheckinOnStart;
+        private System.Windows.Forms.CheckBox OptionRefreshOnStart;
+        private System.Windows.Forms.LinkLabel ProjectLabel;
+        private System.Windows.Forms.Button CloseButton;
     }
 }
