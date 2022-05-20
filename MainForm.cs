@@ -22,7 +22,7 @@ namespace GenshinNotifier {
 
         private async void OnFormLoad(object sender, EventArgs e) {
             this.Text = $"{Application.ProductName} {Application.ProductVersion}";
-            var cache =  DataController.Default.Cache;
+            var cache = DataController.Default.Cache;
             var user = await cache.LoadCache2<UserGameRole>();
             var note = await cache.LoadCache2<DailyNote>();
             Logger.Debug($"OnFormLoad uid={user?.GameUid} resin={note?.CurrentResin}");
@@ -34,7 +34,7 @@ namespace GenshinNotifier {
             Logger.Debug($"OnFormShow uid={user?.GameUid} error={error?.Message}");
             Logger.Debug(DataController.Default.Ready ? "Ready" : "NotReady");
             if (DataController.Default.Ready) {
-                await RefreshDailyNote(sender, e);
+                //await RefreshDailyNote(sender, e);
             } else {
                 AccountValueL.Text = "当前Cookie为空或已失效，请设置Cookie后使用";
                 AccountValueL.ForeColor = Color.Red;
@@ -47,7 +47,7 @@ namespace GenshinNotifier {
 
         void ShowCookieDialog() {
             var cd = new CookieDialog {
-                Location = new Point(this.Location.X + 160, this.Location.Y + 80)
+                Location = new Point(this.Location.X + 120, this.Location.Y + 80)
             };
             cd.Handlers += OnCookieChanged;
             //cd.FormClosed += (fo, fe) => cd.Handlers -= OnCookieChanged;
@@ -84,11 +84,11 @@ namespace GenshinNotifier {
         void OnOptionButtonClicked(object sender, EventArgs e) {
             if (IsRefreshingData)
                 return;
-        }
-
-        void OnAboutButtonClicked(object sender, EventArgs e) {
-            if (IsRefreshingData)
-                return;
+            var cd = new OptionForm {
+                Location = new Point(this.Location.X + 120, this.Location.Y + 80)
+            };
+            //cd.Handlers += OnCookieChanged;
+            cd.ShowDialog();
         }
 
         void UpdateRefreshState(bool loading) {
@@ -102,7 +102,7 @@ namespace GenshinNotifier {
         async Task RefreshDailyNote(object sender, EventArgs e) {
             UpdateRefreshState(true);
             var (user, note) = await DataController.Default.GetDailyNote();
-            Logger.Info($"RefreshDailyNote\nuser={user?.GameUid}\resin={note?.CurrentResin}");
+            Logger.Info($"RefreshDailyNote user={user?.GameUid} resin={note?.CurrentResin}");
             UpdateUIControls(user, note);
             UpdateRefreshState(false);
         }
@@ -111,15 +111,17 @@ namespace GenshinNotifier {
             if (user == null || note == null) {
                 return;
             }
+            var colorNormal = Color.Green;
+            var colorAttention = Color.Red;
             AccountValueL.Text = $"{user.Nickname} {user.Level}级 / {user.RegionName}({user.Server}) / {user.GameUid}";
             AccountValueL.ForeColor = Color.Blue;
             var resinMayFull = note.CurrentResin >= note.MaxResin - 2;
             ResinValueL.Text = $"{note.CurrentResin}/{note.MaxResin}";
-            ResinValueL.ForeColor = resinMayFull ? Color.Red : Color.Green;
+            ResinValueL.ForeColor = resinMayFull ? colorAttention : colorNormal;
             ResinRecValueL.Text = $"{note.ResinRecoveryTimeFormatted}";
-            ResinRecValueL.ForeColor = resinMayFull ? Color.Red : Control.DefaultForeColor;
+            ResinRecValueL.ForeColor = resinMayFull ? colorAttention : colorNormal;
             ResinTimeValueL.Text = $"{note.ResinRecoveryTargetTimeFormatted}";
-            ResinTimeValueL.ForeColor = resinMayFull ? Color.Red : Control.DefaultForeColor;
+            ResinTimeValueL.ForeColor = resinMayFull ? colorAttention : colorNormal;
 
             var expeditionCompleted = note.Expeditions?.All(it => it.RemainedTime == "0") ?? false;
             var expeditionText = $"{note.CurrentExpeditionNum}/{note.MaxExpeditionNum}";
@@ -127,26 +129,65 @@ namespace GenshinNotifier {
                 expeditionText += " (已完成)";
             }
             ExpeditionValueL.Text = expeditionText;
-            ExpeditionValueL.ForeColor = expeditionCompleted ? Color.Red : Control.DefaultForeColor;
+            ExpeditionValueL.ForeColor = expeditionCompleted ? colorAttention : colorNormal;
 
             var taskRewardStr = note.IsExtraTaskRewardReceived ? "(已领取)" : "(未领取)";
             TaskNameValueL.Text = $"{note.FinishedTaskNum}/{note.TotalTaskNum} {taskRewardStr}";
-            TaskNameValueL.ForeColor = note.IsExtraTaskRewardReceived ? Control.DefaultForeColor : Color.Red;
+            TaskNameValueL.ForeColor = note.IsExtraTaskRewardReceived ? colorNormal : colorAttention;
 
             var homeCoinMayFull = note.CurrentHomeCoin >= note.MaxHomeCoin - 100;
             HomeCoinValueL.Text = $"{note.CurrentHomeCoin}/{note.MaxHomeCoin}";
-            HomeCoinValueL.ForeColor = homeCoinMayFull ? Color.Red : Control.DefaultForeColor;
+            HomeCoinValueL.ForeColor = homeCoinMayFull ? colorAttention : colorNormal;
 
             var discountNotUsed = note.ResinDiscountUsedNum < note.ResinDiscountNumLimit;
             DiscountTaskValueL.Text = $"{note.ResinDiscountUsedNum}/{note.ResinDiscountNumLimit}";
-            DiscountTaskValueL.ForeColor = discountNotUsed ? Color.Red : Control.DefaultForeColor;
+            DiscountTaskValueL.ForeColor = discountNotUsed ? colorAttention : colorNormal;
 
             var transformerReady = note.Transformer.RecoveryTime.Reached;
             TransformerValueL.Text = $"{note.Transformer.RecoveryTime.TimeFormatted}";
-            TransformerValueL.ForeColor = (transformerReady ? Color.Red : Control.DefaultForeColor);
+            TransformerValueL.ForeColor = (transformerReady ? colorAttention : colorNormal);
 
             UpdatedValueL.Text = note.CreatedAt.ToString("T");
+            UpdatedValueL.ForeColor = colorNormal;
         }
 
+        private void HideToTrayIcon() {
+            this.Hide();
+            this.ShowInTaskbar = false;
+            AppNotifyIcon.Visible = true;
+            //AppNotifyIcon.ShowBalloonTip(2000, "已最小化到系统托盘", "双击图标恢复", ToolTipIcon.Info);
+        }
+
+        private void RestoreFromTrayIcon() {
+            this.Show();
+            this.Activate();
+            this.WindowState = FormWindowState.Normal;
+            this.ShowInTaskbar = true;
+            AppNotifyIcon.Visible = false;
+        }
+
+        private void OnSizeChanged(object sender, EventArgs e) {
+            Logger.Info($"OnSizeChanged {this.WindowState}");
+            if (this.WindowState == FormWindowState.Minimized) {
+                HideToTrayIcon();
+            }
+        }
+
+        private void AppNotifyIcon_DoubleClick(object sender, EventArgs e) {
+            RestoreFromTrayIcon();
+        }
+
+        private void MenuItemShow_Click(object sender, EventArgs e) {
+            RestoreFromTrayIcon();
+        }
+
+        private void MenuItemCheckin_Click(object sender, EventArgs e) {
+
+        }
+
+        private void MenuItemQuit_Click(object sender, EventArgs e) {
+            Dispose();
+            Close();
+        }
     }
 }
