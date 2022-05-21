@@ -45,11 +45,11 @@ namespace GenshinNotifier {
     }
 
     public static class Logger {
-#if DEBUG
+//#if DEBUG
         static readonly ILogger Default = new SeriLogger();
-#else
-         static ILogger Default = new DummyLogger();
-#endif
+//#else
+//         static ILogger Default = new DummyLogger();
+//#endif
 
         public static void Verbose(string m) => Default.Log(LogEventLevel.Verbose, m);
         public static void Debug(string m) => Default.Log(LogEventLevel.Debug, m);

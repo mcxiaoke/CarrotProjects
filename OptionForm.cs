@@ -57,7 +57,7 @@ namespace GenshinNotifier {
         }
 
         private void ProjectLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
-            Logger.Info($"ProjectLabel_LinkClicked {e.Link}");
+            Logger.Debug($"ProjectLabel_LinkClicked {e.Link}");
             ProjectLabel.LinkVisited = true;
             System.Diagnostics.Process.Start("https://gitee.com/osap/GenshinNotifier");
         }

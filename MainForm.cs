@@ -59,6 +59,7 @@ namespace GenshinNotifier {
         }
 
         private void OnVisibleChanged(object sender, EventArgs e) {
+            Logger.Debug($"OnVisibleChanged visible={this.Visible}");
             if (this.Visible) {
                 var (user, note) = SchedulerController.Default.PendingData;
                 Logger.Debug($"OnVisibleChanged pending update uid={user?.GameUid} resin={note?.CurrentResin}");
@@ -165,7 +166,7 @@ namespace GenshinNotifier {
             Logger.Debug("RefreshDailyNote");
             UpdateRefreshState(true);
             var (user, note) = await DataController.Default.GetDailyNote();
-            Logger.Info($"RefreshDailyNote user={user?.GameUid} resin={note?.CurrentResin}");
+            Logger.Debug($"RefreshDailyNote user={user?.GameUid} resin={note?.CurrentResin}");
             UpdateUIControls(user, note);
             UpdateRefreshState(false);
         }

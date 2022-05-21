@@ -100,7 +100,7 @@ namespace GenshinNotifier {
                     throw new TokenException("No Cookie");
                 }
                 var user = await Api.GetGameRoleInfo();
-                Logger.Info($"Initialize uid={UID}");
+                Logger.Info($"DataController.Initialize uid={UID}");
                 if (user != null) {
                     await Cache.SaveCache2(user);
                     SaveUserData(this.Cookie, user);
@@ -120,7 +120,7 @@ namespace GenshinNotifier {
 
             try {
                 var (note, error) = await Api.GetDailyNote();
-                Logger.Info($"GetDailyNote resin={note?.CurrentResin} error={error?.Message}");
+                Logger.Debug($"GetDailyNote resin={note?.CurrentResin} error={error?.Message}");
                 if (note != null) {
                     await Cache.SaveCache2(note);
                 }

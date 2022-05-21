@@ -55,7 +55,7 @@ namespace GenshinNotifier {
             int windowStyle = 1,
             string description = null,
             string iconLocation = null) {
-            Logger.Info($"CreateShortcut in {directory} for {targetPath}");
+            Logger.Debug($"CreateShortcut in {directory} for {targetPath}");
             try {
                 if (!Directory.Exists(directory))
                     Directory.CreateDirectory(directory);

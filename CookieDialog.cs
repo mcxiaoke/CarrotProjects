@@ -60,7 +60,7 @@ namespace GenshinNotifier {
                 return;
             }
             var user = await DataController.ValidateCookie(tempCookie);
-            Logger.Info($"YesButton_Click uid={user?.GameUid}");
+            Logger.Debug($"YesButton_Click uid={user?.GameUid}");
             if (user?.GameUid != null) {
                 Handlers?.Invoke(this, new SimpleEventArgs(tempCookie));
                 Close();

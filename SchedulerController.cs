@@ -82,7 +82,7 @@ namespace GenshinNotifier {
 
         private void Setup() {
             ATimer = new Timer();
-            ATimer.Interval = 20 * 1000;
+            ATimer.Interval = 30 * 1000;
             ATimer.Elapsed += TimerEvent;
             ATimer.AutoReset = true;
             ATimer.Enabled = true;
@@ -101,10 +101,11 @@ namespace GenshinNotifier {
             ATimer.Dispose();
         }
 
-        private void TimerEvent(Object sender, ElapsedEventArgs e) {
+        private void TimerEvent(object sender, ElapsedEventArgs e) {
+            Logger.Debug($"TimerEvent last={Status.LastCheckedAt} now={e.SignalTime}");
             Status.LastCheckedAt = DateTime.Now;
-            if (!DataController.Default.Ready) { 
-                Logger.Debug($"TimerEvent not ready, skip task"); 
+            if (!DataController.Default.Ready) {
+                Logger.Debug($"TimerEvent not ready, skip task");
                 return;
             }
             Task.Run(async () => {
@@ -116,7 +117,7 @@ namespace GenshinNotifier {
                     Handlers?.Invoke(user, note);
                     PendingData = (user, note);
                 }
-            });
+            }).Wait();
         }
     }
 }
