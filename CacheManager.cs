@@ -8,7 +8,7 @@ using GenshinNotifier.Net;
 using Newtonsoft.Json;
 
 namespace GenshinNotifier {
-    public class CacheManager {
+    public sealed class CacheManager {
         private string _name;
         public string Name {
             get => _name;

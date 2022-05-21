@@ -25,10 +25,12 @@ namespace GenshinNotifier {
 
         public SeriLogger() {
             var logOutput = Path.Combine(Storage.UserDataFolder, "logs");
+            Storage.CheckDir(logOutput);
+            var logFile = Path.Combine(logOutput, "log-.txt");
             _logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.Console()
-                .WriteTo.Async(a => a.File(logOutput, restrictedToMinimumLevel: LogEventLevel.Information))
+                .WriteTo.Async(a => a.File(logFile, restrictedToMinimumLevel: LogEventLevel.Information, rollingInterval: RollingInterval.Day))
                 .CreateLogger();
             Serilog.Log.Logger = _logger;
         }
@@ -44,9 +46,9 @@ namespace GenshinNotifier {
 
     public static class Logger {
 #if DEBUG
-        public static ILogger Default = new SeriLogger();
+        static readonly ILogger Default = new SeriLogger();
 #else
-        public static ILogger Default = new DummyLogger();
+         static ILogger Default = new DummyLogger();
 #endif
 
         public static void Verbose(string m) => Default.Log(LogEventLevel.Verbose, m);

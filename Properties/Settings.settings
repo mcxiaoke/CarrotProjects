@@ -20,7 +20,7 @@
     <Setting Name="OptionHideToTray" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="OptionCloseToTray" Type="System.Boolean" Scope="User">
+    <Setting Name="OptionCloseConfirm" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
     <Setting Name="OptionRefreshOnStart" Type="System.Boolean" Scope="User">

@@ -8,9 +8,10 @@ using System.Windows.Forms;
 using GenshinNotifier.Net;
 using System.IO;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace GenshinNotifier {
-    internal class DataController {
+    public sealed class DataController {
         public static DataController Default = new DataController();
 
         private readonly API Api;
@@ -18,49 +19,75 @@ namespace GenshinNotifier {
 
         private string _uid;
         public string UID {
-            get { return User?.GameUid ?? _uid; }
+            get => User?.GameUid ?? _uid;
             set => _uid = value;
         }
 
         public string Cookie {
-            get { return Api.Cookie; }
-            set { this.Api.Cookie = value; }
+            get => Api.Cookie;
+            private set {
+                Api.Cookie = value;
+            }
         }
 
         public UserGameRole User {
-            get { return Api.User; }
-            set { this.Api.User = value; }
+            get => Api.User; private set {
+                Api.User = value;
+                Cache.Name = value.GameUid;
+            }
         }
 
         public bool Ready { get { return this.Api.Ready; } }
 
         private DataController() {
+            this.Cache = new CacheManager();
+            this.Api = new API();
+            LoadUserData();
+        }
+
+        private void LoadUserData() {
             var cookie = Properties.Settings.Default.MihoyoCookie;
-            var uid = Properties.Settings.Default.MihoyoUserID;
-            this.Api = new API(cookie);
-            this.Cache = new CacheManager(uid);
-            this.UID = uid;
+            var userJson = Properties.Settings.Default.MihoyoUser;
+            var cookieValid = Utility.ValiteCookieFields(cookie);
+            UserGameRole user;
+            bool userValid;
+            try {
+                user = JsonConvert.DeserializeObject<UserGameRole>(userJson);
+                userValid = !String.IsNullOrEmpty(user.GameUid) && !String.IsNullOrEmpty(user.GameBiz);
+            } catch (Exception) {
+                user = null;
+                userValid = false;
+            }
+            if (cookieValid && userValid) {
+                this.Cookie = cookie;
+                this.User = user;
+                Logger.Debug($"LoadUserData uid={UID} cookie={cookie}");
+            } else {
+                ClearUserData();
+            }
         }
 
         public void ClearUserData() {
-            Logger.Info("ClearUserData");
+            Logger.Debug("ClearUserData");
             this.Cookie = null;
             this.User = null;
-            this.Cache.Name = null;
             Properties.Settings.Default.MihoyoCookie = null;
             Properties.Settings.Default.MihoyoUserID = null;
             Properties.Settings.Default.MihoyoUser = null;
             Properties.Settings.Default.Save();
         }
 
-        public void SaveUserData(string cookie, UserGameRole user) {
-            Logger.Info($"SaveUserData for {user.GameUid}");
-            this.Cookie = cookie;
-            this.User = user;
-            this.Cache.Name = user.GameUid;
-            Properties.Settings.Default.MihoyoCookie = cookie;
-            Properties.Settings.Default.MihoyoUserID = user.GameUid;
-            Properties.Settings.Default.MihoyoUser = user.ToString();
+        public void SaveUserData(string cookie, UserGameRole user = null) {
+            Logger.Debug($"SaveUserData cookie={cookie} uid={user?.GameUid}");
+            if (!String.IsNullOrEmpty(cookie)) {
+                this.Cookie = cookie;
+                Properties.Settings.Default.MihoyoCookie = cookie;
+            }
+            if (user != null) {
+                this.User = user;
+                Properties.Settings.Default.MihoyoUserID = user.GameUid;
+                Properties.Settings.Default.MihoyoUser = user.ToString();
+            }
             Properties.Settings.Default.Save();
         }
 
@@ -70,7 +97,7 @@ namespace GenshinNotifier {
                     throw new TokenException("No Cookie");
                 }
                 var user = await Api.GetGameRoleInfo();
-                Logger.Info($"Initialize uid={user?.GameUid}");
+                Logger.Info($"Initialize uid={UID}");
                 if (user != null) {
                     await Cache.SaveCache2(user);
                     SaveUserData(this.Cookie, user);
@@ -113,7 +140,7 @@ namespace GenshinNotifier {
                 Logger.Info($"ValidateCookie uid={user.GameUid}");
                 return user;
             } catch (Exception ex) {
-                Logger.Error("ValidateCookie", ex);
+                Logger.Info($"ValidateCookie {ex.Message}");
                 return null;
             }
         }

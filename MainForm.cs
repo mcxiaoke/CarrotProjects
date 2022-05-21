@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using GenshinNotifier.Net;
 using GenshinNotifier.Properties;
+using System.Runtime;
+using System.ComponentModel;
 
 namespace GenshinNotifier {
     public partial class MainForm : Form {
@@ -50,6 +52,42 @@ namespace GenshinNotifier {
                 AccountValueL.Text = "当前Cookie为空或已失效，请设置Cookie后使用";
                 AccountValueL.ForeColor = Color.Red;
             }
+            Settings.Default.PropertyChanged += OnPropertyChanged;
+        }
+
+
+        private void OnFormClosing(object sender, FormClosingEventArgs e) {
+            Settings.Default.PropertyChanged -= OnPropertyChanged;
+            Logger.Debug($"OnFormClosing {e.CloseReason} {DialogResult}");
+            if (Settings.Default.OptionCloseConfirm) {
+                if (e.CloseReason == CloseReason.UserClosing) {
+                    var cd = new ConfirmDialog();
+                    var ret = cd.ShowDialog();
+                    Logger.Debug($"ConfirmDialog {e.CloseReason} {ret}");
+                    switch (ret) {
+                        case DialogResult.Cancel:
+                            // close button
+                            e.Cancel = true;
+                            break;
+                        case DialogResult.No:
+                            // minimize button
+                            e.Cancel = true;
+                            HideToTrayIcon();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
+
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e) {
+            var key = e.PropertyName;
+            var value = Settings.Default[key];
+            Logger.Debug($"OnPropertyChanged: {key}={value}");
+            if (key == "OptionAutoStart") {
+                Task.Run(() => ShortcutHelper.EnableAutoStart(Settings.Default.OptionAutoStart));
+            }
         }
 
         void ShowCookieDialog() {
@@ -68,9 +106,7 @@ namespace GenshinNotifier {
             var oldCookie = DataController.Default.Cookie;
             if (newCookie != oldCookie) {
                 Logger.Debug($"OnCookieChanged newCookie={newCookie}");
-                DataController.Default.Cookie = newCookie;
-                Properties.Settings.Default.MihoyoCookie = newCookie;
-                Properties.Settings.Default.Save();
+                DataController.Default.SaveUserData(newCookie);
                 await DataController.Default.Initialize();
                 await RefreshDailyNote(null, null);
                 Logger.Debug($"OnCookieChanged data saved");
@@ -177,9 +213,11 @@ namespace GenshinNotifier {
         }
 
         private void OnSizeChanged(object sender, EventArgs e) {
-            Logger.Info($"OnSizeChanged {this.WindowState}");
-            if (this.WindowState == FormWindowState.Minimized) {
-                HideToTrayIcon();
+            Logger.Debug($"OnSizeChanged {this.WindowState}");
+            if (Settings.Default.OptionHideToTray) {
+                if (this.WindowState == FormWindowState.Minimized) {
+                    HideToTrayIcon();
+                }
             }
         }
 
@@ -199,5 +237,6 @@ namespace GenshinNotifier {
             Dispose();
             Close();
         }
+
     }
 }

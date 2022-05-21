@@ -98,12 +98,12 @@ namespace GenshinNotifier.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool OptionCloseToTray {
+        public bool OptionCloseConfirm {
             get {
-                return ((bool)(this["OptionCloseToTray"]));
+                return ((bool)(this["OptionCloseConfirm"]));
             }
             set {
-                this["OptionCloseToTray"] = value;
+                this["OptionCloseConfirm"] = value;
             }
         }
         

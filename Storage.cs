@@ -3,6 +3,7 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace GenshinNotifier {
     public class Storage {
@@ -74,11 +75,14 @@ namespace GenshinNotifier {
         /// </summary>
         /// <param name="dir"></param>
         /// <returns></returns>
-        private static string CheckDir(string dir) {
+        public static string CheckDir(string dir) {
             if (!Directory.Exists(dir)) {
                 Directory.CreateDirectory(dir);
             }
             return dir;
         }
+
+        public static string UserStartupFolder => Environment.GetFolderPath(Environment.SpecialFolder.Startup);
+        public static string UserDesktopFolder => Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
     }
 }

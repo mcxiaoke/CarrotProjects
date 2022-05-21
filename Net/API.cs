@@ -105,7 +105,8 @@ namespace GenshinNotifier.Net {
         public string Cookie { get; set; }
         public UserGameRole User { get; set; }
         public bool Ready => Cookie != null && User != null;
-
+        public string UID => User?.GameUid ?? "0";
+        public IDictionary<string, string> CookieDict => Utility.ParseCookieString(Cookie);
 
         private void CheckReady(bool checkUser = false) {
             if (String.IsNullOrEmpty(Cookie)) {
@@ -133,7 +134,6 @@ namespace GenshinNotifier.Net {
            bool newDS = true) {
             var builder = new UriBuilder(url) { Query = Utility.CreateQueryString(queryDict) };
             url = builder.ToString();
-            Logger.Debug($"SendRequestAsync {method} {url} ({newDS})");
             using (var request = new HttpRequestMessage(method, url)) {
                 Helper.SetExtraHeadres(request, newDS);
                 request.Headers.Add("Cookie", Cookie);
@@ -142,8 +142,10 @@ namespace GenshinNotifier.Net {
                     //HttpContent body = new StringContent(Stringify(bodyDict));
                     //body.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
                     request.Content = new StringContent(Utility.Stringify(bodyObj), Encoding.UTF8, "application/json");
-                    Logger.Debug($"SendRequestAsync data={Utility.Stringify(bodyObj)}");
+                    Logger.Debug($"[API] {method} {url} data={Utility.Stringify(bodyObj)}");
                 }
+                Logger.Info($"[API] {method} {url} ({UID})");
+                Logger.Verbose($"[API] {request}");
                 var response = await client.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
                 if ((int)response.StatusCode >= 500) {

@@ -48,6 +48,7 @@
             // NoButton
             // 
             this.NoButton.AutoSize = true;
+            this.NoButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.NoButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.NoButton.Location = new System.Drawing.Point(727, 601);
             this.NoButton.Margin = new System.Windows.Forms.Padding(8);
@@ -98,8 +99,10 @@
             // 
             // CookieDialog
             // 
+            this.AcceptButton = this.YesButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 24F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.CancelButton = this.NoButton;
             this.ClientSize = new System.Drawing.Size(874, 679);
             this.Controls.Add(this.CookieLabel);
             this.Controls.Add(this.CookieTextGroup);

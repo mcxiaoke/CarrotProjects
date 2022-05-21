@@ -24,7 +24,7 @@
         /// </summary>
         private void InitializeComponent() {
             this.CommonGroup = new System.Windows.Forms.GroupBox();
-            this.OptionCloseToTray = new System.Windows.Forms.CheckBox();
+            this.OptionCloseConfirm = new System.Windows.Forms.CheckBox();
             this.OptionHideToTray = new System.Windows.Forms.CheckBox();
             this.OptionAutoStart = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
@@ -47,7 +47,7 @@
             // CommonGroup
             // 
             this.CommonGroup.AutoSize = true;
-            this.CommonGroup.Controls.Add(this.OptionCloseToTray);
+            this.CommonGroup.Controls.Add(this.OptionCloseConfirm);
             this.CommonGroup.Controls.Add(this.OptionHideToTray);
             this.CommonGroup.Controls.Add(this.OptionAutoStart);
             this.CommonGroup.Location = new System.Drawing.Point(13, 13);
@@ -59,14 +59,14 @@
             // 
             // OptionCloseToTray
             // 
-            this.OptionCloseToTray.AutoSize = true;
-            this.OptionCloseToTray.Location = new System.Drawing.Point(11, 145);
-            this.OptionCloseToTray.Margin = new System.Windows.Forms.Padding(8);
-            this.OptionCloseToTray.Name = "OptionCloseToTray";
-            this.OptionCloseToTray.Size = new System.Drawing.Size(238, 35);
-            this.OptionCloseToTray.TabIndex = 2;
-            this.OptionCloseToTray.Text = "关闭到任系统托盘";
-            this.OptionCloseToTray.UseVisualStyleBackColor = true;
+            this.OptionCloseConfirm.AutoSize = true;
+            this.OptionCloseConfirm.Location = new System.Drawing.Point(11, 145);
+            this.OptionCloseConfirm.Margin = new System.Windows.Forms.Padding(8);
+            this.OptionCloseConfirm.Name = "OptionCloseToTray";
+            this.OptionCloseConfirm.Size = new System.Drawing.Size(190, 35);
+            this.OptionCloseConfirm.TabIndex = 2;
+            this.OptionCloseConfirm.Text = "退出时需确认";
+            this.OptionCloseConfirm.UseVisualStyleBackColor = true;
             // 
             // OptionHideToTray
             // 
@@ -265,7 +265,7 @@
         #endregion
 
         private System.Windows.Forms.GroupBox CommonGroup;
-        private System.Windows.Forms.CheckBox OptionCloseToTray;
+        private System.Windows.Forms.CheckBox OptionCloseConfirm;
         private System.Windows.Forms.CheckBox OptionHideToTray;
         private System.Windows.Forms.CheckBox OptionAutoStart;
         private System.Windows.Forms.GroupBox groupBox1;
