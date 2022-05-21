@@ -51,9 +51,8 @@ namespace GenshinNotifier.Net {
                 } else {
                     return new StringBuilder()
                         .AppendIf(Day > 0, $"{Day}天")
-                        .AppendIf(Hour > 0, $"{Hour}时")
+                        .AppendIf(Hour > 0, $"{Hour}小时")
                         .AppendIf(Minute > 0, $"{Minute}分")
-                        .AppendIf(Second > 0, $"{Second}秒")
                         .Append("后")
                         .ToString();
                 }

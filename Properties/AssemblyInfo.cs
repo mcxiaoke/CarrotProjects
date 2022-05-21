@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // 有关程序集的一般信息由以下
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
-[assembly: AssemblyTitle("GenshinNotifier")]
-[assembly: AssemblyDescription("Genshin Impact Notifier for Windows 10")]
+[assembly: AssemblyTitle("CarrotNotifier")]
+[assembly: AssemblyDescription("Carrot Notifier for Windows 10")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("CatCastle")]
-[assembly: AssemblyProduct("GenshinNotifier")]
+[assembly: AssemblyProduct("CarrotNotifier")]
 [assembly: AssemblyCopyright("Copyright © CatCastle 2022")]
 [assembly: AssemblyTrademark("CatCastle")]
 [assembly: AssemblyCulture("")]

@@ -454,6 +454,7 @@
             this.Load += new System.EventHandler(this.OnFormLoad);
             this.Shown += new System.EventHandler(this.OnFormShow);
             this.SizeChanged += new System.EventHandler(this.OnSizeChanged);
+            this.VisibleChanged += new System.EventHandler(this.OnVisibleChanged);
             this.MainLayout.ResumeLayout(false);
             this.MainLayout.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.LoadingPic)).EndInit();

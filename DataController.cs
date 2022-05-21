@@ -33,7 +33,7 @@ namespace GenshinNotifier {
         public UserGameRole User {
             get => Api.User; private set {
                 Api.User = value;
-                Cache.Name = value.GameUid;
+                Cache.Name = value?.GameUid;
             }
         }
 
@@ -92,6 +92,9 @@ namespace GenshinNotifier {
         }
 
         public async Task<(UserGameRole, Exception)> Initialize() {
+            if (String.IsNullOrEmpty(Cookie)) {
+                return default;
+            }
             try {
                 if (String.IsNullOrEmpty(Cookie)) {
                     throw new TokenException("No Cookie");

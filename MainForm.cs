@@ -3,6 +3,7 @@ using System.Text;
 using System.Configuration;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GenshinNotifier.Net;
@@ -52,12 +53,22 @@ namespace GenshinNotifier {
                 AccountValueL.Text = "当前Cookie为空或已失效，请设置Cookie后使用";
                 AccountValueL.ForeColor = Color.Red;
             }
+            SchedulerController.Default.Initialize();
+            SchedulerController.Default.Handlers += OnDataUpdated;
             Settings.Default.PropertyChanged += OnPropertyChanged;
         }
 
+        private void OnVisibleChanged(object sender, EventArgs e) {
+            if (this.Visible) {
+                var (user, note) = SchedulerController.Default.PendingData;
+                Logger.Debug($"OnVisibleChanged pending update uid={user?.GameUid} resin={note?.CurrentResin}");
+                UpdateUIControls(user, note);
+            }
+        }
 
         private void OnFormClosing(object sender, FormClosingEventArgs e) {
             Settings.Default.PropertyChanged -= OnPropertyChanged;
+            SchedulerController.Default.Handlers -= OnDataUpdated;
             Logger.Debug($"OnFormClosing {e.CloseReason} {DialogResult}");
             if (Settings.Default.OptionCloseConfirm) {
                 if (e.CloseReason == CloseReason.UserClosing) {
@@ -135,6 +146,13 @@ namespace GenshinNotifier {
             cd.ShowDialog();
         }
 
+        void OnDataUpdated(UserGameRole user, DailyNote note) {
+            Logger.Debug($"OnDataUpdated uid={user?.GameUid} resin={note?.CurrentResin} visible={this.Visible}");
+            if (this.Visible) {
+                UpdateUIControls(user, note);
+            }
+        }
+
         void UpdateRefreshState(bool loading) {
             IsRefreshingData = loading;
             this.RefreshButton.Enabled = !loading;
@@ -154,9 +172,10 @@ namespace GenshinNotifier {
 
         void UpdateUIControls(UserGameRole user, DailyNote note) {
             if (user == null || note == null) {
+                Logger.Debug($"UpdateUIControls skip null data");
                 return;
             }
-            Logger.Debug("UpdateUIControls");
+            Logger.Debug($"UpdateUIControls uid={user?.GameUid} resin={note?.CurrentResin}");
             var colorNormal = Color.Green;
             var colorAttention = Color.Red;
             AccountValueL.Text = $"{user.Nickname} {user.Level}级 / {user.RegionName}({user.Server}) / {user.GameUid}";
@@ -237,6 +256,5 @@ namespace GenshinNotifier {
             Dispose();
             Close();
         }
-
     }
 }

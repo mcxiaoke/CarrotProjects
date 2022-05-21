@@ -17,6 +17,7 @@ namespace GenshinNotifier {
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm());
             Logger.Close();
+            SchedulerController.Default.Stop();
         }
 
         static void CheckSettings() {
