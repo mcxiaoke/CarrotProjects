@@ -37,6 +37,7 @@ namespace GenshinNotifier {
 
         private void CookieDialog_Shown(object sender, EventArgs e) {
             Logger.Debug("CookieDialog_Shown");
+            // 必备字段只有两个 cookie_token 和 account_id
         }
 
         private void NoButton_Click(object sender, EventArgs e) {

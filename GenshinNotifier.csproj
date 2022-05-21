@@ -240,7 +240,6 @@
     <Compile Include="DataController.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="ILogger.cs" />
-    <Compile Include="Logger.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

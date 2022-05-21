@@ -49,18 +49,6 @@ namespace GenshinNotifier.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string MihoyoDailyNote {
-            get {
-                return ((string)(this["MihoyoDailyNote"]));
-            }
-            set {
-                this["MihoyoDailyNote"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool UpgradeRequired {
             get {
@@ -212,18 +200,6 @@ namespace GenshinNotifier.Properties {
             }
             set {
                 this["OptionRemindTransformer"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool 设置 {
-            get {
-                return ((bool)(this["设置"]));
-            }
-            set {
-                this["设置"] = value;
             }
         }
     }

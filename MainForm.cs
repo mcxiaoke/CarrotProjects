@@ -18,14 +18,14 @@ namespace GenshinNotifier {
         }
 
         private void PrintAllSettings() {
-            Logger.Debug("---------- SETTINGS BEGIN ----------");
+            Logger.Verbose("---------- SETTINGS BEGIN ----------");
             var sb = new StringBuilder();
             foreach (SettingsProperty key in Settings.Default.Properties) {
                 var value = Settings.Default[key.Name];
                 sb.Append($"\n{key.Name} = {value}");
             }
-            Logger.Debug(sb.ToString());
-            Logger.Debug("---------- SETTINGS END ----------\n");
+            Logger.Verbose(sb.ToString());
+            Logger.Verbose("---------- SETTINGS END ----------\n");
         }
 
         private async void OnFormLoad(object sender, EventArgs e) {

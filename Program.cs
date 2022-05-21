@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Configuration;
 
 namespace GenshinNotifier {
 
@@ -16,14 +12,19 @@ namespace GenshinNotifier {
 #if DEBUG
             NativeHelper.AllocConsole();
 #endif
+            CheckSettings();
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new MainForm());
+            Logger.Close();
+        }
+
+        static void CheckSettings() {
             if (Properties.Settings.Default.UpgradeRequired) {
                 Properties.Settings.Default.Upgrade();
                 Properties.Settings.Default.UpgradeRequired = false;
                 Properties.Settings.Default.Save();
             }
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
         }
     }
 }
