@@ -4,17 +4,13 @@ using System.Configuration;
 using System.Drawing;
 using System.Linq;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GenshinNotifier.Net;
 using GenshinNotifier.Properties;
-using System.Runtime;
 using System.ComponentModel;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.Foundation.Collections;
-using Windows.UI.Xaml.Media.Imaging;
-using System.Timers;
 
 namespace GenshinNotifier {
     public partial class MainForm : Form {
@@ -40,6 +36,7 @@ namespace GenshinNotifier {
         }
 
         private async void OnFormLoad(object sender, EventArgs e) {
+            Console.WriteLine("OnFormLoad()");
             PrintAllSettings();
             this.Text = $"{Application.ProductName} {Application.ProductVersion}";
             var (user, error) = await DataController.Default.Initialize();
@@ -61,8 +58,9 @@ namespace GenshinNotifier {
 
         private bool IsFormLoaded;
         async void OnFormShow(object sender, EventArgs e) {
-            Logger.Debug($"OnFormShow {HideOnStart}");
+            Console.WriteLine($"OnFormShow() hide={HideOnStart}");
             await CheckLocalAssets();
+            UDPService.Handlers += OnNewInstance;
             SchedulerController.Default.Initialize();
             SchedulerController.Default.Handlers += OnDataUpdated;
             ToastNotificationManagerCompat.OnActivated += OnNotificationActivated;
@@ -80,6 +78,13 @@ namespace GenshinNotifier {
             if (HideOnStart) {
                 HideToTrayIcon();
             }
+        }
+
+        private void OnNewInstance(object sender, EventArgs e) {
+            Console.WriteLine($"OnNewInstance() {sender}");
+            Invoke(new Action(() => {
+                RestoreFromTrayIcon();
+            }));
         }
 
         private System.Timers.Timer CookieBlinkTimer;
@@ -174,7 +179,7 @@ namespace GenshinNotifier {
         }
 
         private async void OnVisibleChanged(object sender, EventArgs e) {
-            Logger.Verbose($"OnVisibleChanged visible={this.Visible} formLoaded={IsFormLoaded}");
+            Console.WriteLine($"OnVisibleChanged() visible={this.Visible} formLoaded={IsFormLoaded}");
             if (!this.Visible) { return; }
             if (!IsFormLoaded) { return; }
             if (!DataController.Default.Ready) { return; }
@@ -182,7 +187,7 @@ namespace GenshinNotifier {
             var note = DataController.Default.NoteCached;
             Logger.Debug($"OnVisibleChanged update uid={user?.GameUid} resin={note?.CurrentResin}");
             UpdateUIControls(user, note);
-            var needRefresh = note == null || (DateTime.Now - note.CreatedAt).TotalMinutes > 10;
+            var needRefresh = note != null && (DateTime.Now - note.CreatedAt).TotalMinutes > 10;
             if (needRefresh) {
                 await RefreshDailyNote(null, null);
             }
@@ -190,10 +195,8 @@ namespace GenshinNotifier {
         }
 
         private void OnFormClosing(object sender, FormClosingEventArgs e) {
-            IsFormLoaded = false;
+            Console.WriteLine("OnFormClosing()");
             StopCookieBlinkTimer();
-            Settings.Default.PropertyChanged -= OnSettingValueChanged;
-            SchedulerController.Default.Handlers -= OnDataUpdated;
             if (Settings.Default.OptionCloseConfirm) {
                 if (e.CloseReason == CloseReason.UserClosing) {
                     var cd = new ConfirmDialog();
@@ -217,6 +220,11 @@ namespace GenshinNotifier {
         }
 
         private void OnFormClosed(object sender, FormClosedEventArgs e) {
+            Console.WriteLine("OnFormClosed");
+            IsFormLoaded = false;
+            Settings.Default.PropertyChanged -= OnSettingValueChanged;
+            SchedulerController.Default.Handlers -= OnDataUpdated;
+            UDPService.Handlers -= OnNewInstance;
             NativeHelper.FreeConsole();
         }
 
@@ -349,9 +357,11 @@ namespace GenshinNotifier {
 
         private bool HidePopupShown = false;
         private void HideToTrayIcon() {
+            AppNotifyIcon.Visible = true;
+            this.Opacity = 0;
+            //this.WindowState = FormWindowState.Normal;
             this.Hide();
             this.ShowInTaskbar = false;
-            AppNotifyIcon.Visible = true;
             if (!HidePopupShown) {
                 HidePopupShown = true;
                 AppNotifyIcon.ShowBalloonTip(1000, "已最小化到系统托盘", "双击图标恢复", ToolTipIcon.Info);
@@ -359,15 +369,19 @@ namespace GenshinNotifier {
         }
 
         private void RestoreFromTrayIcon() {
-            this.Show();
-            this.Activate();
+            Console.WriteLine($"RestoreFromTrayIcon() visible={Visible} window={WindowState}");
+            if (!this.Visible) {
+                this.Show();
+                this.Activate();
+                this.ShowInTaskbar = true;
+                AppNotifyIcon.Visible = false;
+            }
             this.WindowState = FormWindowState.Normal;
-            this.ShowInTaskbar = true;
-            AppNotifyIcon.Visible = false;
+            this.Opacity = 1;
         }
 
         private void OnSizeChanged(object sender, EventArgs e) {
-            Logger.Debug($"OnSizeChanged {this.WindowState}");
+            Console.WriteLine($"OnSizeChanged {this.WindowState}");
             if (Settings.Default.OptionHideToTray) {
                 if (this.WindowState == FormWindowState.Minimized) {
                     HideToTrayIcon();

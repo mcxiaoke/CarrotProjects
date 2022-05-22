@@ -158,6 +158,7 @@
     <Compile Include="SchedulerController.cs" />
     <Compile Include="ShortcutHelper.cs" />
     <Compile Include="Storage.cs" />
+    <Compile Include="UDPService.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
