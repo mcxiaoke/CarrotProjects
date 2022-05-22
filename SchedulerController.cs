@@ -7,6 +7,7 @@ using System.Timers;
 using GenshinNotifier.Properties;
 using Newtonsoft.Json;
 using GenshinNotifier.Net;
+using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace GenshinNotifier {
 
@@ -18,7 +19,12 @@ namespace GenshinNotifier {
         public bool Expedition;
         public bool Transformer;
 
-        public bool Enabled => Resin || HomeCoin || DailyTask || Discount || Expedition || Transformer;
+        public bool Enabled => Resin
+            || HomeCoin
+            || DailyTask
+            || Discount
+            || Expedition
+            || Transformer;
 
         public override string ToString() {
             return JsonConvert.SerializeObject(this);
@@ -51,16 +57,17 @@ namespace GenshinNotifier {
 
         public static SchedulerController Default = new SchedulerController();
         public DataUpdateEventHandler Handlers;
-        public (UserGameRole, DailyNote) PendingData { get; set; }
 
         private static readonly int INTERVAL_NOTE = 10 * 60 * 1000; // in milliseconds
         private static readonly int INTERVAL_USER = 4 * 60 * 60 * 1000;
         private readonly RemindConfig Config;
+        private readonly RemindConfig MuteConfig;
         private readonly RemindStatus Status;
-        private System.Timers.Timer ATimer;
+        private Timer ATimer;
 
         private SchedulerController() {
             Config = new RemindConfig();
+            MuteConfig = new RemindConfig();
             Status = new RemindStatus();
         }
 
@@ -78,23 +85,26 @@ namespace GenshinNotifier {
             Config.Discount = Settings.Default.OptionRemindDiscount;
             Config.Expedition = Settings.Default.OptionRemindExpedition;
             Config.Transformer = Settings.Default.OptionRemindTransformer;
+            Logger.Debug($"SchedulerController.LoadConfig {Config}");
         }
 
         private void Setup() {
             ATimer = new Timer();
-            ATimer.Interval = 30 * 1000;
+            ATimer.Interval = 60 * 1000;
             ATimer.Elapsed += TimerEvent;
             ATimer.AutoReset = true;
             ATimer.Enabled = true;
         }
 
         private void Start() {
+            Logger.Debug("SchedulerController.Start");
             ATimer.Start();
             Status.StartAt = DateTime.Now;
             Status.LastCheckedAt = DateTime.MinValue;
         }
 
         public void Stop() {
+            Logger.Debug("SchedulerController.Stop");
             Status.StartAt = DateTime.MinValue;
             Status.LastCheckedAt = DateTime.MinValue;
             ATimer.Stop();
@@ -109,13 +119,17 @@ namespace GenshinNotifier {
                 return;
             }
             Task.Run(async () => {
+                //todo fixme for debug
+                Logger.Debug($"====== TimerEvent ====== {ThreadId}");
+                var n = DataController.Default.NoteCached;
+                if (n != null) { return; }
                 var (user, note) = await DataController.Default.GetDailyNote();
                 Logger.Info($"TimerEvent uid={user?.GameUid} resin={note?.CurrentResin}");
                 if (user != null && note != null) {
+                    LoadConfig();
                     Status.user = user;
                     Status.note = note;
                     Handlers?.Invoke(user, note);
-                    PendingData = (user, note);
                 }
             }).Wait();
         }

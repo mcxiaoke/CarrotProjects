@@ -345,6 +345,7 @@
             this.AccountValueL.Size = new System.Drawing.Size(622, 51);
             this.AccountValueL.TabIndex = 0;
             this.AccountValueL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.AccountValueL.DoubleClick += new System.EventHandler(this.OnAccountLabelClicked);
             // 
             // OptionButton
             // 
@@ -386,7 +387,7 @@
             // 
             // LoadingPic
             // 
-            this.LoadingPic.Image = global::GenshinNotifier.Properties.Resources.loading_100;
+            this.LoadingPic.Image = ((System.Drawing.Image)(resources.GetObject("LoadingPic.Image")));
             this.LoadingPic.Location = new System.Drawing.Point(13, 541);
             this.LoadingPic.Name = "LoadingPic";
             this.LoadingPic.Size = new System.Drawing.Size(100, 100);
@@ -489,11 +490,11 @@
         private System.Windows.Forms.Button RefreshButton;
         private System.Windows.Forms.PictureBox LoadingPic;
         private System.Windows.Forms.Button CookieButton;
-        private System.Windows.Forms.NotifyIcon AppNotifyIcon;
         private System.Windows.Forms.ContextMenuStrip NotifyMenuStrip;
         private System.Windows.Forms.ToolStripMenuItem MenuItemShow;
         private System.Windows.Forms.ToolStripMenuItem MenuItemCheckin;
         private System.Windows.Forms.ToolStripMenuItem MenuItemQuit;
+        public System.Windows.Forms.NotifyIcon AppNotifyIcon;
     }
 }
 

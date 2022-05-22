@@ -25,7 +25,7 @@ namespace GenshinNotifier {
 
         public SeriLogger() {
             var logOutput = Path.Combine(Storage.UserDataFolder, "logs");
-            Storage.CheckDir(logOutput);
+            Storage.CheckOrCreateDir(logOutput);
             var logFile = Path.Combine(logOutput, "log-.txt");
             _logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()

@@ -118,6 +118,7 @@
   <ItemGroup>
     <Compile Include="AppConfig.cs" />
     <Compile Include="CacheManager.cs" />
+    <Compile Include="CustomApplicationContext.cs" />
     <Compile Include="DataController.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="ILogger.cs" />
@@ -197,7 +198,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\carrot_512.ico" />
-    <Content Include="Assets\loading.gif" />
+    <None Include="Assets\carrot_512.png" />
     <Content Include="FodyWeavers.xml" />
     <None Include="Assets\loading_100.gif" />
   </ItemGroup>
@@ -234,6 +235,9 @@
       <Version>6.6.1</Version>
       <IncludeAssets>runtime; compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications">
+      <Version>7.1.2</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
       <Version>13.0.1</Version>

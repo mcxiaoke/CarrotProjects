@@ -57,12 +57,12 @@
             this.CommonGroup.TabStop = false;
             this.CommonGroup.Text = "通用";
             // 
-            // OptionCloseToTray
+            // OptionCloseConfirm
             // 
             this.OptionCloseConfirm.AutoSize = true;
             this.OptionCloseConfirm.Location = new System.Drawing.Point(11, 145);
             this.OptionCloseConfirm.Margin = new System.Windows.Forms.Padding(8);
-            this.OptionCloseConfirm.Name = "OptionCloseToTray";
+            this.OptionCloseConfirm.Name = "OptionCloseConfirm";
             this.OptionCloseConfirm.Size = new System.Drawing.Size(190, 35);
             this.OptionCloseConfirm.TabIndex = 2;
             this.OptionCloseConfirm.Text = "退出时需确认";
@@ -104,7 +104,7 @@
             this.groupBox1.Size = new System.Drawing.Size(346, 223);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "提醒";
+            this.groupBox1.Text = "通知提醒";
             // 
             // OptionRemindTransformer
             // 

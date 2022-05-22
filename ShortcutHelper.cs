@@ -27,7 +27,8 @@ namespace GenshinNotifier {
                         DeleteFile(shortcuts[i]);
                     }
                 } else if (shortcuts.Count < 1) {
-                    CreateShortcut(StartupPath, ProgramName, ProgramPath, 7);
+                    var targetPath = $"{ProgramPath} autostart";
+                    CreateShortcut(StartupPath, ProgramName, targetPath, 7);
                 }
             } else {
                 GetExistsShortcuts(StartupPath, ProgramPath).ForEach(it => DeleteFile(it));

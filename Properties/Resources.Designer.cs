@@ -61,31 +61,11 @@ namespace GenshinNotifier.Properties {
         }
         
         /// <summary>
-        ///   查找类似于 (图标) 的 System.Drawing.Icon 类型的本地化资源。
-        /// </summary>
-        internal static System.Drawing.Icon carrot {
-            get {
-                object obj = ResourceManager.GetObject("carrot", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   查找类似于 (图标) 的 System.Drawing.Icon 类型的本地化资源。
-        /// </summary>
-        internal static System.Drawing.Icon carrot_512 {
-            get {
-                object obj = ResourceManager.GetObject("carrot_512", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
         ///   查找 System.Drawing.Bitmap 类型的本地化资源。
         /// </summary>
-        internal static System.Drawing.Bitmap loading_100 {
+        internal static System.Drawing.Bitmap ImageCarrot512 {
             get {
-                object obj = ResourceManager.GetObject("loading_100", resourceCulture);
+                object obj = ResourceManager.GetObject("ImageCarrot512", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

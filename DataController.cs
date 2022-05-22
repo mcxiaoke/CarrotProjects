@@ -16,6 +16,8 @@ namespace GenshinNotifier {
 
         private readonly API Api;
         public readonly CacheManager Cache;
+        public UserGameRole UserCached { get; private set; }
+        public DailyNote NoteCached { get; private set; }
 
         private string _uid;
         public string UID {
@@ -30,8 +32,8 @@ namespace GenshinNotifier {
             }
         }
 
-        public UserGameRole User {
-            get => Api.User; private set {
+        private UserGameRole User {
+            get => Api.User; set {
                 Api.User = value;
                 Cache.Name = value?.GameUid;
             }
@@ -85,6 +87,7 @@ namespace GenshinNotifier {
             }
             if (user != null) {
                 this.User = user;
+                this.UserCached = user;
                 Properties.Settings.Default.MihoyoUserID = user.GameUid;
                 Properties.Settings.Default.MihoyoUser = user.ToString();
             }
@@ -92,18 +95,21 @@ namespace GenshinNotifier {
         }
 
         public async Task<(UserGameRole, Exception)> Initialize() {
-            if (String.IsNullOrEmpty(Cookie)) {
+            if (string.IsNullOrEmpty(Cookie)) {
                 return default;
             }
+            UserCached = await Cache.LoadCache2<UserGameRole>();
+            NoteCached = await Cache.LoadCache2<DailyNote>();
+            Logger.Debug($"DataController.Initialize cached uid={UserCached?.GameUid} resin={NoteCached?.CurrentResin}");
             try {
-                if (String.IsNullOrEmpty(Cookie)) {
+                if (string.IsNullOrEmpty(Cookie)) {
                     throw new TokenException("No Cookie");
                 }
                 var user = await Api.GetGameRoleInfo();
                 Logger.Info($"DataController.Initialize uid={UID}");
                 if (user != null) {
+                    SaveUserData(null, user);
                     await Cache.SaveCache2(user);
-                    SaveUserData(this.Cookie, user);
                 }
                 return (user, null);
             } catch (TokenException ex) {
@@ -122,6 +128,7 @@ namespace GenshinNotifier {
                 var (note, error) = await Api.GetDailyNote();
                 Logger.Debug($"GetDailyNote resin={note?.CurrentResin} error={error?.Message}");
                 if (note != null) {
+                    NoteCached = note;
                     await Cache.SaveCache2(note);
                 }
                 return (this.User, note);

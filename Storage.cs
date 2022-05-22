@@ -3,11 +3,11 @@ using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
-using System.Diagnostics;
 
 namespace GenshinNotifier {
     public class Storage {
 
+        public static string CompanyName => Application.CompanyName;
         public static string AppName => Application.ProductName;
         public static string AppVersion => Application.ProductVersion;
         public static string AppGuidStr => AppGuid.ToString("B").ToUpper();
@@ -45,7 +45,7 @@ namespace GenshinNotifier {
                 string folderBase = Environment.GetFolderPath
                                     (Environment.SpecialFolder.LocalApplicationData);
                 string dir = Path.Combine(folderBase, AppGuidStr);
-                return CheckDir(dir);
+                return CheckOrCreateDir(dir);
             }
         }
         /// <summary>
@@ -56,7 +56,7 @@ namespace GenshinNotifier {
                 string folderBase = Environment.GetFolderPath
                                     (Environment.SpecialFolder.ApplicationData);
                 string dir = Path.Combine(folderBase, AppGuidStr);
-                return CheckDir(dir);
+                return CheckOrCreateDir(dir);
             }
         }
         /// <summary>
@@ -67,7 +67,7 @@ namespace GenshinNotifier {
                 string folderBase = Environment.GetFolderPath
                                     (Environment.SpecialFolder.CommonApplicationData);
                 string dir = Path.Combine(folderBase, AppGuidStr);
-                return CheckDir(dir);
+                return CheckOrCreateDir(dir);
             }
         }
         /// <summary>
@@ -75,7 +75,7 @@ namespace GenshinNotifier {
         /// </summary>
         /// <param name="dir"></param>
         /// <returns></returns>
-        public static string CheckDir(string dir) {
+        public static string CheckOrCreateDir(string dir) {
             if (!Directory.Exists(dir)) {
                 Directory.CreateDirectory(dir);
             }

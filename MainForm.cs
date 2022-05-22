@@ -3,6 +3,7 @@ using System.Text;
 using System.Configuration;
 using System.Drawing;
 using System.Linq;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -10,11 +11,15 @@ using GenshinNotifier.Net;
 using GenshinNotifier.Properties;
 using System.Runtime;
 using System.ComponentModel;
+using Microsoft.Toolkit.Uwp.Notifications;
+using Windows.Foundation.Collections;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace GenshinNotifier {
     public partial class MainForm : Form {
 
-        private bool IsRefreshingData;
+        private bool IsRefreshingData = false;
+        private DateTime LastUpdateTime = DateTime.MinValue;
 
         public MainForm() {
             InitializeComponent();
@@ -34,48 +39,123 @@ namespace GenshinNotifier {
         private async void OnFormLoad(object sender, EventArgs e) {
             PrintAllSettings();
             this.Text = $"{Application.ProductName} {Application.ProductVersion}";
-            var cache = DataController.Default.Cache;
-            var user = await cache.LoadCache2<UserGameRole>();
-            var note = await cache.LoadCache2<DailyNote>();
-            Logger.Debug($"OnFormLoad cached uid={user?.GameUid} resin={note?.CurrentResin}");
-            UpdateUIControls(user, note);
-        }
-
-        async void OnFormShow(object sender, EventArgs e) {
             var (user, error) = await DataController.Default.Initialize();
             Logger.Debug($"OnFormShow uid={user?.GameUid} error={error?.Message}");
             Logger.Debug(DataController.Default.Ready ? "Ready" : "NotReady");
             if (DataController.Default.Ready) {
-                if (Settings.Default.OptionRefreshOnStart) {
+                var uc = DataController.Default.UserCached;
+                var nc = DataController.Default.NoteCached;
+                UpdateUIControls(uc, nc);
+                if (Settings.Default.OptionRefreshOnStart
+                    || string.IsNullOrEmpty(UpdatedValueL.Text)) {
                     await RefreshDailyNote(sender, e);
                 }
             } else {
                 AccountValueL.Text = "当前Cookie为空或已失效，请设置Cookie后使用";
                 AccountValueL.ForeColor = Color.Red;
             }
-            SchedulerController.Default.Initialize();
-            SchedulerController.Default.Handlers += OnDataUpdated;
-            Settings.Default.PropertyChanged += OnPropertyChanged;
         }
 
-        private void OnVisibleChanged(object sender, EventArgs e) {
-            Logger.Debug($"OnVisibleChanged visible={this.Visible}");
-            if (this.Visible) {
-                var (user, note) = SchedulerController.Default.PendingData;
-                Logger.Debug($"OnVisibleChanged pending update uid={user?.GameUid} resin={note?.CurrentResin}");
-                UpdateUIControls(user, note);
+        private bool IsFormLoaded;
+        async void OnFormShow(object sender, EventArgs e) {
+            await CheckLocalAssets();
+            SchedulerController.Default.Initialize();
+            SchedulerController.Default.Handlers += OnDataUpdated;
+            ToastNotificationManagerCompat.OnActivated += OnNotificationActivated;
+            Settings.Default.PropertyChanged += OnSettingValueChanged;
+            if (Settings.Default.FirstLaunch) {
+                Settings.Default.FirstLaunch = false;
+                Settings.Default.Save();
             }
+            IsFormLoaded = true;
+            if (DataController.Default.Ready) {
+                //HideToTrayIcon();
+            } else {
+                //RestoreFromTrayIcon();
+            }
+            RestoreFromTrayIcon();
+        }
+
+
+        private const string ICON_FILE_NAME = "carrot_512.png";
+        private static readonly string IconFilePath = Path.Combine(Storage.UserDataFolder, "assets", ICON_FILE_NAME);
+        private async Task CheckLocalAssets() {
+            await Task.Run(() => {
+                var assetsDir = Directory.GetParent(IconFilePath).FullName;
+                Storage.CheckOrCreateDir(assetsDir);
+                if (!File.Exists(IconFilePath)) {
+                    Resources.ImageCarrot512.Save(IconFilePath);
+                    Logger.Info($"CheckLocalAssets copied to {IconFilePath}");
+                }
+            });
+        }
+
+        private void ShowNotification() {
+            var image = IconFilePath;
+            Logger.Debug(new Uri(image).AbsolutePath);
+            var toast = new ToastContentBuilder()
+                .AddArgument("type", "resin")
+                .AddArgument("action", "view")
+                .AddArgument("conversationId", 1)
+                .AddText("Andrew sent you a picture")
+                .AddText("Check this out 11, The Enchantments")
+                .AddText("Check this out 33, The Enchantments ExpirationTime = DateTime.Now.AddMinutes(30)")
+                .AddAppLogoOverride(new Uri(image), ToastGenericAppLogoCrop.Circle)
+                // Buttons
+                .AddButton(new ToastButton()
+                    .SetContent("打开主界面")
+                    .AddArgument("action", "show")
+                    .SetBackgroundActivation())
+                .AddButton(new ToastButton()
+                .SetContent("今日不再提醒")
+                .AddArgument("action", "mute")
+                .SetBackgroundActivation());
+            toast.Show(t => {
+                t.Group = "Notification";
+                t.Tag = "DailyNote";
+                t.ExpirationTime = DateTime.Now.AddMinutes(30);
+            });
+        }
+
+        private void OnNotificationActivated(ToastNotificationActivatedEventArgsCompat toastArgs) {
+            Logger.Debug($"OnNotificationActivated {toastArgs.Argument}");
+            // Obtain the arguments from the notification
+            ToastArguments args = ToastArguments.Parse(toastArgs.Argument);
+
+            // Obtain any user input (text boxes, menu selections) from the notification
+            ValueSet userInput = toastArgs.UserInput;
+
+            // Need to dispatch to UI thread if performing UI operations
+            Invoke(new Action(() => {
+                Logger.Debug("Toast activated. Args: " + toastArgs.Argument);
+            }));
+        }
+
+        private async void OnVisibleChanged(object sender, EventArgs e) {
+            Logger.Verbose($"OnVisibleChanged visible={this.Visible} formLoaded={IsFormLoaded}");
+            if (!this.Visible) { return; }
+            if (!IsFormLoaded) { return; }
+            if (!DataController.Default.Ready) { return; }
+            var user = DataController.Default.UserCached;
+            var note = DataController.Default.NoteCached;
+            Logger.Debug($"OnVisibleChanged update uid={user?.GameUid} resin={note?.CurrentResin}");
+            UpdateUIControls(user, note);
+            var needRefresh = note == null || (DateTime.Now - note.CreatedAt).TotalMinutes > 10;
+            if (needRefresh) {
+                await RefreshDailyNote(null, null);
+            }
+            ToastNotificationManagerCompat.History.Clear();
         }
 
         private void OnFormClosing(object sender, FormClosingEventArgs e) {
-            Settings.Default.PropertyChanged -= OnPropertyChanged;
+            IsFormLoaded = false;
+            Settings.Default.PropertyChanged -= OnSettingValueChanged;
             SchedulerController.Default.Handlers -= OnDataUpdated;
-            Logger.Debug($"OnFormClosing {e.CloseReason} {DialogResult}");
             if (Settings.Default.OptionCloseConfirm) {
                 if (e.CloseReason == CloseReason.UserClosing) {
                     var cd = new ConfirmDialog();
                     var ret = cd.ShowDialog();
-                    Logger.Debug($"ConfirmDialog {e.CloseReason} {ret}");
+                    //Logger.Debug($"ConfirmDialog {e.CloseReason} {ret}");
                     switch (ret) {
                         case DialogResult.Cancel:
                             // close button
@@ -93,10 +173,10 @@ namespace GenshinNotifier {
             }
         }
 
-        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e) {
+        private void OnSettingValueChanged(object sender, PropertyChangedEventArgs e) {
             var key = e.PropertyName;
             var value = Settings.Default[key];
-            Logger.Debug($"OnPropertyChanged: {key}={value}");
+            Logger.Debug($"OnSettingValueChanged: {key}={value}");
             if (key == "OptionAutoStart") {
                 Task.Run(() => ShortcutHelper.EnableAutoStart(Settings.Default.OptionAutoStart));
             }
@@ -215,13 +295,14 @@ namespace GenshinNotifier {
 
             UpdatedValueL.Text = note.CreatedAt.ToString("T");
             UpdatedValueL.ForeColor = colorNormal;
+            LastUpdateTime = DateTime.Now;
         }
 
         private void HideToTrayIcon() {
             this.Hide();
             this.ShowInTaskbar = false;
             AppNotifyIcon.Visible = true;
-            //AppNotifyIcon.ShowBalloonTip(2000, "已最小化到系统托盘", "双击图标恢复", ToolTipIcon.Info);
+            AppNotifyIcon.ShowBalloonTip(2000, "已最小化到系统托盘", "双击图标恢复", ToolTipIcon.Info);
         }
 
         private void RestoreFromTrayIcon() {
@@ -256,6 +337,12 @@ namespace GenshinNotifier {
         private void MenuItemQuit_Click(object sender, EventArgs e) {
             Dispose();
             Close();
+        }
+
+        private void OnAccountLabelClicked(object sender, EventArgs e) {
+#if DEBUG
+            ShowNotification();
+#endif
         }
     }
 }
