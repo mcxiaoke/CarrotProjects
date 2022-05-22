@@ -27,8 +27,7 @@ namespace GenshinNotifier {
                         DeleteFile(shortcuts[i]);
                     }
                 } else if (shortcuts.Count < 1) {
-                    var targetPath = $"{ProgramPath} autostart";
-                    CreateShortcut(StartupPath, ProgramName, targetPath, 7);
+                    CreateShortcut(StartupPath, ProgramName, ProgramPath, "--autostart", 7);
                 }
             } else {
                 GetExistsShortcuts(StartupPath, ProgramPath).ForEach(it => DeleteFile(it));
@@ -53,6 +52,7 @@ namespace GenshinNotifier {
             string directory,
             string shortcutName,
             string targetPath,
+            string arguments = null,
             int windowStyle = 1,
             string description = null,
             string iconLocation = null) {
@@ -64,6 +64,7 @@ namespace GenshinNotifier {
                 WshShell shell = new WshShell();
                 IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutPath);
                 shortcut.TargetPath = targetPath;
+                shortcut.Arguments = arguments;
                 shortcut.WorkingDirectory = Path.GetDirectoryName(targetPath);
                 // 1 normal; 3 maximized; 7 minimized;
                 shortcut.WindowStyle = windowStyle;

@@ -73,7 +73,7 @@ namespace GenshinNotifier.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool OptionAutoStart {
             get {
                 return ((bool)(this["OptionAutoStart"]));
@@ -85,7 +85,7 @@ namespace GenshinNotifier.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool OptionHideToTray {
             get {
                 return ((bool)(this["OptionHideToTray"]));
@@ -97,7 +97,7 @@ namespace GenshinNotifier.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool OptionCloseConfirm {
             get {
                 return ((bool)(this["OptionCloseConfirm"]));
@@ -133,7 +133,7 @@ namespace GenshinNotifier.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool OptionRemindResin {
             get {
                 return ((bool)(this["OptionRemindResin"]));

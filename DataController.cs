@@ -63,6 +63,7 @@ namespace GenshinNotifier {
             if (cookieValid && userValid) {
                 this.Cookie = cookie;
                 this.User = user;
+                this.UserCached = user;
                 Logger.Debug($"LoadUserData uid={UID} cookie={cookie}");
             } else {
                 ClearUserData();

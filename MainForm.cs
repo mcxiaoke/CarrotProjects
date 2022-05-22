@@ -14,14 +14,17 @@ using System.ComponentModel;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml.Media.Imaging;
+using System.Timers;
 
 namespace GenshinNotifier {
     public partial class MainForm : Form {
 
         private bool IsRefreshingData = false;
         private DateTime LastUpdateTime = DateTime.MinValue;
+        private bool HideOnStart = false;
 
-        public MainForm() {
+        public MainForm(bool shouldHide) {
+            HideOnStart = shouldHide;
             InitializeComponent();
         }
 
@@ -40,7 +43,7 @@ namespace GenshinNotifier {
             PrintAllSettings();
             this.Text = $"{Application.ProductName} {Application.ProductVersion}";
             var (user, error) = await DataController.Default.Initialize();
-            Logger.Debug($"OnFormShow uid={user?.GameUid} error={error?.Message}");
+            Logger.Debug($"OnFormLoad uid={user?.GameUid} error={error?.Message}");
             Logger.Debug(DataController.Default.Ready ? "Ready" : "NotReady");
             if (DataController.Default.Ready) {
                 var uc = DataController.Default.UserCached;
@@ -52,12 +55,13 @@ namespace GenshinNotifier {
                 }
             } else {
                 AccountValueL.Text = "当前Cookie为空或已失效，请设置Cookie后使用";
-                AccountValueL.ForeColor = Color.Red;
+                AccountValueL.ForeColor = Color.Blue;
             }
         }
 
         private bool IsFormLoaded;
         async void OnFormShow(object sender, EventArgs e) {
+            Logger.Debug($"OnFormShow {HideOnStart}");
             await CheckLocalAssets();
             SchedulerController.Default.Initialize();
             SchedulerController.Default.Handlers += OnDataUpdated;
@@ -69,13 +73,47 @@ namespace GenshinNotifier {
             }
             IsFormLoaded = true;
             if (DataController.Default.Ready) {
-                //HideToTrayIcon();
+                StopCookieBlinkTimer();
             } else {
-                //RestoreFromTrayIcon();
+                StartCookieBlinkTimer();
             }
-            RestoreFromTrayIcon();
+            if (HideOnStart) {
+                HideToTrayIcon();
+            }
         }
 
+        private System.Timers.Timer CookieBlinkTimer;
+        private void StartCookieBlinkTimer() {
+            //Logger.Debug("StartCookieBlinkTimer");
+            CookieBlinkTimer = new System.Timers.Timer();
+            CookieBlinkTimer.Interval = 250;
+            CookieBlinkTimer.Elapsed += CookieBlinkEvent;
+            CookieBlinkTimer.Start();
+        }
+
+        private void StopCookieBlinkTimer() {
+            if (CookieBlinkTimer != null) {
+                //Logger.Debug("StopCookieBlinkTimer");
+                CookieBlinkTimer.Stop();
+                CookieBlinkTimer = null;
+                CookieButton.ForeColor = default;
+                CookieButton.BackColor = SystemColors.ButtonFace;
+                CookieButton.UseVisualStyleBackColor = true;
+            }
+        }
+
+        private void CookieBlinkEvent(object sender, EventArgs e) {
+            if (CookieButton.ForeColor != Color.White) {
+                CookieButton.ForeColor = Color.White;
+            } else {
+                CookieButton.ForeColor = default;
+            }
+            if (CookieButton.BackColor != Color.Blue) {
+                CookieButton.BackColor = Color.Blue;
+            } else {
+                CookieButton.BackColor = SystemColors.ButtonFace;
+            }
+        }
 
         private const string ICON_FILE_NAME = "carrot_512.png";
         private static readonly string IconFilePath = Path.Combine(Storage.UserDataFolder, "assets", ICON_FILE_NAME);
@@ -91,15 +129,19 @@ namespace GenshinNotifier {
         }
 
         private void ShowNotification() {
+            // https://docs.microsoft.com/zh-cn/windows/apps/design/shell/tiles-and-notifications/adaptive-interactive-toasts?tabs=builder-syntax
             var image = IconFilePath;
             Logger.Debug(new Uri(image).AbsolutePath);
             var toast = new ToastContentBuilder()
+                .SetToastScenario(ToastScenario.Reminder)
+                .AddHeader("1", Storage.AppName, "action=open&id=1")
                 .AddArgument("type", "resin")
                 .AddArgument("action", "view")
-                .AddArgument("conversationId", 1)
+                .AddArgument("conversationId", 1001)
                 .AddText("Andrew sent you a picture")
                 .AddText("Check this out 11, The Enchantments")
                 .AddText("Check this out 33, The Enchantments ExpirationTime = DateTime.Now.AddMinutes(30)")
+                .AddAttributionText(DateTime.Now.ToString("F"))
                 .AddAppLogoOverride(new Uri(image), ToastGenericAppLogoCrop.Circle)
                 // Buttons
                 .AddButton(new ToastButton()
@@ -149,6 +191,7 @@ namespace GenshinNotifier {
 
         private void OnFormClosing(object sender, FormClosingEventArgs e) {
             IsFormLoaded = false;
+            StopCookieBlinkTimer();
             Settings.Default.PropertyChanged -= OnSettingValueChanged;
             SchedulerController.Default.Handlers -= OnDataUpdated;
             if (Settings.Default.OptionCloseConfirm) {
@@ -171,6 +214,10 @@ namespace GenshinNotifier {
                     }
                 }
             }
+        }
+
+        private void OnFormClosed(object sender, FormClosedEventArgs e) {
+            NativeHelper.FreeConsole();
         }
 
         private void OnSettingValueChanged(object sender, PropertyChangedEventArgs e) {
@@ -213,14 +260,12 @@ namespace GenshinNotifier {
         }
 
         void OnCookieButtonClicked(object sender, EventArgs e) {
-            if (IsRefreshingData)
-                return;
+            if (IsRefreshingData) { return; }
             ShowCookieDialog();
         }
 
         void OnOptionButtonClicked(object sender, EventArgs e) {
-            if (IsRefreshingData)
-                return;
+            if (IsRefreshingData) { return; }
             var cd = new OptionForm {
                 Location = new Point(this.Location.X + 120, this.Location.Y + 80)
             };
@@ -234,11 +279,11 @@ namespace GenshinNotifier {
             }
         }
 
-        void UpdateRefreshState(bool loading) {
-            IsRefreshingData = loading;
-            this.RefreshButton.Enabled = !loading;
-            this.CookieButton.Enabled = !loading;
-            this.LoadingPic.Visible = loading;
+        void UpdateRefreshState(bool refreshing) {
+            IsRefreshingData = refreshing;
+            this.RefreshButton.Enabled = !refreshing;
+            this.CookieButton.Enabled = !refreshing;
+            this.LoadingPic.Visible = refreshing;
         }
 
 
@@ -257,6 +302,9 @@ namespace GenshinNotifier {
                 return;
             }
             Logger.Debug($"UpdateUIControls uid={user?.GameUid} resin={note?.CurrentResin}");
+
+            StopCookieBlinkTimer();
+
             var colorNormal = Color.Green;
             var colorAttention = Color.Red;
             AccountValueL.Text = $"{user.Nickname} {user.Level}级 / {user.RegionName}({user.Server}) / {user.GameUid}";
@@ -295,14 +343,19 @@ namespace GenshinNotifier {
 
             UpdatedValueL.Text = note.CreatedAt.ToString("T");
             UpdatedValueL.ForeColor = colorNormal;
+
             LastUpdateTime = DateTime.Now;
         }
 
+        private bool HidePopupShown = false;
         private void HideToTrayIcon() {
             this.Hide();
             this.ShowInTaskbar = false;
             AppNotifyIcon.Visible = true;
-            AppNotifyIcon.ShowBalloonTip(2000, "已最小化到系统托盘", "双击图标恢复", ToolTipIcon.Info);
+            if (!HidePopupShown) {
+                HidePopupShown = true;
+                AppNotifyIcon.ShowBalloonTip(1000, "已最小化到系统托盘", "双击图标恢复", ToolTipIcon.Info);
+            }
         }
 
         private void RestoreFromTrayIcon() {

@@ -9,19 +9,22 @@ namespace GenshinNotifier {
         /// 应用程序的主入口点。
         /// </summary>
         [STAThread]
-        static void Main() {
+        static void Main(string[] args) {
 #if DEBUG
             NativeHelper.AllocConsole();
 #endif
+            if (args.Length > 0) {
+                Console.WriteLine(string.Join(" ", args));
+            }
             CheckSettingsUpgrade();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            //Application.Run(new MainForm());
-            // hide on start
-            Application.Run(new CustomApplicationContext(new MainForm()));
+            bool shouldHide = (args.Length == 1 && args[0] == "--autostart");
+            Application.Run(new CustomApplicationContext(new MainForm(shouldHide), shouldHide));
             ToastNotificationManagerCompat.Uninstall();
             SchedulerController.Default.Stop();
             Logger.Close();
+            NativeHelper.FreeConsole();
         }
 
         static void CheckSettingsUpgrade() {

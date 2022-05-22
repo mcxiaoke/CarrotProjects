@@ -355,7 +355,7 @@
             this.OptionButton.Name = "OptionButton";
             this.OptionButton.Padding = new System.Windows.Forms.Padding(8);
             this.OptionButton.Size = new System.Drawing.Size(130, 61);
-            this.OptionButton.TabIndex = 3;
+            this.OptionButton.TabIndex = 4;
             this.OptionButton.Text = "选项";
             this.OptionButton.UseVisualStyleBackColor = true;
             this.OptionButton.Click += new System.EventHandler(this.OnOptionButtonClicked);
@@ -367,7 +367,7 @@
             this.RefreshButton.Name = "RefreshButton";
             this.RefreshButton.Padding = new System.Windows.Forms.Padding(8);
             this.RefreshButton.Size = new System.Drawing.Size(130, 61);
-            this.RefreshButton.TabIndex = 4;
+            this.RefreshButton.TabIndex = 5;
             this.RefreshButton.Text = "刷新";
             this.RefreshButton.UseVisualStyleBackColor = true;
             this.RefreshButton.Click += new System.EventHandler(this.OnRefershButtonClicked);
@@ -380,7 +380,7 @@
             this.CookieButton.Name = "CookieButton";
             this.CookieButton.Padding = new System.Windows.Forms.Padding(0, 8, 0, 8);
             this.CookieButton.Size = new System.Drawing.Size(130, 61);
-            this.CookieButton.TabIndex = 6;
+            this.CookieButton.TabIndex = 3;
             this.CookieButton.Text = "Cookie";
             this.CookieButton.UseVisualStyleBackColor = true;
             this.CookieButton.Click += new System.EventHandler(this.OnCookieButtonClicked);
@@ -452,6 +452,7 @@
             this.Padding = new System.Windows.Forms.Padding(10);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.OnFormClosed);
             this.Load += new System.EventHandler(this.OnFormLoad);
             this.Shown += new System.EventHandler(this.OnFormShow);
             this.SizeChanged += new System.EventHandler(this.OnSizeChanged);

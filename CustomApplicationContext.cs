@@ -18,7 +18,7 @@ namespace GenshinNotifier {
         /// Initializes a new instance of the <see cref="CustomApplicationContext"/> class.
         /// </summary>
         /// <param name="mainForm">The main form of the application.</param>
-        public CustomApplicationContext(Form mainForm) {
+        public CustomApplicationContext(Form mainForm, bool hide = true) {
             _mainForm = mainForm;
 
             if (_mainForm != null) {
@@ -28,10 +28,14 @@ namespace GenshinNotifier {
 
                 // We still want to call Show() here, but we can at least hide it from the user
                 // by setting Opacity to 0 while the form is being shown for the first time.
-                _mainForm.Opacity = 0;
-                _mainForm.Show();
-                _mainForm.Hide();
-                _mainForm.Opacity = 1;
+                if (hide) {
+                    _mainForm.Opacity = 0;
+                    _mainForm.Show();
+                    _mainForm.Hide();
+                    _mainForm.Opacity = 1;
+                } else {
+                    _mainForm.Show();
+                }
             }
         }
 
