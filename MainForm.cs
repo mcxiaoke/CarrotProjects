@@ -362,7 +362,7 @@ namespace GenshinNotifier {
             //this.WindowState = FormWindowState.Normal;
             this.Hide();
             this.ShowInTaskbar = false;
-            if (!HidePopupShown) {
+            if (!HidePopupShown && !HideOnStart) {
                 HidePopupShown = true;
                 AppNotifyIcon.ShowBalloonTip(1000, "已最小化到系统托盘", "双击图标恢复", ToolTipIcon.Info);
             }
@@ -377,6 +377,7 @@ namespace GenshinNotifier {
                 AppNotifyIcon.Visible = false;
             }
             this.WindowState = FormWindowState.Normal;
+            // 调整透明度，避免界面闪烁
             this.Opacity = 1;
         }
 
