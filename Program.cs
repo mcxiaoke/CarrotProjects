@@ -25,11 +25,8 @@ namespace GenshinNotifier {
             }
 
 #if DEBUG
-            NativeHelper.AllocConsoleWithFix();
+            //NativeHelper.AllocConsoleWithFix();
 #endif
-            if (args.Length > 0) {
-                Console.WriteLine(string.Join(" ", args));
-            }
             CheckSettingsUpgrade();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
@@ -47,7 +44,7 @@ namespace GenshinNotifier {
             SchedulerController.Default.Stop();
             Logger.Close();
             UDPService.StopUDP();
-            NativeHelper.FreeConsole();
+            //NativeHelper.FreeConsole();
             GC.KeepAlive(mutex);
         }
 
@@ -67,25 +64,20 @@ namespace GenshinNotifier {
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e) {
             try {
                 Exception ex = (Exception)e.ExceptionObject;
-                string errorMsg = "An application error occurred. Please contact the adminstrator " +
+                string errorMsg = "An application error occurred. Please contact the owner " +
                     "with the following information:\n\n";
 
-                // Since we can't prevent the app from terminating, log this to the event log.
-                if (!EventLog.SourceExists("ThreadException")) {
-                    EventLog.CreateEventSource("ThreadException", "Application");
+                using (EventLog eventLog = new EventLog("Application")) {
+                    eventLog.Source = "Application";
+                    eventLog.WriteEntry(errorMsg + ex.Message + "\n\nStack Trace:\n" + ex.StackTrace, EventLogEntryType.Warning, 101, 1);
                 }
-
-                // Create an EventLog instance and assign its source.
-                EventLog myLog = new EventLog {
-                    Source = "ThreadException"
-                };
-                myLog.WriteEntry(errorMsg + ex.Message + "\n\nStack Trace:\n" + ex.StackTrace);
 #if DEBUG
                 MessageBox.Show("Fatal Non-UI Error",
     "Fatal Non-UI Error. Could not write the error to the event log. Reason: "
     + ex.StackTrace, MessageBoxButtons.OK, MessageBoxIcon.Stop);
 #endif
             } catch (Exception exc) {
+#if DEBUG
                 try {
                     MessageBox.Show("Fatal Non-UI Error",
                         "Fatal Non-UI Error. Could not write the error to the event log. Reason: "
@@ -93,6 +85,7 @@ namespace GenshinNotifier {
                 } finally {
                     Application.Exit();
                 }
+#endif
             }
         }
 

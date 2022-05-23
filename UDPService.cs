@@ -18,7 +18,7 @@ namespace GenshinNotifier {
             Client = new UdpClient(Port);
             while (!Closed) {
                 var receivedResult = await Client.ReceiveAsync();
-                Console.WriteLine(Encoding.UTF8.GetString(receivedResult.Buffer));
+                Logger.Debug(Encoding.UTF8.GetString(receivedResult.Buffer));
             }
         }
 

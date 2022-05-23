@@ -8,6 +8,7 @@ using GenshinNotifier.Properties;
 using Newtonsoft.Json;
 using GenshinNotifier.Net;
 using Microsoft.Toolkit.Uwp.Notifications;
+using Microsoft.Win32;
 
 namespace GenshinNotifier {
 
@@ -93,6 +94,27 @@ namespace GenshinNotifier {
             LoadConfig();
             Setup();
             Start();
+            SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
+            SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
+        }
+
+        void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e) {
+            switch (e.Mode) {
+                case PowerModes.Resume:
+                    Logger.Debug($"===> Resume {DateTime.Now}");
+                    break;
+                case PowerModes.Suspend:
+                    Logger.Debug($"===> Suspend {DateTime.Now}");
+                    break;
+                case PowerModes.StatusChange:
+                    Logger.Debug($"===>  StatusChange {DateTime.Now}");
+                    break;
+            }
+        }
+
+        private void SystemEvents_SessionSwitch(object sender, EventArgs e) {
+            var args = e as SessionSwitchEventArgs;
+            Logger.Debug($"===> {args.Reason} {DateTime.Now}");
         }
 
         private void LoadConfig() {
@@ -127,6 +149,8 @@ namespace GenshinNotifier {
             Status.LastCheckedAt = DateTime.MinValue;
             ATimer.Stop();
             ATimer.Dispose();
+            SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
+            SystemEvents.SessionSwitch -= SystemEvents_SessionSwitch;
         }
 
         public void MuteToday() {

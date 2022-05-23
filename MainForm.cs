@@ -37,7 +37,7 @@ namespace GenshinNotifier {
         }
 
         private async void OnFormLoad(object sender, EventArgs e) {
-            Console.WriteLine("OnFormLoad()");
+            Logger.Debug("OnFormLoad()");
             PrintAllSettings();
             this.Text = $"{Application.ProductName} {Application.ProductVersion}";
             var (user, error) = await DataController.Default.Initialize();
@@ -59,7 +59,7 @@ namespace GenshinNotifier {
 
         private bool IsFormLoaded;
         async void OnFormShow(object sender, EventArgs e) {
-            Console.WriteLine($"OnFormShow() hide={HideOnStart}");
+            Logger.Debug($"OnFormShow() hide={HideOnStart}");
             await AppUtils.CheckLocalAssets();
             UDPService.Handlers += OnNewInstance;
             SchedulerController.Default.Initialize();
@@ -87,7 +87,7 @@ namespace GenshinNotifier {
         }
 
         private void OnNewInstance(object sender, EventArgs e) {
-            Console.WriteLine($"OnNewInstance() {sender}");
+            Logger.Debug($"OnNewInstance() {sender}");
             Invoke(new Action(() => {
                 RestoreFromTrayIcon();
             }));
@@ -133,7 +133,6 @@ namespace GenshinNotifier {
             ToastArguments args = ToastArguments.Parse(toastArgs.Argument);
             var action = args.Get("action");
             // Need to dispatch to UI thread if performing UI operations
-            Console.WriteLine(action);
             if (action == "view") {
                 // restore from tray
                 Invoke(new Action(() => {
@@ -147,7 +146,7 @@ namespace GenshinNotifier {
         }
 
         private async void OnVisibleChanged(object sender, EventArgs e) {
-            Console.WriteLine($"OnVisibleChanged() visible={this.Visible} formLoaded={IsFormLoaded}");
+            Logger.Debug($"OnVisibleChanged() visible={this.Visible} formLoaded={IsFormLoaded}");
             if (!this.Visible) { return; }
             if (!IsFormLoaded) { return; }
             if (!DataController.Default.Ready) { return; }
@@ -155,6 +154,7 @@ namespace GenshinNotifier {
             UpdateUIControlsUseCache();
             var note = DataController.Default.NoteCached;
             var needRefresh = note != null && (DateTime.Now - note.CreatedAt).TotalMilliseconds > SchedulerController.INTERVAL_NOTE / 3;
+            needRefresh = true;
             if (needRefresh) {
                 await RefreshDailyNote(null, null);
             }
@@ -162,7 +162,7 @@ namespace GenshinNotifier {
         }
 
         private void OnFormClosing(object sender, FormClosingEventArgs e) {
-            Console.WriteLine("OnFormClosing()");
+            Logger.Debug("OnFormClosing()");
             StopCookieBlinkTimer();
             if (Settings.Default.OptionCloseConfirm) {
                 if (e.CloseReason == CloseReason.UserClosing) {
@@ -187,7 +187,7 @@ namespace GenshinNotifier {
         }
 
         private void OnFormClosed(object sender, FormClosedEventArgs e) {
-            Console.WriteLine("OnFormClosed");
+            Logger.Debug("OnFormClosed");
             IsFormLoaded = false;
             Settings.Default.PropertyChanged -= OnSettingValueChanged;
             UDPService.Handlers -= OnNewInstance;
@@ -341,7 +341,7 @@ namespace GenshinNotifier {
         }
 
         private void RestoreFromTrayIcon() {
-            Console.WriteLine($"RestoreFromTrayIcon() visible={Visible} window={WindowState} thread={AppUtils.ThreadId}");
+            Logger.Debug($"RestoreFromTrayIcon() visible={Visible} window={WindowState} thread={AppUtils.ThreadId}");
             if (!this.Visible) {
                 this.Show();
                 this.Activate();
@@ -355,7 +355,7 @@ namespace GenshinNotifier {
         }
 
         private void OnSizeChanged(object sender, EventArgs e) {
-            Console.WriteLine($"OnSizeChanged {this.WindowState}");
+            Logger.Debug($"OnSizeChanged {this.WindowState}");
             if (Settings.Default.OptionHideToTray) {
                 if (this.WindowState == FormWindowState.Minimized) {
                     HideToTrayIcon();

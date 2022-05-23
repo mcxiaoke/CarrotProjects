@@ -15,11 +15,9 @@ namespace GenshinNotifier {
 
         private static string COOKIE_GUIDE =
             @"使用说明：
-1. 打开 http://bbs.mihoyo.com/ys/ 并进行登录操作；
-2. 新建标签页，打开 http://user.mihoyo.com/ 并进行登录操作；
-3. 按下键盘上的F12或右键检查,打开开发者工具,点击控制台；
-4. 控制台输入 document.cookie 复制出现的字符串；
-5. 将复制好的Cookie字符串粘贴到输入框，点击保存";
+1. 浏览器打开米游社网页 http://bbs.mihoyo.com/ys/ 登录你的帐号，可以点击网页右上角的头像确认登录状态；
+3. 按下键盘上的F12或右键检查，打开开发者工具，点击控制台，在控制台输入 document.cookie 按回车，复制下一行出现的字符串；
+3. 将复制好的Cookie字符串粘贴到输入框，点击保存";
 
         public event EventHandler Handlers;
 
@@ -75,10 +73,10 @@ namespace GenshinNotifier {
         }
 
         private void CookieDialog_FormClosed(object sender, FormClosedEventArgs e) {
-            Console.WriteLine("CookieDialog_FormClosed");
+            Logger.Debug("CookieDialog_FormClosed");
             var handlers = Handlers?.GetInvocationList() ?? new Delegate[] { };
             foreach (EventHandler d in handlers) {
-                Console.WriteLine("CookieDialog_FormClosed -Handlers");
+                Logger.Debug("CookieDialog_FormClosed -Handlers");
                 Handlers -= d;
             }
         }
