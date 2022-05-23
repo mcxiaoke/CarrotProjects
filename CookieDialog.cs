@@ -74,10 +74,11 @@ namespace GenshinNotifier {
             System.Diagnostics.Process.Start(e.LinkText);
         }
 
-        private void CookieDialog_FormClosing(object sender, FormClosingEventArgs e) {
-            Logger.Debug("CookieDialog_FormClosing");
-            foreach (EventHandler d in Handlers.GetInvocationList()) {
-                Logger.Debug("CookieDialog_FormClosing -Handlers");
+        private void CookieDialog_FormClosed(object sender, FormClosedEventArgs e) {
+            Console.WriteLine("CookieDialog_FormClosed");
+            var handlers = Handlers?.GetInvocationList() ?? new Delegate[] { };
+            foreach (EventHandler d in handlers) {
+                Console.WriteLine("CookieDialog_FormClosed -Handlers");
                 Handlers -= d;
             }
         }

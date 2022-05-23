@@ -145,7 +145,7 @@ namespace GenshinNotifier.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool OptionRemindCoin {
             get {
                 return ((bool)(this["OptionRemindCoin"]));
@@ -157,7 +157,7 @@ namespace GenshinNotifier.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool OptionRemindTask {
             get {
                 return ((bool)(this["OptionRemindTask"]));
@@ -193,7 +193,7 @@ namespace GenshinNotifier.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
         public bool OptionRemindTransformer {
             get {
                 return ((bool)(this["OptionRemindTransformer"]));

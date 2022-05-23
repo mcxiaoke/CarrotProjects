@@ -273,7 +273,9 @@ namespace GenshinNotifier.Net {
             JObject o = jsonObj.data.list[0];
             //Console.WriteLine(o);
             // https://www.newtonsoft.com/json/help/html/SerializingJSONFragments.htm
-            return o.ToObject<UserGameRole>();
+            var data = o.ToObject<UserGameRole>();
+            data.CreatedAt = DateTime.Now;
+            return data;
         }
     }
 }

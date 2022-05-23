@@ -21,6 +21,7 @@ namespace GenshinNotifier {
 
         public MainForm(bool shouldHide) {
             HideOnStart = shouldHide;
+            TopMost = true;
             InitializeComponent();
         }
 
@@ -59,15 +60,15 @@ namespace GenshinNotifier {
         private bool IsFormLoaded;
         async void OnFormShow(object sender, EventArgs e) {
             Console.WriteLine($"OnFormShow() hide={HideOnStart}");
-            await CheckLocalAssets();
+            await AppUtils.CheckLocalAssets();
             UDPService.Handlers += OnNewInstance;
             SchedulerController.Default.Initialize();
-            SchedulerController.Default.Handlers += OnDataUpdated;
             ToastNotificationManagerCompat.OnActivated += OnNotificationActivated;
             Settings.Default.PropertyChanged += OnSettingValueChanged;
             if (Settings.Default.FirstLaunch) {
                 Settings.Default.FirstLaunch = false;
                 Settings.Default.Save();
+                OnFirstLaunch();
             }
             IsFormLoaded = true;
             if (DataController.Default.Ready) {
@@ -78,6 +79,11 @@ namespace GenshinNotifier {
             if (HideOnStart) {
                 HideToTrayIcon();
             }
+        }
+
+        private void OnFirstLaunch() {
+            ShortcutHelper.EnableAutoStart(Settings.Default.OptionAutoStart);
+            Logger.Info("========== OnFirstLaunch ==========");
         }
 
         private void OnNewInstance(object sender, EventArgs e) {
@@ -121,62 +127,23 @@ namespace GenshinNotifier {
             }
         }
 
-        private const string ICON_FILE_NAME = "carrot_512.png";
-        private static readonly string IconFilePath = Path.Combine(Storage.UserDataFolder, "assets", ICON_FILE_NAME);
-        private async Task CheckLocalAssets() {
-            await Task.Run(() => {
-                var assetsDir = Directory.GetParent(IconFilePath).FullName;
-                Storage.CheckOrCreateDir(assetsDir);
-                if (!File.Exists(IconFilePath)) {
-                    Resources.ImageCarrot512.Save(IconFilePath);
-                    Logger.Info($"CheckLocalAssets copied to {IconFilePath}");
-                }
-            });
-        }
-
-        private void ShowNotification() {
-            // https://docs.microsoft.com/zh-cn/windows/apps/design/shell/tiles-and-notifications/adaptive-interactive-toasts?tabs=builder-syntax
-            var image = IconFilePath;
-            Logger.Debug(new Uri(image).AbsolutePath);
-            var toast = new ToastContentBuilder()
-                .SetToastScenario(ToastScenario.Reminder)
-                .AddHeader("1", Storage.AppName, "action=open&id=1")
-                .AddArgument("type", "resin")
-                .AddArgument("action", "view")
-                .AddArgument("conversationId", 1001)
-                .AddText("Andrew sent you a picture")
-                .AddText("Check this out 11, The Enchantments")
-                .AddText("Check this out 33, The Enchantments ExpirationTime = DateTime.Now.AddMinutes(30)")
-                .AddAttributionText(DateTime.Now.ToString("F"))
-                .AddAppLogoOverride(new Uri(image), ToastGenericAppLogoCrop.Circle)
-                // Buttons
-                .AddButton(new ToastButton()
-                    .SetContent("打开主界面")
-                    .AddArgument("action", "show")
-                    .SetBackgroundActivation())
-                .AddButton(new ToastButton()
-                .SetContent("今日不再提醒")
-                .AddArgument("action", "mute")
-                .SetBackgroundActivation());
-            toast.Show(t => {
-                t.Group = "Notification";
-                t.Tag = "DailyNote";
-                t.ExpirationTime = DateTime.Now.AddMinutes(30);
-            });
-        }
-
         private void OnNotificationActivated(ToastNotificationActivatedEventArgsCompat toastArgs) {
             Logger.Debug($"OnNotificationActivated {toastArgs.Argument}");
             // Obtain the arguments from the notification
             ToastArguments args = ToastArguments.Parse(toastArgs.Argument);
-
-            // Obtain any user input (text boxes, menu selections) from the notification
-            ValueSet userInput = toastArgs.UserInput;
-
+            var action = args.Get("action");
             // Need to dispatch to UI thread if performing UI operations
-            Invoke(new Action(() => {
-                Logger.Debug("Toast activated. Args: " + toastArgs.Argument);
-            }));
+            Console.WriteLine(action);
+            if (action == "view") {
+                // restore from tray
+                Invoke(new Action(() => {
+                    RestoreFromTrayIcon();
+                    UpdateUIControlsUseCache();
+                }));
+            } else if (action == "mute") {
+                // mute current day
+                SchedulerController.Default.MuteToday();
+            }
         }
 
         private async void OnVisibleChanged(object sender, EventArgs e) {
@@ -184,11 +151,10 @@ namespace GenshinNotifier {
             if (!this.Visible) { return; }
             if (!IsFormLoaded) { return; }
             if (!DataController.Default.Ready) { return; }
-            var user = DataController.Default.UserCached;
+            if (IsRefreshingData) { return; }
+            UpdateUIControlsUseCache();
             var note = DataController.Default.NoteCached;
-            Logger.Debug($"OnVisibleChanged update uid={user?.GameUid} resin={note?.CurrentResin}");
-            UpdateUIControls(user, note);
-            var needRefresh = note != null && (DateTime.Now - note.CreatedAt).TotalMinutes > 10;
+            var needRefresh = note != null && (DateTime.Now - note.CreatedAt).TotalMilliseconds > SchedulerController.INTERVAL_NOTE / 3;
             if (needRefresh) {
                 await RefreshDailyNote(null, null);
             }
@@ -224,7 +190,6 @@ namespace GenshinNotifier {
             Console.WriteLine("OnFormClosed");
             IsFormLoaded = false;
             Settings.Default.PropertyChanged -= OnSettingValueChanged;
-            SchedulerController.Default.Handlers -= OnDataUpdated;
             UDPService.Handlers -= OnNewInstance;
             UDPService.StopUDP();
             NativeHelper.FreeConsole();
@@ -236,12 +201,15 @@ namespace GenshinNotifier {
             Logger.Debug($"OnSettingValueChanged: {key}={value}");
             if (key == "OptionAutoStart") {
                 Task.Run(() => ShortcutHelper.EnableAutoStart(Settings.Default.OptionAutoStart));
+            } else if (key == "none") {
+
             }
         }
 
         void ShowCookieDialog() {
             var cd = new CookieDialog {
-                Location = new Point(this.Location.X + 120, this.Location.Y + 80)
+                Location = new Point(this.Location.X + 120, this.Location.Y + 80),
+                Owner = this
             };
             cd.Handlers += OnCookieChanged;
             cd.FormClosed += (fo, fe) => cd.Handlers -= OnCookieChanged;
@@ -276,17 +244,12 @@ namespace GenshinNotifier {
 
         void OnOptionButtonClicked(object sender, EventArgs e) {
             if (IsRefreshingData) { return; }
+            Logger.Debug($"OnOptionButtonClicked");
             var cd = new OptionForm {
-                Location = new Point(this.Location.X + 120, this.Location.Y + 80)
+                Location = new Point(this.Location.X + 120, this.Location.Y + 80),
+                Owner = this
             };
             cd.ShowDialog();
-        }
-
-        void OnDataUpdated(UserGameRole user, DailyNote note) {
-            Logger.Debug($"OnDataUpdated uid={user?.GameUid} resin={note?.CurrentResin} visible={this.Visible}");
-            if (this.Visible) {
-                UpdateUIControls(user, note);
-            }
         }
 
         void UpdateRefreshState(bool refreshing) {
@@ -300,10 +263,17 @@ namespace GenshinNotifier {
         async Task RefreshDailyNote(object sender, EventArgs e) {
             Logger.Debug("RefreshDailyNote");
             UpdateRefreshState(true);
-            var (user, note) = await DataController.Default.GetDailyNote();
+            var user = DataController.Default.UserCached;
+            var (note, _) = await DataController.Default.GetDailyNote();
             Logger.Debug($"RefreshDailyNote user={user?.GameUid} resin={note?.CurrentResin}");
             UpdateUIControls(user, note);
             UpdateRefreshState(false);
+        }
+
+        void UpdateUIControlsUseCache() {
+            var user = DataController.Default.UserCached;
+            var note = DataController.Default.NoteCached;
+            UpdateUIControls(user, note);
         }
 
         void UpdateUIControls(UserGameRole user, DailyNote note) {
@@ -319,7 +289,7 @@ namespace GenshinNotifier {
             var colorAttention = Color.Red;
             AccountValueL.Text = $"{user.Nickname} {user.Level}级 / {user.RegionName}({user.Server}) / {user.GameUid}";
             AccountValueL.ForeColor = Color.Blue;
-            var resinMayFull = note.CurrentResin >= note.MaxResin - 2;
+            var resinMayFull = note.ResinAlmostFull();
             ResinValueL.Text = $"{note.CurrentResin}/{note.MaxResin}";
             ResinValueL.ForeColor = resinMayFull ? colorAttention : colorNormal;
             ResinRecValueL.Text = $"{note.ResinRecoveryTimeFormatted}";
@@ -327,7 +297,7 @@ namespace GenshinNotifier {
             ResinTimeValueL.Text = $"{note.ResinRecoveryTargetTimeFormatted}";
             ResinTimeValueL.ForeColor = resinMayFull ? colorAttention : colorNormal;
 
-            var expeditionCompleted = note.Expeditions?.All(it => it.RemainedTime == "0") ?? false;
+            var expeditionCompleted = note.ExpeditionAllCompleted;
             var expeditionText = $"{note.CurrentExpeditionNum}/{note.MaxExpeditionNum}";
             if (expeditionCompleted) {
                 expeditionText += " (已完成)";
@@ -339,15 +309,15 @@ namespace GenshinNotifier {
             TaskNameValueL.Text = $"{note.FinishedTaskNum}/{note.TotalTaskNum} {taskRewardStr}";
             TaskNameValueL.ForeColor = note.IsExtraTaskRewardReceived ? colorNormal : colorAttention;
 
-            var homeCoinMayFull = note.CurrentHomeCoin >= note.MaxHomeCoin - 100;
+            var homeCoinMayFull = note.HomeCoinAlmostFull();
             HomeCoinValueL.Text = $"{note.CurrentHomeCoin}/{note.MaxHomeCoin}";
             HomeCoinValueL.ForeColor = homeCoinMayFull ? colorAttention : colorNormal;
 
-            var discountNotUsed = note.ResinDiscountUsedNum < note.ResinDiscountNumLimit;
+            var discountNotUsed = note.ResinDiscountNotUsed;
             DiscountTaskValueL.Text = $"{note.ResinDiscountUsedNum}/{note.ResinDiscountNumLimit}";
             DiscountTaskValueL.ForeColor = discountNotUsed ? colorAttention : colorNormal;
 
-            var transformerReady = note.Transformer.RecoveryTime.Reached;
+            var transformerReady = note.TransformerReady;
             TransformerValueL.Text = $"{note.Transformer.RecoveryTime.TimeFormatted}";
             TransformerValueL.ForeColor = (transformerReady ? colorAttention : colorNormal);
 
@@ -371,16 +341,17 @@ namespace GenshinNotifier {
         }
 
         private void RestoreFromTrayIcon() {
-            Console.WriteLine($"RestoreFromTrayIcon() visible={Visible} window={WindowState}");
+            Console.WriteLine($"RestoreFromTrayIcon() visible={Visible} window={WindowState} thread={AppUtils.ThreadId}");
             if (!this.Visible) {
                 this.Show();
                 this.Activate();
                 this.ShowInTaskbar = true;
                 AppNotifyIcon.Visible = false;
+                this.WindowState = FormWindowState.Normal;
+                // 调整透明度，避免界面闪烁
+                this.Opacity = 1;
+                //NativeHelper.SetForegroundWindow(Handle);
             }
-            this.WindowState = FormWindowState.Normal;
-            // 调整透明度，避免界面闪烁
-            this.Opacity = 1;
         }
 
         private void OnSizeChanged(object sender, EventArgs e) {
@@ -411,7 +382,7 @@ namespace GenshinNotifier {
 
         private void OnAccountLabelClicked(object sender, EventArgs e) {
 #if DEBUG
-            ShowNotification();
+            SchedulerController.Default.ShowNotification(DataController.Default.UserCached, DataController.Default.NoteCached);
 #endif
         }
     }

@@ -96,50 +96,55 @@ namespace GenshinNotifier {
         }
 
         public async Task<(UserGameRole, Exception)> Initialize() {
+            return await GetGameRoleInfo(true);
+        }
+
+        public async Task<(UserGameRole, Exception)> GetGameRoleInfo(bool forInit = false) {
             if (string.IsNullOrEmpty(Cookie)) {
                 return default;
             }
-            UserCached = await Cache.LoadCache2<UserGameRole>();
-            NoteCached = await Cache.LoadCache2<DailyNote>();
-            Logger.Debug($"DataController.Initialize cached uid={UserCached?.GameUid} resin={NoteCached?.CurrentResin}");
             try {
-                if (string.IsNullOrEmpty(Cookie)) {
-                    throw new TokenException("No Cookie");
+                if (forInit) {
+                    UserCached = await Cache.LoadCache2<UserGameRole>();
+                    NoteCached = await Cache.LoadCache2<DailyNote>();
+                    Logger.Debug($"DataController.GetGameRoleInfo cached uid={UserCached?.GameUid} resin={NoteCached?.CurrentResin}");
                 }
                 var user = await Api.GetGameRoleInfo();
-                Logger.Info($"DataController.Initialize uid={UID}");
+                Logger.Info($"DataController.GetGameRoleInfo uid={UID}");
                 if (user != null) {
                     SaveUserData(null, user);
                     await Cache.SaveCache2(user);
                 }
                 return (user, null);
             } catch (TokenException ex) {
-                Logger.Error("Initialize", ex);
+                Logger.Error("DataController.GetGameRoleInfo", ex);
                 ClearUserData();
                 return (null, ex);
             } catch (Exception ex) {
-                Logger.Error("Initialize", ex);
+                Logger.Error("DataController.GetGameRoleInfo", ex);
                 return (null, ex);
             }
         }
 
-        public async Task<(UserGameRole, DailyNote)> GetDailyNote() {
-
+        public async Task<(DailyNote, Exception)> GetDailyNote() {
+            if (string.IsNullOrEmpty(Cookie)) {
+                return default;
+            }
             try {
                 var (note, error) = await Api.GetDailyNote();
-                Logger.Debug($"GetDailyNote resin={note?.CurrentResin} error={error?.Message}");
+                Logger.Debug($"DataController.GetDailyNote resin={note?.CurrentResin} error={error?.Message}");
                 if (note != null) {
                     NoteCached = note;
                     await Cache.SaveCache2(note);
                 }
-                return (this.User, note);
+                return (note, null);
             } catch (TokenException ex) {
-                Logger.Error("GetDailyNote", ex);
+                Logger.Error("DataController.GetDailyNote", ex);
                 ClearUserData();
-                return (this.User, null);
+                return (null, ex);
             } catch (Exception ex) {
-                Logger.Error("GetDailyNote", ex);
-                return (this.User, null);
+                Logger.Error("DataController.GetDailyNote", ex);
+                return (null, ex);
             }
         }
 

@@ -25,7 +25,7 @@ namespace GenshinNotifier {
             }
 
 #if DEBUG
-            NativeHelper.AllocConsole();
+            NativeHelper.AllocConsoleWithFix();
 #endif
             if (args.Length > 0) {
                 Console.WriteLine(string.Join(" ", args));
@@ -80,6 +80,11 @@ namespace GenshinNotifier {
                     Source = "ThreadException"
                 };
                 myLog.WriteEntry(errorMsg + ex.Message + "\n\nStack Trace:\n" + ex.StackTrace);
+#if DEBUG
+                MessageBox.Show("Fatal Non-UI Error",
+    "Fatal Non-UI Error. Could not write the error to the event log. Reason: "
+    + ex.StackTrace, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+#endif
             } catch (Exception exc) {
                 try {
                     MessageBox.Show("Fatal Non-UI Error",
@@ -96,7 +101,7 @@ namespace GenshinNotifier {
             string errorMsg = "An application error occurred. Please contact the adminstrator " +
                 "with the following information:\n\n";
             errorMsg = errorMsg + e.Message + "\n\nStack Trace:\n" + e.StackTrace;
-            return MessageBox.Show(errorMsg, title, MessageBoxButtons.AbortRetryIgnore,
+            return MessageBox.Show(errorMsg, title, MessageBoxButtons.OK,
                 MessageBoxIcon.Stop);
         }
 
@@ -107,13 +112,13 @@ namespace GenshinNotifier {
             } catch {
                 try {
                     MessageBox.Show("Fatal Windows Forms Error",
-                        "Fatal Windows Forms Error", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Stop);
+                        "Fatal Windows Forms Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 } finally {
                     Application.Exit();
                 }
             }
             // Exits the program when the user clicks Abort.
-            if (result == DialogResult.Abort)
+            if (result == DialogResult.OK)
                 Application.Exit();
         }
     }

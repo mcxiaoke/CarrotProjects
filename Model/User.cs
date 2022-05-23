@@ -24,6 +24,12 @@ namespace GenshinNotifier.Net {
         [JsonProperty("is_official")]
         public string IsOfficial { get; set; }
 
+        /// <summary>
+        /// 数据更新时间
+        /// </summary>
+        [JsonProperty("created_at")]
+        public DateTime CreatedAt { get; set; }
+
         public string Server => GameBiz == "hk4e_cn" ? "CN" : "OS";
 
         public override string ToString() {

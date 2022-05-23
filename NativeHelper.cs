@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
@@ -12,6 +13,30 @@ namespace GenshinNotifier {
         [DllImport("kernel32.dll", SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool FreeConsole();
+
+        [DllImport("kernel32.dll")]
+        public static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
+
+        const uint ENABLE_QUICK_EDIT = 0x0040;
+
+        // STD_INPUT_HANDLE (DWORD): -10 is the standard input device.
+        const int STD_INPUT_HANDLE = -10;
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        static extern IntPtr GetStdHandle(int nStdHandle);
+
+        [DllImport("kernel32.dll")]
+        static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
+
+        private const uint ENABLE_EXTENDED_FLAGS = 0x0080;
+
+        // https://stackoverflow.com/questions/21884406
+        // https://dev.to/mhmd_azeez/why-my-console-app-freezes-randomly-and-i-need-to-press-a-key-for-it-to-continue-44h9
+        public static void AllocConsoleWithFix() {
+            AllocConsole();
+            IntPtr handle = Process.GetCurrentProcess().MainWindowHandle;
+            SetConsoleMode(handle, ENABLE_EXTENDED_FLAGS);
+        }
 
         [DllImport("user32")]
         public static extern int RegisterWindowMessage(string message);
