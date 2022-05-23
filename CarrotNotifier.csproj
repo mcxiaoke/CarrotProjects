@@ -182,6 +182,7 @@
     <EmbeddedResource Include="ConfirmDialog.resx">
       <DependentUpon>ConfirmDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <None Include=".editorconfig" />
     <None Include=".gitignore" />
     <EmbeddedResource Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

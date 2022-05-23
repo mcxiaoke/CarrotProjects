@@ -29,24 +29,27 @@ namespace GenshinNotifier {
         }
 
         private static bool ListenUDPNext = true;
+        private const string DefaultIP = "127.0.0.1";
+        private const int DefaultPort = 45678;
         public static void OnUDPReceived(IAsyncResult result) {
             // this is what had been passed into BeginReceive as the second parameter:
-            UdpClient socket = result.AsyncState as UdpClient;
+            UdpClient server = result.AsyncState as UdpClient;
+            if (!ListenUDPNext) {
+                server.Close();
+                return;
+            }
             // points towards whoever had sent the message:
             IPEndPoint source = new IPEndPoint(0, 0);
             // get the actual message and fill out the source:
-            byte[] bytes = socket.EndReceive(result, ref source);
+            byte[] bytes = server.EndReceive(result, ref source);
             string message = Encoding.UTF8.GetString(bytes);
             //Console.WriteLine("UDP Received: " + Encoding.UTF8.GetString(bytes));
             if (message == Storage.AppGuidStr) {
                 // new instance, show front
                 Handlers?.Invoke(message, new EventArgs());
             }
-
-            if (ListenUDPNext) {
-                // schedule the next receive operation once reading is done:
-                socket.BeginReceive(new AsyncCallback(OnUDPReceived), socket);
-            }
+            // schedule the next receive operation once reading is done:
+            server.BeginReceive(new AsyncCallback(OnUDPReceived), server);
         }
 
         public static void StopUDP() {
@@ -54,16 +57,17 @@ namespace GenshinNotifier {
         }
 
         // another way is using IpcChannel
-        public static void BeginUDP(int listenPort = 45678) {
-            UdpClient socket = new UdpClient(listenPort);
-            socket.BeginReceive(new AsyncCallback(OnUDPReceived), socket);
+        public static void BeginUDP(int listenPort = DefaultPort) {
+            var ip = new IPEndPoint(IPAddress.Parse(DefaultIP), listenPort);
+            UdpClient server = new UdpClient(ip);
+            server.BeginReceive(new AsyncCallback(OnUDPReceived), server);
         }
 
-        public static void SendUDP(string message = null, int targetPort = 45678, string targetIP = "127.0.0.1") {
-            UdpClient socket = new UdpClient();
+        public static void SendUDP(string message = null, int targetPort = DefaultPort, string targetIP = DefaultIP) {
+            UdpClient client = new UdpClient();
             IPEndPoint target = new IPEndPoint(IPAddress.Parse(targetIP), targetPort);
             var bytes = Encoding.UTF8.GetBytes(message ?? Storage.AppGuidStr);
-            socket.Send(bytes, bytes.Length, target);
+            client.Send(bytes, bytes.Length, target);
         }
 
     }

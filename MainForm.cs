@@ -17,7 +17,7 @@ namespace GenshinNotifier {
 
         private bool IsRefreshingData = false;
         private DateTime LastUpdateTime = DateTime.MinValue;
-        private bool HideOnStart = false;
+        private readonly bool HideOnStart = false;
 
         public MainForm(bool shouldHide) {
             HideOnStart = shouldHide;
@@ -90,8 +90,9 @@ namespace GenshinNotifier {
         private System.Timers.Timer CookieBlinkTimer;
         private void StartCookieBlinkTimer() {
             //Logger.Debug("StartCookieBlinkTimer");
-            CookieBlinkTimer = new System.Timers.Timer();
-            CookieBlinkTimer.Interval = 250;
+            CookieBlinkTimer = new System.Timers.Timer {
+                Interval = 250
+            };
             CookieBlinkTimer.Elapsed += CookieBlinkEvent;
             CookieBlinkTimer.Start();
         }
@@ -225,6 +226,7 @@ namespace GenshinNotifier {
             Settings.Default.PropertyChanged -= OnSettingValueChanged;
             SchedulerController.Default.Handlers -= OnDataUpdated;
             UDPService.Handlers -= OnNewInstance;
+            UDPService.StopUDP();
             NativeHelper.FreeConsole();
         }
 

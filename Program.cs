@@ -46,6 +46,7 @@ namespace GenshinNotifier {
             ToastNotificationManagerCompat.Uninstall();
             SchedulerController.Default.Stop();
             Logger.Close();
+            UDPService.StopUDP();
             NativeHelper.FreeConsole();
             GC.KeepAlive(mutex);
         }
