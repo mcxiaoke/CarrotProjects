@@ -24,7 +24,7 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="OptionRefreshOnStart" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="OptionCheckinOnStart" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
@@ -39,10 +39,10 @@
       <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="OptionRemindDiscount" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="OptionRemindExpedition" Type="System.Boolean" Scope="User">
-      <Value Profile="(Default)">False</Value>
+      <Value Profile="(Default)">True</Value>
     </Setting>
     <Setting Name="OptionRemindTransformer" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>

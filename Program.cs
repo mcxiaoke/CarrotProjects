@@ -64,6 +64,7 @@ namespace GenshinNotifier {
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e) {
             try {
                 Exception ex = (Exception)e.ExceptionObject;
+                Logger.Error("UnhandledException", ex);
                 string errorMsg = "An application error occurred. Please contact the owner " +
                     "with the following information:\n\n";
 

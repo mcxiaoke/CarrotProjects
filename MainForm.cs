@@ -22,6 +22,8 @@ namespace GenshinNotifier {
         public MainForm(bool shouldHide) {
             HideOnStart = shouldHide;
             TopMost = true;
+            Logger.Debug("=======================================");
+            Logger.Debug($"MainForm HideOnStart={HideOnStart}");
             InitializeComponent();
         }
 
@@ -55,11 +57,6 @@ namespace GenshinNotifier {
                 AccountValueL.Text = "当前Cookie为空或已失效，请设置Cookie后使用";
                 AccountValueL.ForeColor = Color.Blue;
             }
-        }
-
-        private bool IsFormLoaded;
-        async void OnFormShow(object sender, EventArgs e) {
-            Logger.Debug($"OnFormShow() hide={HideOnStart}");
             await AppUtils.CheckLocalAssets();
             UDPService.Handlers += OnNewInstance;
             SchedulerController.Default.Initialize();
@@ -70,14 +67,19 @@ namespace GenshinNotifier {
                 Settings.Default.Save();
                 OnFirstLaunch();
             }
+            if (HideOnStart) {
+                HideToTrayIcon();
+            }
+        }
+
+        private bool IsFormLoaded;
+        private void OnFormShow(object sender, EventArgs e) {
+            Logger.Debug($"OnFormShow() hide={HideOnStart}");
             IsFormLoaded = true;
             if (DataController.Default.Ready) {
                 StopCookieBlinkTimer();
             } else {
                 StartCookieBlinkTimer();
-            }
-            if (HideOnStart) {
-                HideToTrayIcon();
             }
         }
 
@@ -154,7 +156,7 @@ namespace GenshinNotifier {
             UpdateUIControlsUseCache();
             var note = DataController.Default.NoteCached;
             var needRefresh = note != null && (DateTime.Now - note.CreatedAt).TotalMilliseconds > SchedulerController.INTERVAL_NOTE / 3;
-            needRefresh = true;
+
             if (needRefresh) {
                 await RefreshDailyNote(null, null);
             }

@@ -50,14 +50,12 @@ namespace GenshinNotifier {
     sealed class RemindStatus {
         public DateTime StartAt;
         public DateTime LastCheckedAt;
-        public UserGameRole user;
-        public DailyNote note;
+        public DateTime LastNotifyAt;
 
         public RemindStatus() {
             StartAt = DateTime.MinValue;
             LastCheckedAt = DateTime.MinValue;
-            user = null;
-            note = null;
+            LastNotifyAt = DateTime.MinValue;
         }
 
         public override string ToString() => JsonConvert.SerializeObject(this);
@@ -69,9 +67,11 @@ namespace GenshinNotifier {
 
         //INTERVAL_NOTE every 30 minutes
         //INTERVAL_USER everty 4 hours;
-        public const int TIME_ONE_MINUTE_MS = 60 * 1000;
+        public const int TIME_ONE_SECOND_MS = 1000;
+        public const int TIME_ONE_MINUTE_MS = 60 * TIME_ONE_SECOND_MS;
         public const int TIME_ONE_HOUR_MS = 60 * TIME_ONE_MINUTE_MS;
         public const int TIME_ONE_DAY_MS = 24 * TIME_ONE_HOUR_MS;
+        public const int INTERVAL_CHECK = 5 * TIME_ONE_MINUTE_MS;
         public const int INTERVAL_NOTE = 30 * TIME_ONE_MINUTE_MS;
         public const int INTERVAL_USER = 4 * TIME_ONE_HOUR_MS;
 
@@ -96,6 +96,7 @@ namespace GenshinNotifier {
             Start();
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
             SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
+            FirstCheck();
         }
 
         void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e) {
@@ -129,9 +130,9 @@ namespace GenshinNotifier {
 
         private void Setup() {
             ATimer = new Timer {
-                Interval = INTERVAL_NOTE
+                Interval = INTERVAL_CHECK
             };
-            ATimer.Elapsed += CheckDailyNoteEvent;
+            ATimer.Elapsed += CheckTimerEvent;
             ATimer.AutoReset = true;
             ATimer.Enabled = true;
         }
@@ -172,9 +173,9 @@ namespace GenshinNotifier {
 
         private string MuteKey => "mute_" + DateTime.Now.ToShortDateString();
 
-        private void CheckDailyNoteEvent(object sender, ElapsedEventArgs e) {
+        private void CheckTimerEvent(object sender, ElapsedEventArgs e) {
             LoadConfig();
-            Logger.Info($"CheckDailyNoteEvent " +
+            Logger.Info($"CheckTimerEvent " +
                 $"last={Status.LastCheckedAt} " +
                 $"enabled={Config.Enabled} " +
                 $"ready={DataController.Default.Ready} " +
@@ -182,33 +183,47 @@ namespace GenshinNotifier {
             if (!Config.Enabled) { return; }
             if (IsMutedToday) { return; }
             if (!DataController.Default.Ready) { return; }
-            var checkElapsed = (DateTime.Now - Status.LastCheckedAt).TotalMilliseconds;
-            if (checkElapsed < INTERVAL_NOTE / 3) { return; }
             Task.Run(async () => {
-                var uc = DataController.Default.UserCached;
-                var nc = DataController.Default.NoteCached;
+                await CheckUser();
+                await CheckDailyNote("CheckTimerEvent");
+            }).Wait();
+        }
 
-                var userLastUpdateAt = uc == null ? DateTime.MinValue : uc.CreatedAt;
-                var noteLastUpdatedAt = nc == null ? DateTime.MinValue : nc.CreatedAt;
+        private void FirstCheck() {
+            Logger.Debug("SchedulerController.FirstCheck");
+            Task.Run(async () => {
+                await Task.Delay(TIME_ONE_SECOND_MS * 10);
+                await CheckDailyNote("FirstCheck");
+            });
+        }
 
-                var userCheckElapsed = (DateTime.Now - userLastUpdateAt).TotalMilliseconds;
-                var noteCheckElapsed = (DateTime.Now - noteLastUpdatedAt).TotalMilliseconds;
+        private async Task CheckUser() {
+            var uc = DataController.Default.UserCached;
+            var userLastUpdateAt = uc == null ? DateTime.MinValue : uc.CreatedAt;
+            var userCheckElapsed = (DateTime.Now - userLastUpdateAt).TotalMilliseconds;
+            if (userCheckElapsed > INTERVAL_USER + TIME_ONE_MINUTE_MS) {
+                var (user, ex) = await DataController.Default.GetGameRoleInfo();
+                Logger.Debug($"CheckUser refresh uid={user?.GameUid} err={ex?.Message}");
+            }
+        }
 
-                if (userCheckElapsed > INTERVAL_USER) {
-                    await DataController.Default.GetGameRoleInfo();
-                }
-
+        private async Task<DailyNote> CheckDailyNote(string source) {
+            var checkElapsed = (DateTime.Now - Status.LastCheckedAt);
+            Logger.Debug($"CheckDailyNote checkElapsed={checkElapsed.TotalMinutes} ({source})");
+            if (checkElapsed.TotalMilliseconds < INTERVAL_NOTE - TIME_ONE_MINUTE_MS) { return default; }
+            Status.LastCheckedAt = DateTime.Now;
+            try {
                 var user = DataController.Default.UserCached;
                 var (note, ex) = await DataController.Default.GetDailyNote();
-                Logger.Info($"CheckDailyNoteEvent result uid={user?.GameUid} resin={note?.CurrentResin} error={ex.Message}");
+                Logger.Info($"CheckDailyNote result uid={user?.GameUid} " +
+                    $"resin={note?.CurrentResin} error={ex?.Message}");
                 if (user != null && note != null) {
-                    Status.user = user;
-                    Status.note = note;
-                    // received data, check for show notifcations
                     ShowNotification(user, note);
                 }
-                Status.LastCheckedAt = DateTime.Now;
-            }).Wait();
+            } catch (Exception ex) {
+                Logger.Debug($"CheckDailyNote error={ex} ({source})");
+            }
+            return default;
         }
 
         public void ShowNotification(UserGameRole user, DailyNote note) {
@@ -216,61 +231,79 @@ namespace GenshinNotifier {
             var now = DateTime.Now;
             var title = new List<string>();
             var text = new List<string>();
+            var needNotify = 0;
             if (Config.ResinEnabled) {
                 if (note.ResinFull) {
-                    title.Add("原粹树脂溢出！");
+                    title.Add("原粹树脂已溢出！");
+                    ++needNotify;
                 } else if (note.ResinAlmostFull()) {
-                    title.Add("原粹树脂将满！");
+                    title.Add("原粹树脂即将回满！");
+                    ++needNotify;
                 }
             }
             if (Config.HomeCoinEnabled) {
                 if (note.HomeCoinFull) {
-                    title.Add("洞天宝钱溢出！");
+                    title.Add("洞天宝钱已溢出！");
+                    ++needNotify;
                 } else if (note.HomeCoinAlmostFull()) {
-                    title.Add("洞天宝钱将满！");
+                    title.Add("洞天宝钱即将回满！");
+                    ++needNotify;
                 }
             }
 
-            if (Config.DailyTaskEnabled
-                && now.Hour >= RemindConfig.DailyTaskAfterHour) {
+            if (Config.DailyTaskEnabled) {
                 if (!note.DailyTaskAllFinished) {
                     title.Add("每日委托未完成！");
+                    if (now.Hour >= RemindConfig.DailyTaskAfterHour) {
+                        ++needNotify;
+                    }
                 } else if (!note.IsExtraTaskRewardReceived) {
                     title.Add("每日委托奖励待领取！");
+                    if (now.Hour >= RemindConfig.DailyTaskAfterHour) {
+                        ++needNotify;
+                    }
                 }
             }
 
             if (Config.DiscountEnabled
-                && now.DayOfWeek == RemindConfig.DiscountAfterDay
-                && now.Hour > RemindConfig.DiscountAfterHour) {
+                && now.DayOfWeek == RemindConfig.DiscountAfterDay) {
                 if (!note.ResinDiscountNotUsed) {
-                    title.Add("减半周本待完成！");
+                    title.Add("减半周本未完成！");
+                    if (now.Hour > RemindConfig.DiscountAfterHour) {
+                        ++needNotify;
+                    }
                 }
             }
 
             if (Config.ExpeditionEnabled) {
                 if (note.ExpeditionAllCompleted) {
                     title.Add("探索派遣已完成！");
+                    ++needNotify;
                 }
             }
 
             if (Config.TransformerEnabled) {
                 if (note.TransformerReady) {
                     title.Add("参量质变仪已就绪！");
+                    ++needNotify;
                 }
             }
 
-#if DEBUG
-            title.Add("原粹树脂将满！");
-            title.Add("减半周本待完成！");
-#endif
-            text.Add($"原粹树脂 {note.CurrentResin}/{note.MaxResin}，洞天宝钱: {note.CurrentHomeCoin}/{note.MaxHomeCoin}");
-            text.Add($"每日委托 {note.FinishedTaskNum}/{note.TotalTaskNum}，探索派遣: {note.CurrentExpeditionNum}/{note.MaxExpeditionNum}");
-            text.Add($"减半周本 {note.ResinDiscountUsedNum}/{note.ResinDiscountNumLimit}，参量质变仪 {note.Transformer.RecoveryTime.TimeFormatted}");
+            if (needNotify == 0) {
+                Logger.Debug($"ShowNotification no need, skip show");
+                return;
+            }
+
+            text.Add($"原粹树脂 {note.CurrentResin}/{note.MaxResin}，" +
+                $"洞天宝钱 {note.CurrentHomeCoin}/{note.MaxHomeCoin}");
+            text.Add($"每日委托 {note.FinishedTaskNum}/{note.TotalTaskNum}，" +
+                $"探索派遣 {note.CurrentExpeditionNum}/{note.MaxExpeditionNum}");
+            text.Add($"减半周本 {note.ResinDiscountUsedNum}/{note.ResinDiscountNumLimit}，" +
+                $"参量质变仪 {note.Transformer.RecoveryTime.TimeFormatted}");
 
             var titleStr = string.Join("", title.Take(3));
             var textStr = string.Join("，", text);
-            var header = $"{titleStr}";
+            var header = $"{user.Nickname}，你的{titleStr}";
             var image = AppUtils.IconFilePath;
             ++ToastId;
             var toast = new ToastContentBuilder()
@@ -278,7 +311,7 @@ namespace GenshinNotifier {
                 .AddArgument("toast_id", ToastId)
                 .AddArgument("action", "click")
                 .AddHeader($"{ToastId}", header, $"action=open&id={ToastId}")
-                .AddText("原神实时便签：")
+                .AddText($"原神实时便签：")
                 .AddText(textStr)
                 .AddAttributionText(DateTime.Now.ToString("F"))
                 .AddAppLogoOverride(new Uri(image), ToastGenericAppLogoCrop.Circle)
@@ -296,6 +329,8 @@ namespace GenshinNotifier {
                 t.Tag = "DailyNote";
                 t.ExpirationTime = DateTimeOffset.Now.AddHours(1);
             });
+            Status.LastNotifyAt = DateTime.Now;
+            Logger.Info($"ShowNotification show hour={now.Hour} weekday={now.DayOfWeek} text={textStr}");
         }
     }
 }
