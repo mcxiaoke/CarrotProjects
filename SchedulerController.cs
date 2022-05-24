@@ -267,7 +267,7 @@ namespace GenshinNotifier {
 
             if (Config.DiscountEnabled
                 && now.DayOfWeek == RemindConfig.DiscountAfterDay) {
-                if (!note.ResinDiscountNotUsed) {
+                if (!note.ResinDiscountAllUsed) {
                     title.Add("减半周本未完成！");
                     if (now.Hour > RemindConfig.DiscountAfterHour) {
                         ++needNotify;
@@ -276,7 +276,7 @@ namespace GenshinNotifier {
             }
 
             if (Config.ExpeditionEnabled) {
-                if (note.ExpeditionAllCompleted) {
+                if (note.ExpeditionAllFinished) {
                     title.Add("探索派遣已完成！");
                     ++needNotify;
                 }
@@ -311,10 +311,10 @@ namespace GenshinNotifier {
                 .AddArgument("toast_id", ToastId)
                 .AddArgument("action", "click")
                 .AddHeader($"{ToastId}", header, $"action=open&id={ToastId}")
-                .AddText($"原神实时便签：")
+                .AddText($"原神实时便签（{user.GameUid}）")
                 .AddText(textStr)
-                .AddAttributionText(DateTime.Now.ToString("F"))
-                .AddAppLogoOverride(new Uri(image), ToastGenericAppLogoCrop.Circle)
+                //.AddAttributionText(DateTime.Now.ToString("F"))
+                //.AddAppLogoOverride(new Uri(image), ToastGenericAppLogoCrop.Circle)
                 // Buttons
                 .AddButton(new ToastButton()
                     .SetContent("查看详情")

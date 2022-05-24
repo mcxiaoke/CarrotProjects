@@ -160,13 +160,13 @@ namespace GenshinNotifier.Net {
         }
 
         // added for convenince
-        public bool ResinDiscountNotUsed => ResinDiscountUsedNum < ResinDiscountNumLimit;
+        public bool ResinDiscountAllUsed => ResinDiscountUsedNum >= ResinDiscountNumLimit;
         public bool ResinAlmostFull(int offset = 8) => CurrentResin >= MaxResin - offset;
-        public bool ResinFull => CurrentResin == MaxResin;
+        public bool ResinFull => CurrentResin >= MaxResin;
         public bool HomeCoinAlmostFull(int offset = 100) => CurrentHomeCoin >= MaxHomeCoin - offset;
-        public bool HomeCoinFull => CurrentHomeCoin == MaxHomeCoin;
-        public bool DailyTaskAllFinished => FinishedTaskNum == TotalTaskNum;
-        public bool ExpeditionAllCompleted => Expeditions?.FindAll(it => it.RemainedTime == "0").Count == CurrentExpeditionNum;
+        public bool HomeCoinFull => CurrentHomeCoin >= MaxHomeCoin;
+        public bool DailyTaskAllFinished => FinishedTaskNum >= TotalTaskNum;
+        public bool ExpeditionAllFinished => Expeditions?.FindAll(it => it.RemainedTime == "0").Count >= CurrentExpeditionNum;
         public bool TransformerReady => Transformer.RecoveryTime.Reached;
 
         /// <summary>

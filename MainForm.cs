@@ -299,32 +299,39 @@ namespace GenshinNotifier {
             ResinTimeValueL.Text = $"{note.ResinRecoveryTargetTimeFormatted}";
             ResinTimeValueL.ForeColor = resinMayFull ? colorAttention : colorNormal;
 
-            var expeditionCompleted = note.ExpeditionAllCompleted;
-            var expeditionText = $"{note.CurrentExpeditionNum}/{note.MaxExpeditionNum}";
-            if (expeditionCompleted) {
-                expeditionText += " (已完成)";
-            }
-            ExpeditionValueL.Text = expeditionText;
+            var expeditionCompleted = note.ExpeditionAllFinished;
+            var expeditionStr = $"{note.CurrentExpeditionNum}/{note.MaxExpeditionNum}";
+            expeditionStr += expeditionCompleted ? " (已完成)" : " (未完成)";
+            ExpeditionValueL.Text = expeditionStr;
             ExpeditionValueL.ForeColor = expeditionCompleted ? colorAttention : colorNormal;
 
-            var taskRewardStr = note.IsExtraTaskRewardReceived ? "(已领取)" : "(未领取)";
-            TaskNameValueL.Text = $"{note.FinishedTaskNum}/{note.TotalTaskNum} {taskRewardStr}";
+            var taskStr = $"{note.FinishedTaskNum}/{note.TotalTaskNum}";
+            if (!note.DailyTaskAllFinished) {
+                taskStr += " (未完成)";
+            } else {
+                taskStr += note.IsExtraTaskRewardReceived ? " (已领取)" : " (未领取)";
+            }
+            TaskNameValueL.Text = taskStr;
             TaskNameValueL.ForeColor = note.IsExtraTaskRewardReceived ? colorNormal : colorAttention;
 
             var homeCoinMayFull = note.HomeCoinAlmostFull();
             HomeCoinValueL.Text = $"{note.CurrentHomeCoin}/{note.MaxHomeCoin}";
             HomeCoinValueL.ForeColor = homeCoinMayFull ? colorAttention : colorNormal;
 
-            var discountNotUsed = note.ResinDiscountNotUsed;
-            DiscountTaskValueL.Text = $"{note.ResinDiscountUsedNum}/{note.ResinDiscountNumLimit}";
-            DiscountTaskValueL.ForeColor = discountNotUsed ? colorAttention : colorNormal;
+            var discountAllUsed = note.ResinDiscountAllUsed;
+            var discountStr = $"{note.ResinDiscountUsedNum}/{note.ResinDiscountNumLimit}";
+            discountStr += discountAllUsed ? " (已完成)" : " (未完成)";
+            DiscountTaskValueL.Text = discountStr;
+            DiscountTaskValueL.ForeColor = discountAllUsed ? colorNormal : colorAttention;
 
             var transformerReady = note.TransformerReady;
             TransformerValueL.Text = $"{note.Transformer.RecoveryTime.TimeFormatted}";
             TransformerValueL.ForeColor = (transformerReady ? colorAttention : colorNormal);
 
+            var updateDelta = DateTime.Now - note.CreatedAt;
+            var outdated = updateDelta.TotalMinutes > 30;
             UpdatedValueL.Text = note.CreatedAt.ToString("T");
-            UpdatedValueL.ForeColor = colorNormal;
+            UpdatedValueL.ForeColor = outdated ? colorAttention : colorNormal;
 
             LastUpdateTime = DateTime.Now;
         }

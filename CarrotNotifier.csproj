@@ -124,6 +124,7 @@
     <Compile Include="CustomApplicationContext.cs" />
     <Compile Include="DataController.cs" />
     <Compile Include="Delegates.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="ILogger.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
