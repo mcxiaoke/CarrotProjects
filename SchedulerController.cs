@@ -13,6 +13,7 @@ using Microsoft.Win32;
 namespace GenshinNotifier {
 
     sealed class RemindConfig {
+        public bool NotificationEnabled;
         public bool ResinEnabled;
         public bool HomeCoinEnabled;
         public bool DailyTaskEnabled;
@@ -35,12 +36,13 @@ namespace GenshinNotifier {
         // transformer reached
 
 
-        public bool Enabled => ResinEnabled
+        public bool Enabled => NotificationEnabled &&
+            (ResinEnabled
             || HomeCoinEnabled
             || DailyTaskEnabled
             || DiscountEnabled
             || ExpeditionEnabled
-            || TransformerEnabled;
+            || TransformerEnabled);
 
         public override string ToString() {
             return JsonConvert.SerializeObject(this);
@@ -119,6 +121,7 @@ namespace GenshinNotifier {
         }
 
         private void LoadConfig() {
+            Config.NotificationEnabled = Settings.Default.OptionEnableNotifications;
             Config.ResinEnabled = Settings.Default.OptionRemindResin;
             Config.HomeCoinEnabled = Settings.Default.OptionRemindCoin;
             Config.DailyTaskEnabled = Settings.Default.OptionRemindTask;
@@ -227,7 +230,10 @@ namespace GenshinNotifier {
         }
 
         public void ShowNotification(UserGameRole user, DailyNote note) {
-            Logger.Debug($"ShowNotification uid={user?.GameUid} resin={note?.CurrentResin}");
+            Logger.Debug($"ShowNotification " +
+                $"uid={user?.GameUid} " +
+                $"resin={note?.CurrentResin} " +
+                $"enabled={Config.Enabled}");
             var now = DateTime.Now;
             var title = new List<string>();
             var text = new List<string>();
@@ -314,7 +320,7 @@ namespace GenshinNotifier {
                 .AddText($"原神实时便签（{user.GameUid}）")
                 .AddText(textStr)
                 //.AddAttributionText(DateTime.Now.ToString("F"))
-                //.AddAppLogoOverride(new Uri(image), ToastGenericAppLogoCrop.Circle)
+                .AddAppLogoOverride(new Uri(image), ToastGenericAppLogoCrop.Circle)
                 // Buttons
                 .AddButton(new ToastButton()
                     .SetContent("查看详情")

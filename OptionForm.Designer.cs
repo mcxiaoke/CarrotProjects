@@ -35,6 +35,8 @@
             this.OptionRemindTask = new System.Windows.Forms.CheckBox();
             this.OptionRemindResin = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.OptionAutoUpdate = new System.Windows.Forms.CheckBox();
+            this.OptionEnableNotifications = new System.Windows.Forms.CheckBox();
             this.OptionCheckinOnStart = new System.Windows.Forms.CheckBox();
             this.OptionRefreshOnStart = new System.Windows.Forms.CheckBox();
             this.ProjectLabel = new System.Windows.Forms.LinkLabel();
@@ -104,7 +106,7 @@
             this.groupBox1.Size = new System.Drawing.Size(346, 223);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "通知提醒";
+            this.groupBox1.Text = "提醒项目";
             // 
             // OptionRemindTransformer
             // 
@@ -175,6 +177,8 @@
             // groupBox2
             // 
             this.groupBox2.AutoSize = true;
+            this.groupBox2.Controls.Add(this.OptionAutoUpdate);
+            this.groupBox2.Controls.Add(this.OptionEnableNotifications);
             this.groupBox2.Controls.Add(this.OptionCheckinOnStart);
             this.groupBox2.Controls.Add(this.OptionRefreshOnStart);
             this.groupBox2.Location = new System.Drawing.Point(13, 243);
@@ -183,6 +187,28 @@
             this.groupBox2.TabIndex = 2;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "其它";
+            // 
+            // OptionAutoUpdate
+            // 
+            this.OptionAutoUpdate.AutoSize = true;
+            this.OptionAutoUpdate.Location = new System.Drawing.Point(341, 94);
+            this.OptionAutoUpdate.Margin = new System.Windows.Forms.Padding(8);
+            this.OptionAutoUpdate.Name = "OptionAutoUpdate";
+            this.OptionAutoUpdate.Size = new System.Drawing.Size(214, 35);
+            this.OptionAutoUpdate.TabIndex = 3;
+            this.OptionAutoUpdate.Text = "自动检查新版本";
+            this.OptionAutoUpdate.UseVisualStyleBackColor = true;
+            // 
+            // OptionEnableNotifications
+            // 
+            this.OptionEnableNotifications.AutoSize = true;
+            this.OptionEnableNotifications.Location = new System.Drawing.Point(341, 43);
+            this.OptionEnableNotifications.Margin = new System.Windows.Forms.Padding(8);
+            this.OptionEnableNotifications.Name = "OptionEnableNotifications";
+            this.OptionEnableNotifications.Size = new System.Drawing.Size(295, 35);
+            this.OptionEnableNotifications.TabIndex = 2;
+            this.OptionEnableNotifications.Text = "启用Windows系统通知";
+            this.OptionEnableNotifications.UseVisualStyleBackColor = true;
             // 
             // OptionCheckinOnStart
             // 
@@ -215,7 +241,7 @@
             this.ProjectLabel.Size = new System.Drawing.Size(682, 43);
             this.ProjectLabel.TabIndex = 0;
             this.ProjectLabel.TabStop = true;
-            this.ProjectLabel.Text = "下载最新版";
+            this.ProjectLabel.Text = "前往项目页面";
             this.ProjectLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.ProjectLabel.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.ProjectLabel_LinkClicked);
             // 
@@ -250,7 +276,6 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "选项";
-            this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OptionForm_FormClosing);
             this.Load += new System.EventHandler(this.OptionForm_Load);
             this.CommonGroup.ResumeLayout(false);
@@ -282,5 +307,7 @@
         private System.Windows.Forms.CheckBox OptionRefreshOnStart;
         private System.Windows.Forms.LinkLabel ProjectLabel;
         private System.Windows.Forms.Button CloseButton;
+        private System.Windows.Forms.CheckBox OptionEnableNotifications;
+        private System.Windows.Forms.CheckBox OptionAutoUpdate;
     }
 }

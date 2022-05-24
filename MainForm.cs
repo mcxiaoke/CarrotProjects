@@ -21,7 +21,7 @@ namespace GenshinNotifier {
 
         public MainForm(bool shouldHide) {
             HideOnStart = shouldHide;
-            TopMost = true;
+            //TopMost = true;
             Logger.Debug("=======================================");
             Logger.Debug($"MainForm HideOnStart={HideOnStart}");
             InitializeComponent();
@@ -40,6 +40,11 @@ namespace GenshinNotifier {
 
         private async void OnFormLoad(object sender, EventArgs e) {
             Logger.Debug("OnFormLoad()");
+            if (HideOnStart) {
+                //HideToTrayIcon();
+                AppNotifyIcon.Visible = true;
+                this.ShowInTaskbar = false;
+            }
             PrintAllSettings();
             this.Text = $"{Application.ProductName} {Application.ProductVersion}";
             var (user, error) = await DataController.Default.Initialize();
@@ -67,9 +72,6 @@ namespace GenshinNotifier {
                 Settings.Default.Save();
                 OnFirstLaunch();
             }
-            if (HideOnStart) {
-                HideToTrayIcon();
-            }
         }
 
         private bool IsFormLoaded;
@@ -84,8 +86,8 @@ namespace GenshinNotifier {
         }
 
         private void OnFirstLaunch() {
+            Logger.Info("OnFirstLaunch");
             ShortcutHelper.EnableAutoStart(Settings.Default.OptionAutoStart);
-            Logger.Info("========== OnFirstLaunch ==========");
         }
 
         private void OnNewInstance(object sender, EventArgs e) {
@@ -147,6 +149,11 @@ namespace GenshinNotifier {
             }
         }
 
+
+        private void OnFormActivated(object sender, EventArgs e) {
+            Logger.Debug($"OnFormActivated() visible={this.Visible} state={this.WindowState}");
+        }
+
         private async void OnVisibleChanged(object sender, EventArgs e) {
             Logger.Debug($"OnVisibleChanged() visible={this.Visible} formLoaded={IsFormLoaded}");
             if (!this.Visible) { return; }
@@ -155,7 +162,7 @@ namespace GenshinNotifier {
             if (IsRefreshingData) { return; }
             UpdateUIControlsUseCache();
             var note = DataController.Default.NoteCached;
-            var needRefresh = note != null && (DateTime.Now - note.CreatedAt).TotalMilliseconds > SchedulerController.INTERVAL_NOTE / 3;
+            var needRefresh = note != null && (DateTime.Now - note.CreatedAt).TotalMilliseconds > SchedulerController.INTERVAL_NOTE;
 
             if (needRefresh) {
                 await RefreshDailyNote(null, null);
@@ -283,6 +290,10 @@ namespace GenshinNotifier {
                 Logger.Debug($"UpdateUIControls skip null data");
                 return;
             }
+            if (!this.Visible) {
+                Logger.Debug($"UpdateUIControls skip hidden form");
+                return;
+            }
             Logger.Debug($"UpdateUIControls uid={user?.GameUid} resin={note?.CurrentResin}");
 
             StopCookieBlinkTimer();
@@ -345,13 +356,14 @@ namespace GenshinNotifier {
             this.ShowInTaskbar = false;
             if (!HidePopupShown && !HideOnStart) {
                 HidePopupShown = true;
-                AppNotifyIcon.ShowBalloonTip(1000, "已最小化到系统托盘", "双击图标恢复", ToolTipIcon.Info);
+                //AppNotifyIcon.ShowBalloonTip(1000, "已最小化到系统托盘", "双击图标恢复", ToolTipIcon.Info);
             }
         }
 
         private void RestoreFromTrayIcon() {
             Logger.Debug($"RestoreFromTrayIcon() visible={Visible} window={WindowState} thread={AppUtils.ThreadId}");
             if (!this.Visible) {
+                this.Opacity = 0;
                 this.Show();
                 this.Activate();
                 this.ShowInTaskbar = true;

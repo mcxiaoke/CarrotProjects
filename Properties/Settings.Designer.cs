@@ -145,7 +145,7 @@ namespace GenshinNotifier.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool OptionRemindCoin {
             get {
                 return ((bool)(this["OptionRemindCoin"]));
@@ -181,7 +181,7 @@ namespace GenshinNotifier.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool OptionRemindExpedition {
             get {
                 return ((bool)(this["OptionRemindExpedition"]));
@@ -212,6 +212,30 @@ namespace GenshinNotifier.Properties {
             }
             set {
                 this["FirstLaunch"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool OptionEnableNotifications {
+            get {
+                return ((bool)(this["OptionEnableNotifications"]));
+            }
+            set {
+                this["OptionEnableNotifications"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool OptionAutoUpdate {
+            get {
+                return ((bool)(this["OptionAutoUpdate"]));
+            }
+            set {
+                this["OptionAutoUpdate"] = value;
             }
         }
     }

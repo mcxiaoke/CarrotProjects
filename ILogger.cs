@@ -28,7 +28,7 @@ namespace GenshinNotifier {
             var level = LogEventLevel.Debug;
             var name = "debug-log-.txt";
 #else
-            var level = LogEventLevel.Debug;
+            var level = LogEventLevel.Information;
             var name = "log-.txt";
 #endif
             var logOutput = Path.Combine(Storage.UserDataFolder, "logs");

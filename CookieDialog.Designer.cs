@@ -114,7 +114,6 @@
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "设置Cookie";
-            this.TopMost = true;
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CookieDialog_FormClosed);
             this.Shown += new System.EventHandler(this.CookieDialog_Shown);
             this.CookieTextGroup.ResumeLayout(false);
