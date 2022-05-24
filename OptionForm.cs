@@ -12,6 +12,8 @@ namespace GenshinNotifier {
     public partial class OptionForm : Form {
         public OptionForm() {
             InitializeComponent();
+            this.OptionCheckinOnStart.Enabled = false;
+            this.OptionAutoUpdate.Enabled = false;
         }
 
         private void OptionForm_Load(object sender, EventArgs e) {
@@ -27,6 +29,8 @@ namespace GenshinNotifier {
             this.OptionRemindDiscount.Checked = settings.OptionRemindDiscount;
             this.OptionRemindExpedition.Checked = settings.OptionRemindExpedition;
             this.OptionRemindTransformer.Checked = settings.OptionRemindTransformer;
+            this.OptionEnableNotifications.Checked = settings.OptionEnableNotifications;
+            this.OptionAutoUpdate.Checked = settings.OptionAutoUpdate;
         }
 
         private void OptionForm_FormClosing(object sender, FormClosingEventArgs e) {
@@ -53,6 +57,8 @@ namespace GenshinNotifier {
             if (settings.OptionRemindDiscount != this.OptionRemindDiscount.Checked) { settings.OptionRemindDiscount = this.OptionRemindDiscount.Checked; }
             if (settings.OptionRemindExpedition != this.OptionRemindExpedition.Checked) { settings.OptionRemindExpedition = this.OptionRemindExpedition.Checked; }
             if (settings.OptionRemindTransformer != this.OptionRemindTransformer.Checked) { settings.OptionRemindTransformer = this.OptionRemindTransformer.Checked; }
+            if (settings.OptionEnableNotifications != this.OptionEnableNotifications.Checked) { settings.OptionEnableNotifications = this.OptionEnableNotifications.Checked; }
+            if (settings.OptionAutoUpdate != this.OptionAutoUpdate.Checked) { settings.OptionAutoUpdate = this.OptionAutoUpdate.Checked; }
             settings.Save();
         }
 
