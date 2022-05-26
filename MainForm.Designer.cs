@@ -381,7 +381,7 @@
             this.CookieButton.Padding = new System.Windows.Forms.Padding(0, 8, 0, 8);
             this.CookieButton.Size = new System.Drawing.Size(130, 61);
             this.CookieButton.TabIndex = 3;
-            this.CookieButton.Text = "Cookie";
+            this.CookieButton.Text = "帐号";
             this.CookieButton.UseVisualStyleBackColor = true;
             this.CookieButton.Click += new System.EventHandler(this.OnCookieButtonClicked);
             // 

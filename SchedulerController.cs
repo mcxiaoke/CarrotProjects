@@ -77,7 +77,11 @@ namespace GenshinNotifier {
         public const int INTERVAL_NOTE = 30 * TIME_ONE_MINUTE_MS;
         public const int INTERVAL_USER = 4 * TIME_ONE_HOUR_MS;
 
-        public static SchedulerController Default = new SchedulerController();
+        public static SchedulerController Default {
+            get { return lazy.Value; }
+        }
+        private static readonly Lazy<SchedulerController> lazy =
+       new Lazy<SchedulerController>(() => new SchedulerController());
 
         private readonly RemindConfig Config;
         private readonly RemindConfig MuteConfig;

@@ -41,6 +41,7 @@
             this.OptionRefreshOnStart = new System.Windows.Forms.CheckBox();
             this.ProjectLabel = new System.Windows.Forms.LinkLabel();
             this.CloseButton = new System.Windows.Forms.Button();
+            this.CheckButton = new System.Windows.Forms.Button();
             this.CommonGroup.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -247,21 +248,34 @@
             // 
             // CloseButton
             // 
-            this.CloseButton.Location = new System.Drawing.Point(547, 491);
+            this.CloseButton.Location = new System.Drawing.Point(527, 491);
             this.CloseButton.Margin = new System.Windows.Forms.Padding(8);
             this.CloseButton.Name = "CloseButton";
             this.CloseButton.Padding = new System.Windows.Forms.Padding(8);
-            this.CloseButton.Size = new System.Drawing.Size(130, 61);
+            this.CloseButton.Size = new System.Drawing.Size(150, 61);
             this.CloseButton.TabIndex = 3;
             this.CloseButton.Text = "关闭";
             this.CloseButton.UseVisualStyleBackColor = true;
             this.CloseButton.Click += new System.EventHandler(this.CloseButton_Click);
+            // 
+            // CheckButton
+            // 
+            this.CheckButton.Location = new System.Drawing.Point(17, 491);
+            this.CheckButton.Margin = new System.Windows.Forms.Padding(8);
+            this.CheckButton.Name = "CheckButton";
+            this.CheckButton.Padding = new System.Windows.Forms.Padding(8);
+            this.CheckButton.Size = new System.Drawing.Size(150, 61);
+            this.CheckButton.TabIndex = 4;
+            this.CheckButton.Text = "检查更新";
+            this.CheckButton.UseVisualStyleBackColor = true;
+            this.CheckButton.Click += new System.EventHandler(this.CheckButton_Click);
             // 
             // OptionForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(14F, 31F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(694, 569);
+            this.Controls.Add(this.CheckButton);
             this.Controls.Add(this.CloseButton);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.ProjectLabel);
@@ -278,6 +292,7 @@
             this.Text = "选项";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OptionForm_FormClosing);
             this.Load += new System.EventHandler(this.OptionForm_Load);
+            this.Shown += new System.EventHandler(this.OptionForm_Shown);
             this.CommonGroup.ResumeLayout(false);
             this.CommonGroup.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -309,5 +324,6 @@
         private System.Windows.Forms.Button CloseButton;
         private System.Windows.Forms.CheckBox OptionEnableNotifications;
         private System.Windows.Forms.CheckBox OptionAutoUpdate;
+        private System.Windows.Forms.Button CheckButton;
     }
 }

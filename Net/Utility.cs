@@ -31,8 +31,8 @@ namespace GenshinNotifier.Net {
 
         public static bool ValiteCookieFields(string value) {
             var cookieDict = ParseCookieString(value);
-            var validKeys = new string[] { "cookie_token", "account_id" };
-            return validKeys.All(it => cookieDict.ContainsKey(it));
+            var validKeys = new string[] { "cookie_token", "login_ticket", "account_id" };
+            return validKeys.Any(it => cookieDict.ContainsKey(it));
         }
 
         public static Dictionary<string, string> ParseCookieString(string str) {

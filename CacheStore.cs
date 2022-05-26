@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Runtime.Caching;
 
 namespace GenshinNotifier {
-    internal class CacheStore {
+    static class CacheStore {
         private static ObjectCache _cache = MemoryCache.Default;
 
         public static bool Add(string key, object value) {

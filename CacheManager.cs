@@ -41,7 +41,7 @@ namespace GenshinNotifier {
                         var json = File.ReadAllText(path);
                         return JsonConvert.DeserializeObject<T>(json);
                     } else {
-                        return default(T);
+                        return default;
                     }
                 } catch (Exception ex) {
                     Logger.Error($"LoadCache {key}", ex);

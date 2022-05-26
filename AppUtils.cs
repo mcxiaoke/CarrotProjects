@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using GenshinNotifier.Properties;
 
 namespace GenshinNotifier {
-    public class AppUtils {
+    public static class AppUtils {
 
         public static int ThreadId => System.Threading.Thread.CurrentThread.ManagedThreadId;
 

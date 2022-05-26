@@ -70,7 +70,7 @@
             this.CookieTextGroup.Size = new System.Drawing.Size(855, 267);
             this.CookieTextGroup.TabIndex = 3;
             this.CookieTextGroup.TabStop = false;
-            this.CookieTextGroup.Text = "输入Cookie";
+            this.CookieTextGroup.Text = "输入米游社Cookie";
             // 
             // CookieTextBox
             // 
@@ -113,7 +113,7 @@
             this.Name = "CookieDialog";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "设置Cookie";
+            this.Text = "添加帐号";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.CookieDialog_FormClosed);
             this.Shown += new System.EventHandler(this.CookieDialog_Shown);
             this.CookieTextGroup.ResumeLayout(false);

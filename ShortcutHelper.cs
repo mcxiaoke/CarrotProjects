@@ -9,7 +9,7 @@ using System.Windows.Forms;
 using IWshRuntimeLibrary;
 
 namespace GenshinNotifier {
-    public class ShortcutHelper {
+    static class ShortcutHelper {
         public static string ProgramFileName => Process.GetCurrentProcess().MainModule.FileName;
         public static string ProgramModuleName => Process.GetCurrentProcess().MainModule.ModuleName;
 

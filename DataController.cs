@@ -12,7 +12,10 @@ using System.Net;
 
 namespace GenshinNotifier {
     public sealed class DataController {
-        public static DataController Default = new DataController();
+        // https://csharpindepth.com/articles/singleton
+        public static DataController Default { get { return lazy.Value; } }
+        private static readonly Lazy<DataController> lazy =
+        new Lazy<DataController>(() => new DataController());
 
         private readonly API Api;
         public readonly CacheManager Cache;
@@ -148,6 +151,25 @@ namespace GenshinNotifier {
             }
         }
 
+
+        public async Task<bool> PostSignReward() {
+            if (string.IsNullOrEmpty(Cookie)) {
+                return default;
+            }
+            try {
+                var (result, error) = await Api.PostSignReward();
+                Logger.Debug($"DataController.PostSignReward result={result} error={error?.Message}");
+                return true;
+            } catch (TokenException ex) {
+                Logger.Error("DataController.PostSignReward", ex);
+                ClearUserData();
+                return false;
+            } catch (Exception ex) {
+                Logger.Error("DataController.PostSignReward", ex);
+                return false;
+            }
+        }
+
         public static async Task<UserGameRole> ValidateCookie(string tempCookie) {
             // use temp api instance to verify cookie
             API tempApi = new API(tempCookie);
@@ -160,6 +182,7 @@ namespace GenshinNotifier {
                 return null;
             }
         }
+
 
     }
 }

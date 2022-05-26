@@ -5,7 +5,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 
 namespace GenshinNotifier {
-    public class Storage {
+    public static class Storage {
 
         public static string CompanyName => Application.CompanyName;
         public static string AppName => Application.ProductName;
@@ -84,5 +84,20 @@ namespace GenshinNotifier {
 
         public static string UserStartupFolder => Environment.GetFolderPath(Environment.SpecialFolder.Startup);
         public static string UserDesktopFolder => Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
+
+        public static void SetFileHidden(string path) {
+            File.SetAttributes(path, File.GetAttributes(path) | FileAttributes.Hidden);
+        }
+
+        public static bool DirectoryWritable(string path) {
+            var name = $"0temp0_{Guid.NewGuid()}.tmp";
+            var tempfile = Path.Combine(path, name);
+            try {
+                using (var f = File.Create(tempfile, 1, FileOptions.DeleteOnClose)) { }
+                return true;
+            } catch (Exception) {
+                return false;
+            }
+        }
     }
 }

@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Drawing;
 using System.Linq;
 using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using GenshinNotifier.Net;
@@ -11,6 +12,7 @@ using GenshinNotifier.Properties;
 using System.ComponentModel;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.Foundation.Collections;
+using Newtonsoft.Json;
 
 namespace GenshinNotifier {
     public partial class MainForm : Form {
@@ -59,7 +61,7 @@ namespace GenshinNotifier {
                     await RefreshDailyNote(sender, e);
                 }
             } else {
-                AccountValueL.Text = "当前Cookie为空或已失效，请设置Cookie后使用";
+                AccountValueL.Text = "无帐号或Cookie失效，请点击帐号按钮设置";
                 AccountValueL.ForeColor = Color.Blue;
             }
             await AppUtils.CheckLocalAssets();
@@ -83,6 +85,12 @@ namespace GenshinNotifier {
             } else {
                 StartCookieBlinkTimer();
             }
+
+            Task.Run(async () => {
+                if (Settings.Default.OptionAutoUpdate) {
+                    await AutoUpdater.CheckUpdate();
+                }
+            });
         }
 
         private void OnFirstLaunch() {
@@ -171,10 +179,14 @@ namespace GenshinNotifier {
         }
 
         private void OnFormClosing(object sender, FormClosingEventArgs e) {
-            Logger.Debug("OnFormClosing()");
+            Logger.Debug($"OnFormClosing() {Settings.Default.OptionCloseConfirm}");
             StopCookieBlinkTimer();
-            if (Settings.Default.OptionCloseConfirm) {
-                if (e.CloseReason == CloseReason.UserClosing) {
+            if (!DataController.Default.Ready) {
+                // no account set, quit now
+                return;
+            }
+            if (e.CloseReason == CloseReason.UserClosing) {
+                if (Settings.Default.OptionCloseConfirm) {
                     var cd = new ConfirmDialog();
                     var ret = cd.ShowDialog();
                     //Logger.Debug($"ConfirmDialog {e.CloseReason} {ret}");
@@ -184,13 +196,17 @@ namespace GenshinNotifier {
                             e.Cancel = true;
                             break;
                         case DialogResult.No:
-                            // minimize button
+                            // hide button
                             e.Cancel = true;
                             HideToTrayIcon();
                             break;
                         default:
                             break;
                     }
+                } else {
+                    // auto hide
+                    e.Cancel = true;
+                    HideToTrayIcon();
                 }
             }
         }
