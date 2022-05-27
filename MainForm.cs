@@ -30,14 +30,14 @@ namespace GenshinNotifier {
         }
 
         private void PrintAllSettings() {
-            Logger.Verbose("---------- SETTINGS BEGIN ----------");
+            Logger.Debug("---------- SETTINGS BEGIN ----------");
             var sb = new StringBuilder();
             foreach (SettingsProperty key in Settings.Default.Properties) {
                 var value = Settings.Default[key.Name];
                 sb.Append($"\n{key.Name} = {value}");
             }
-            Logger.Verbose(sb.ToString());
-            Logger.Verbose("---------- SETTINGS END ----------\n");
+            Logger.Debug(sb.ToString());
+            Logger.Debug("---------- SETTINGS END ----------\n");
         }
 
         private async void OnFormLoad(object sender, EventArgs e) {
@@ -47,7 +47,7 @@ namespace GenshinNotifier {
                 AppNotifyIcon.Visible = true;
                 this.ShowInTaskbar = false;
             }
-            PrintAllSettings();
+            //PrintAllSettings();
             this.Text = $"{Application.ProductName} {Application.ProductVersion}";
             var (user, error) = await DataController.Default.Initialize();
             Logger.Debug($"OnFormLoad uid={user?.GameUid} error={error?.Message}");
@@ -95,7 +95,6 @@ namespace GenshinNotifier {
 
         private void OnFirstLaunch() {
             Logger.Info("OnFirstLaunch");
-            ShortcutHelper.EnableAutoStart(Settings.Default.OptionAutoStart);
         }
 
         private void OnNewInstance(object sender, EventArgs e) {
@@ -203,10 +202,6 @@ namespace GenshinNotifier {
                         default:
                             break;
                     }
-                } else {
-                    // auto hide
-                    e.Cancel = true;
-                    HideToTrayIcon();
                 }
             }
         }
@@ -215,6 +210,7 @@ namespace GenshinNotifier {
             Logger.Debug("OnFormClosed");
             IsFormLoaded = false;
             Settings.Default.PropertyChanged -= OnSettingValueChanged;
+            Settings.Default.Save();
             UDPService.Handlers -= OnNewInstance;
             UDPService.StopUDP();
             NativeHelper.FreeConsole();
@@ -226,8 +222,6 @@ namespace GenshinNotifier {
             Logger.Debug($"OnSettingValueChanged: {key}={value}");
             if (key == "OptionAutoStart") {
                 Task.Run(() => ShortcutHelper.EnableAutoStart(Settings.Default.OptionAutoStart));
-            } else if (key == "none") {
-
             }
         }
 

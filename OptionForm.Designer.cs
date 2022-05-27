@@ -63,6 +63,9 @@
             // OptionCloseConfirm
             // 
             this.OptionCloseConfirm.AutoSize = true;
+            this.OptionCloseConfirm.Checked = global::GenshinNotifier.Properties.Settings.Default.OptionCloseConfirm;
+            this.OptionCloseConfirm.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.OptionCloseConfirm.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::GenshinNotifier.Properties.Settings.Default, "OptionCloseConfirm", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.OptionCloseConfirm.Location = new System.Drawing.Point(11, 145);
             this.OptionCloseConfirm.Margin = new System.Windows.Forms.Padding(8);
             this.OptionCloseConfirm.Name = "OptionCloseConfirm";
@@ -74,6 +77,9 @@
             // OptionHideToTray
             // 
             this.OptionHideToTray.AutoSize = true;
+            this.OptionHideToTray.Checked = global::GenshinNotifier.Properties.Settings.Default.OptionHideToTray;
+            this.OptionHideToTray.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.OptionHideToTray.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::GenshinNotifier.Properties.Settings.Default, "OptionHideToTray", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.OptionHideToTray.Location = new System.Drawing.Point(11, 94);
             this.OptionHideToTray.Margin = new System.Windows.Forms.Padding(8);
             this.OptionHideToTray.Name = "OptionHideToTray";
@@ -85,6 +91,9 @@
             // OptionAutoStart
             // 
             this.OptionAutoStart.AutoSize = true;
+            this.OptionAutoStart.Checked = global::GenshinNotifier.Properties.Settings.Default.OptionAutoStart;
+            this.OptionAutoStart.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.OptionAutoStart.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::GenshinNotifier.Properties.Settings.Default, "OptionAutoStart", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.OptionAutoStart.Location = new System.Drawing.Point(11, 43);
             this.OptionAutoStart.Margin = new System.Windows.Forms.Padding(8);
             this.OptionAutoStart.Name = "OptionAutoStart";
@@ -112,6 +121,9 @@
             // OptionRemindTransformer
             // 
             this.OptionRemindTransformer.AutoSize = true;
+            this.OptionRemindTransformer.Checked = global::GenshinNotifier.Properties.Settings.Default.OptionRemindTransformer;
+            this.OptionRemindTransformer.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.OptionRemindTransformer.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::GenshinNotifier.Properties.Settings.Default, "OptionRemindTransformer", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.OptionRemindTransformer.Location = new System.Drawing.Point(169, 145);
             this.OptionRemindTransformer.Margin = new System.Windows.Forms.Padding(8);
             this.OptionRemindTransformer.Name = "OptionRemindTransformer";
@@ -123,6 +135,9 @@
             // OptionRemindDiscount
             // 
             this.OptionRemindDiscount.AutoSize = true;
+            this.OptionRemindDiscount.Checked = global::GenshinNotifier.Properties.Settings.Default.OptionRemindDiscount;
+            this.OptionRemindDiscount.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.OptionRemindDiscount.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::GenshinNotifier.Properties.Settings.Default, "OptionRemindDiscount", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.OptionRemindDiscount.Location = new System.Drawing.Point(169, 94);
             this.OptionRemindDiscount.Margin = new System.Windows.Forms.Padding(8);
             this.OptionRemindDiscount.Name = "OptionRemindDiscount";
@@ -134,6 +149,8 @@
             // OptionRemindCoin
             // 
             this.OptionRemindCoin.AutoSize = true;
+            this.OptionRemindCoin.Checked = global::GenshinNotifier.Properties.Settings.Default.OptionRemindCoin;
+            this.OptionRemindCoin.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::GenshinNotifier.Properties.Settings.Default, "OptionRemindCoin", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.OptionRemindCoin.Location = new System.Drawing.Point(169, 43);
             this.OptionRemindCoin.Margin = new System.Windows.Forms.Padding(8);
             this.OptionRemindCoin.Name = "OptionRemindCoin";
@@ -145,6 +162,8 @@
             // OptionRemindExpedition
             // 
             this.OptionRemindExpedition.AutoSize = true;
+            this.OptionRemindExpedition.Checked = global::GenshinNotifier.Properties.Settings.Default.OptionRemindExpedition;
+            this.OptionRemindExpedition.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::GenshinNotifier.Properties.Settings.Default, "OptionRemindExpedition", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.OptionRemindExpedition.Location = new System.Drawing.Point(11, 145);
             this.OptionRemindExpedition.Margin = new System.Windows.Forms.Padding(8);
             this.OptionRemindExpedition.Name = "OptionRemindExpedition";
@@ -156,6 +175,9 @@
             // OptionRemindTask
             // 
             this.OptionRemindTask.AutoSize = true;
+            this.OptionRemindTask.Checked = global::GenshinNotifier.Properties.Settings.Default.OptionRemindTask;
+            this.OptionRemindTask.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.OptionRemindTask.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::GenshinNotifier.Properties.Settings.Default, "OptionRemindTask", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.OptionRemindTask.Location = new System.Drawing.Point(11, 94);
             this.OptionRemindTask.Margin = new System.Windows.Forms.Padding(8);
             this.OptionRemindTask.Name = "OptionRemindTask";
@@ -167,6 +189,9 @@
             // OptionRemindResin
             // 
             this.OptionRemindResin.AutoSize = true;
+            this.OptionRemindResin.Checked = global::GenshinNotifier.Properties.Settings.Default.OptionRemindResin;
+            this.OptionRemindResin.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.OptionRemindResin.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::GenshinNotifier.Properties.Settings.Default, "OptionRemindResin", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.OptionRemindResin.Location = new System.Drawing.Point(11, 43);
             this.OptionRemindResin.Margin = new System.Windows.Forms.Padding(8);
             this.OptionRemindResin.Name = "OptionRemindResin";
@@ -192,6 +217,9 @@
             // OptionAutoUpdate
             // 
             this.OptionAutoUpdate.AutoSize = true;
+            this.OptionAutoUpdate.Checked = global::GenshinNotifier.Properties.Settings.Default.OptionAutoUpdate;
+            this.OptionAutoUpdate.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.OptionAutoUpdate.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::GenshinNotifier.Properties.Settings.Default, "OptionAutoUpdate", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.OptionAutoUpdate.Location = new System.Drawing.Point(341, 94);
             this.OptionAutoUpdate.Margin = new System.Windows.Forms.Padding(8);
             this.OptionAutoUpdate.Name = "OptionAutoUpdate";
@@ -203,6 +231,9 @@
             // OptionEnableNotifications
             // 
             this.OptionEnableNotifications.AutoSize = true;
+            this.OptionEnableNotifications.Checked = global::GenshinNotifier.Properties.Settings.Default.OptionEnableNotifications;
+            this.OptionEnableNotifications.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.OptionEnableNotifications.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::GenshinNotifier.Properties.Settings.Default, "OptionEnableNotifications", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.OptionEnableNotifications.Location = new System.Drawing.Point(341, 43);
             this.OptionEnableNotifications.Margin = new System.Windows.Forms.Padding(8);
             this.OptionEnableNotifications.Name = "OptionEnableNotifications";
@@ -214,6 +245,8 @@
             // OptionCheckinOnStart
             // 
             this.OptionCheckinOnStart.AutoSize = true;
+            this.OptionCheckinOnStart.Checked = global::GenshinNotifier.Properties.Settings.Default.OptionCheckinOnStart;
+            this.OptionCheckinOnStart.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::GenshinNotifier.Properties.Settings.Default, "OptionCheckinOnStart", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.OptionCheckinOnStart.Location = new System.Drawing.Point(11, 94);
             this.OptionCheckinOnStart.Margin = new System.Windows.Forms.Padding(8);
             this.OptionCheckinOnStart.Name = "OptionCheckinOnStart";
@@ -225,6 +258,9 @@
             // OptionRefreshOnStart
             // 
             this.OptionRefreshOnStart.AutoSize = true;
+            this.OptionRefreshOnStart.Checked = global::GenshinNotifier.Properties.Settings.Default.OptionRefreshOnStart;
+            this.OptionRefreshOnStart.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.OptionRefreshOnStart.DataBindings.Add(new System.Windows.Forms.Binding("Checked", global::GenshinNotifier.Properties.Settings.Default, "OptionRefreshOnStart", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.OptionRefreshOnStart.Location = new System.Drawing.Point(11, 43);
             this.OptionRefreshOnStart.Margin = new System.Windows.Forms.Padding(8);
             this.OptionRefreshOnStart.Name = "OptionRefreshOnStart";
@@ -291,6 +327,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "选项";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OptionForm_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.OptionForm_FormClosed);
             this.Load += new System.EventHandler(this.OptionForm_Load);
             this.Shown += new System.EventHandler(this.OptionForm_Shown);
             this.CommonGroup.ResumeLayout(false);

@@ -200,6 +200,7 @@ namespace GenshinNotifier {
         private void FirstCheck() {
             Logger.Debug("SchedulerController.FirstCheck");
             Task.Run(async () => {
+                ShortcutHelper.EnableAutoStart(Settings.Default.OptionAutoStart);
                 await Task.Delay(TIME_ONE_SECOND_MS * 10);
                 await CheckSignReward();
                 await Task.Delay(TIME_ONE_SECOND_MS * 10);

@@ -9,6 +9,8 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Diagnostics;
+using GenshinNotifier.Properties;
+using System.Configuration;
 
 namespace GenshinNotifier {
     public partial class OptionForm : Form {
@@ -17,38 +19,11 @@ namespace GenshinNotifier {
         }
 
         private void OptionForm_Load(object sender, EventArgs e) {
-            var settings = Properties.Settings.Default;
-            this.OptionAutoStart.Checked = settings.OptionAutoStart;
-            this.OptionHideToTray.Checked = settings.OptionHideToTray;
-            this.OptionCloseConfirm.Checked = settings.OptionCloseConfirm;
-            this.OptionRefreshOnStart.Checked = settings.OptionRefreshOnStart;
-            this.OptionCheckinOnStart.Checked = settings.OptionCheckinOnStart;
-            this.OptionRemindResin.Checked = settings.OptionRemindResin;
-            this.OptionRemindCoin.Checked = settings.OptionRemindCoin;
-            this.OptionRemindTask.Checked = settings.OptionRemindTask;
-            this.OptionRemindDiscount.Checked = settings.OptionRemindDiscount;
-            this.OptionRemindExpedition.Checked = settings.OptionRemindExpedition;
-            this.OptionRemindTransformer.Checked = settings.OptionRemindTransformer;
-            this.OptionEnableNotifications.Checked = settings.OptionEnableNotifications;
-            this.OptionAutoUpdate.Checked = settings.OptionAutoUpdate;
         }
 
         private void OptionForm_FormClosing(object sender, FormClosingEventArgs e) {
-            var settings = Properties.Settings.Default;
-            if (settings.OptionAutoStart != this.OptionAutoStart.Checked) { settings.OptionAutoStart = this.OptionAutoStart.Checked; }
-            if (settings.OptionHideToTray != this.OptionHideToTray.Checked) { settings.OptionHideToTray = this.OptionHideToTray.Checked; }
-            if (settings.OptionCloseConfirm != this.OptionCloseConfirm.Checked) { settings.OptionCloseConfirm = this.OptionCloseConfirm.Checked; }
-            if (settings.OptionRefreshOnStart != this.OptionRefreshOnStart.Checked) { settings.OptionRefreshOnStart = this.OptionRefreshOnStart.Checked; }
-            if (settings.OptionCheckinOnStart != this.OptionCheckinOnStart.Checked) { settings.OptionCheckinOnStart = this.OptionCheckinOnStart.Checked; }
-            if (settings.OptionRemindResin != this.OptionRemindResin.Checked) { settings.OptionRemindResin = this.OptionRemindResin.Checked; }
-            if (settings.OptionRemindCoin != this.OptionRemindCoin.Checked) { settings.OptionRemindCoin = this.OptionRemindCoin.Checked; }
-            if (settings.OptionRemindTask != this.OptionRemindTask.Checked) { settings.OptionRemindTask = this.OptionRemindTask.Checked; }
-            if (settings.OptionRemindDiscount != this.OptionRemindDiscount.Checked) { settings.OptionRemindDiscount = this.OptionRemindDiscount.Checked; }
-            if (settings.OptionRemindExpedition != this.OptionRemindExpedition.Checked) { settings.OptionRemindExpedition = this.OptionRemindExpedition.Checked; }
-            if (settings.OptionRemindTransformer != this.OptionRemindTransformer.Checked) { settings.OptionRemindTransformer = this.OptionRemindTransformer.Checked; }
-            if (settings.OptionEnableNotifications != this.OptionEnableNotifications.Checked) { settings.OptionEnableNotifications = this.OptionEnableNotifications.Checked; }
-            if (settings.OptionAutoUpdate != this.OptionAutoUpdate.Checked) { settings.OptionAutoUpdate = this.OptionAutoUpdate.Checked; }
-            settings.Save();
+            // why property binding not auto saved?
+            Settings.Default.Save();
         }
 
         private void ProjectLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) {
@@ -97,6 +72,9 @@ namespace GenshinNotifier {
             if (AutoUpdater.HasNewVersion && info != null) {
                 ProjectLabel.Text = $"发现新版本 {info.Version}";
             }
+        }
+
+        private void OptionForm_FormClosed(object sender, FormClosedEventArgs e) {
         }
     }
 }
