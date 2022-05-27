@@ -152,22 +152,26 @@ namespace GenshinNotifier {
         }
 
 
-        public async Task<bool> PostSignReward() {
+        public async Task<(string, Exception)> PostSignReward() {
             if (string.IsNullOrEmpty(Cookie)) {
                 return default;
             }
-            try {
-                var (result, error) = await Api.PostSignReward();
-                Logger.Debug($"DataController.PostSignReward result={result} error={error?.Message}");
-                return true;
-            } catch (TokenException ex) {
-                Logger.Error("DataController.PostSignReward", ex);
-                ClearUserData();
-                return false;
-            } catch (Exception ex) {
-                Logger.Error("DataController.PostSignReward", ex);
-                return false;
+            var (result, error) = await Api.PostSignReward();
+            Logger.Debug($"DataController.PostSignReward sign={result} error={error?.Message}");
+            dynamic obj = JsonConvert.DeserializeObject(result);
+            if (obj.retcode == 0 || obj.retcode == -5003) {
+                (result, error) = await Api.GetSignReward();
+                Logger.Debug($"DataController.PostSignReward reward={result} error={error?.Message}");
+                dynamic robj = JsonConvert.DeserializeObject(result);
+                if (robj.retcode == 0) {
+                    return (result, error);
+                } else {
+                    //return (null, new Exception(result));
+                }
+            } else {
+                //return (null, new Exception(result));
             }
+            return (result, error);
         }
 
         public static async Task<UserGameRole> ValidateCookie(string tempCookie) {

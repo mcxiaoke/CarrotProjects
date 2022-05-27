@@ -23,5 +23,18 @@ namespace GenshinNotifier {
                 }
             });
         }
+
+
+        public static bool PropertyExists(dynamic obj, string name) {
+            if (obj == null)
+                return false;
+            if (obj is IDictionary<string, object> dict) {
+                return dict.ContainsKey(name);
+            }
+            if (obj is Newtonsoft.Json.Linq.JObject jobj) {
+                return jobj.ContainsKey(name);
+            }
+            return obj.GetType().GetProperty(name) != null;
+        }
     }
 }

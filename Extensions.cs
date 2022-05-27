@@ -5,6 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace GenshinNotifier {
+    public static class StringExtensions {
+        public static string SafeSubstring(this string value, int startIndex, int length) {
+            return new string((value ?? string.Empty).Skip(startIndex).Take(length).ToArray());
+        }
+    }
+
+
     public static class TimespanExtensions {
         public static string ToHumanReadableString(this TimeSpan timeSpan) {
             if (timeSpan.TotalSeconds >= 0 && timeSpan.TotalSeconds < 30) {

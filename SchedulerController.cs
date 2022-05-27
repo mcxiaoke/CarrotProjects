@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using GenshinNotifier.Net;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Microsoft.Win32;
+using Windows.System;
 
 namespace GenshinNotifier {
 
@@ -200,6 +201,8 @@ namespace GenshinNotifier {
             Logger.Debug("SchedulerController.FirstCheck");
             Task.Run(async () => {
                 await Task.Delay(TIME_ONE_SECOND_MS * 10);
+                await CheckSignReward();
+                await Task.Delay(TIME_ONE_SECOND_MS * 10);
                 await CheckDailyNote("FirstCheck");
             });
         }
@@ -231,6 +234,67 @@ namespace GenshinNotifier {
                 Logger.Debug($"CheckDailyNote error={ex} ({source})");
             }
             return default;
+        }
+
+        // {"retcode":0,"message":"OK","data":{"total_sign_day":26,"today":"2022-05-27","is_sign":true,"first_bind":false,"is_sub":false,"
+        private async Task CheckSignReward() {
+            if (!DataController.Default.Ready) {
+                return;
+            }
+            if (Settings.Default.OptionCheckinOnStart) {
+                try {
+                    var (result, error) = await DataController.Default.PostSignReward();
+                    Logger.Debug($"CheckSignReward result={result} error={error?.Message}");
+                    dynamic obj = JsonConvert.DeserializeObject(result ?? error?.Message);
+                    if (obj["retcode"] == 0 && obj["data"] != null) {
+                        var title = $"本月已连续签到 {obj.data.total_sign_day} 天";
+                        var text = $"今天是 {DateTime.Now.ToLongDateString()}\n记得到游戏里领取邮件奖励哦！";
+                        ShowSignOKNotification(title, text);
+                    } else {
+                        ShowSignErrorNotification($"遇到错误 {obj.message}", result ?? error?.Message);
+                    }
+
+                } catch (Exception ex) {
+                    Logger.Debug($"CheckSignReward error={ex}");
+                    ShowSignErrorNotification($"遇到错误 {ex.GetType()}", ex.Message);
+                }
+            } else {
+                Logger.Debug($"CheckSignReward not enabled, skip");
+            }
+        }
+
+        private void ShowSignOKNotification(string title, string text) {
+            var image = AppUtils.IconFilePath;
+            var user = DataController.Default.UserCached;
+            var toast = new ToastContentBuilder()
+                .SetToastScenario(ToastScenario.Default)
+                .AddHeader($"1002", $"{user.Nickname}，米游社原神签到成功", "action=signopen&id=1002")
+                .AddText(title)
+                .AddText(text)
+                .AddAttributionText(DateTime.Now.ToString("F"))
+                .AddAppLogoOverride(new Uri(image), ToastGenericAppLogoCrop.Circle);
+            toast.Show(t => {
+                t.Group = Storage.AppName;
+                t.Tag = "SignReward";
+                t.ExpirationTime = DateTimeOffset.Now.AddMinutes(5);
+            });
+        }
+
+        private void ShowSignErrorNotification(string title, string text) {
+            var image = AppUtils.IconFilePath;
+            var user = DataController.Default.UserCached;
+            var toast = new ToastContentBuilder()
+                .SetToastScenario(ToastScenario.Default)
+                .AddHeader($"1003", $"{user.Nickname}，米游社原神签到失败", "action=signopen&id=1003")
+                .AddText(title)
+                .AddText(text)
+                .AddAttributionText(DateTime.Now.ToString("F"))
+                .AddAppLogoOverride(new Uri(image), ToastGenericAppLogoCrop.Circle);
+            toast.Show(t => {
+                t.Group = Storage.AppName;
+                t.Tag = "SignReward";
+                t.ExpirationTime = DateTimeOffset.Now.AddHours(5);
+            });
         }
 
         public void ShowNotification(UserGameRole user, DailyNote note) {

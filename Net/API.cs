@@ -127,11 +127,13 @@ namespace GenshinNotifier.Net {
             client = new HttpClient(handler);
         }
 
+        private int RequestID = 0;
         async Task<string> SendRequestAsync(HttpMethod method,
            string url,
            IDictionary<string, string> queryDict,
            object bodyObj,
            bool newDS = true) {
+            var rid = ++RequestID;
             var builder = new UriBuilder(url) { Query = Utility.CreateQueryString(queryDict) };
             url = builder.ToString();
             using (var request = new HttpRequestMessage(method, url)) {
@@ -139,25 +141,24 @@ namespace GenshinNotifier.Net {
                 request.Headers.Add("Cookie", Cookie);
                 request.Headers.Add("DS", newDS ? Helper.NewDS(queryDict, bodyObj) : Helper.OldDS());
                 if (method == HttpMethod.Post && bodyObj != null) {
-                    //HttpContent body = new StringContent(Stringify(bodyDict));
-                    //body.Headers.ContentType = new MediaTypeHeaderValue("text/plain");
                     request.Content = new StringContent(Utility.Stringify(bodyObj), Encoding.UTF8, "application/json");
-                    Logger.Debug($"[API] {method} {url} data={Utility.Stringify(bodyObj)}");
+                    Logger.Debug($"[API][{rid}] {method} {url} data={Utility.Stringify(bodyObj)}");
                 }
-                Logger.Info($"[API] {method} {url} ({UID})");
-                Logger.Verbose($"[API] {request}");
+                Logger.Info($"[API][{rid}][Req] {method} {url} ({UID})");
                 var response = await client.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
+                Logger.Debug($"[API][{rid}][Res] {url} {response.StatusCode} @{json.SafeSubstring(0, 128)}@");
                 if ((int)response.StatusCode >= 500) {
                     throw new ServerException($"Server Error {response.StatusCode}");
-                } else if ((int)response.StatusCode >= 400) {
-                    throw new ClientException(json);
                 } else if (response.IsSuccessStatusCode) {
-                    dynamic jsonObj = JsonConvert.DeserializeObject(json);
-                    if (jsonObj["retcode"] == 0) {
-                        return json;
-                    } else {
+                    if (json.Contains("登录") || json.Contains("login")) {
                         throw new TokenException(json);
+                    } else {
+                        dynamic jsonObj = JsonConvert.DeserializeObject(json);
+                        if (jsonObj.retcode == -100 || jsonObj.retcode == 10001) {
+                            throw new TokenException(json);
+                        }
+                        return json;
                     }
                 } else {
                     throw new ClientException(json);
@@ -188,7 +189,7 @@ namespace GenshinNotifier.Net {
                 { "act_id","e202009291139501"},
                 {"region",User.Region},
                 {"uid",User.GameUid}
-            };
+                };
                 data = await PostAsync(url, null, body, false);
             } catch (Exception ex) {
                 error = ex;

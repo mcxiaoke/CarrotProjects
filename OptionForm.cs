@@ -14,7 +14,6 @@ namespace GenshinNotifier {
     public partial class OptionForm : Form {
         public OptionForm() {
             InitializeComponent();
-            this.OptionCheckinOnStart.Enabled = false;
         }
 
         private void OptionForm_Load(object sender, EventArgs e) {
@@ -82,7 +81,6 @@ namespace GenshinNotifier {
             var updater = Path.Combine(Application.StartupPath, "SharpUpdater.exe");
             var name = Application.ProductName;
             var url = AutoUpdater.VersionUrls[0];
-            url = "http://127.0.0.1:8000/C%3A/Temp/debug-version.json";
             if (File.Exists(updater)) {
                 ProcessStartInfo startInfo = new ProcessStartInfo(updater) {
                     WindowStyle = ProcessWindowStyle.Normal,
