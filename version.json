@@ -10,6 +10,7 @@
   "created_at": "2022-05-27T18:16:16Z",
   "new_url": "https://bitbucket.org/obitcat/carrotnotifier/raw/master/version.json",
   "project_url": "https://gitee.com/osap/GenshinNotifier",
+  "updater_url": null,
   "download_size": 1456658,
   "download_url": "https://api.bitbucket.org/2.0/repositories/obitcat/carrotnotifier/downloads/CarrotNotifier-0.7.0.zip"
 

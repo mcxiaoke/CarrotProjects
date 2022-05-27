@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 using System.Threading.Tasks;
 using System.Timers;
 using GenshinNotifier.Properties;
@@ -103,7 +104,7 @@ namespace GenshinNotifier {
             Start();
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
             SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
-            FirstCheck();
+            CheckOnLaunch();
         }
 
         void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e) {
@@ -197,14 +198,40 @@ namespace GenshinNotifier {
             }).Wait();
         }
 
-        private void FirstCheck() {
-            Logger.Debug("SchedulerController.FirstCheck");
+        private void CheckOnLaunch() {
+            Logger.Debug("SchedulerController.CheckOnLaunch");
             Task.Run(async () => {
                 ShortcutHelper.EnableAutoStart(Settings.Default.OptionAutoStart);
-                await Task.Delay(TIME_ONE_SECOND_MS * 10);
+                await CheckSharpUpdater();
+                await Task.Delay(TIME_ONE_SECOND_MS * 5);
                 await CheckSignReward();
                 await Task.Delay(TIME_ONE_SECOND_MS * 10);
                 await CheckDailyNote("FirstCheck");
+            });
+        }
+
+        private async Task CheckSharpUpdater() {
+            await Task.Run(() => {
+                var exe = Path.Combine(System.AppContext.BaseDirectory, "SharpUpdater.exe");
+                var exePending = exe + ".pending";
+                if (!File.Exists(exePending)) {
+                    return;
+                }
+                try {
+                    var exeOld = exe + ".old";
+                    if (File.Exists(exeOld)) {
+                        File.Delete(exeOld);
+                    }
+                    if (File.Exists(exe)) {
+                        File.Move(exe, exeOld);
+                    }
+                    if (File.Exists(exePending)) {
+                        File.Move(exePending, exe);
+                    }
+                    Logger.Debug($"CheckSharpUpdater replaced success");
+                } catch (Exception ex) {
+                    Logger.Debug($"CheckSharpUpdater error={ex?.Message}");
+                }
             });
         }
 

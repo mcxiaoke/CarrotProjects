@@ -1,6 +1,7 @@
 AppConfig.cs
 config.json
 .vs/
+publish/
 
 .vscode/*
 !.vscode/settings.json

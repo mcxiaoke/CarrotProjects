@@ -127,9 +127,18 @@ namespace GenshinNotifier {
         [JsonProperty("download_url")]
         public string DownloadUrl { get; set; }
 
+        [JsonProperty("updater_url")]
+        public string UpdaterUrl { get; set; }
+
         public override string ToString() {
             return JsonConvert.SerializeObject(this);
         }
+
+        [JsonIgnore]
+        public string LocalName { get; set; }
+
+        [JsonIgnore]
+        public string LocalVersion { get; set; }
 
         public static bool DataInValid(VersionInfo info) =>
             info == null
