@@ -1,16 +1,16 @@
 ﻿{
   "has_update": true,
   "release": false,
-  "id": 20220526,
+  "id": 20220527,
   "name": "CarrotNotifier",
   "program": "CarrotNotifier.exe",
-  "version": "0.6.1",
-  "changelog": "新版本发布 v0.6.1，基本功能可用，发布测试版",
+  "version": "0.7.0",
+  "changelog": "获取实时便签，每日米游社签到，树脂和任务提醒，发送系统通知，程序自动更新等基本功能可用，发布测试版",
   "sha256sum": "AFB437D44F07FB5757586D477EE61A3E5A53F6376C730C45813DA346632BE953",
-  "created_at": "2022-05-24T14:52:16Z",
+  "created_at": "2022-05-27T18:16:16Z",
   "new_url": "https://bitbucket.org/obitcat/carrotnotifier/raw/master/version.json",
   "project_url": "https://gitee.com/osap/GenshinNotifier",
-  "download_size":  1001234,
-  "download_url": "https://api.bitbucket.org/2.0/repositories/obitcat/carrotnotifier/downloads/CarrotNotifier-0.6.1.0.zip"
+  "download_size": 1456658,
+  "download_url": "https://api.bitbucket.org/2.0/repositories/obitcat/carrotnotifier/downloads/CarrotNotifier-0.7.0.zip"
 
 }

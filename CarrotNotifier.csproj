@@ -207,6 +207,7 @@
     <EmbeddedResource Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="publish.txt" />
     <None Include="Assets\carrot_512.ico" />
     <None Include="Assets\carrot_512.png" />
     <Content Include="FodyWeavers.xml" />
