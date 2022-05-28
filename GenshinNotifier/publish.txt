@@ -1,0 +1,4 @@
+Release/CarrotNotifier.exe
+Release/CarrotNotifier.exe.config
+Release/SharpUpdater.exe
+Release/SharpUpdater.json
