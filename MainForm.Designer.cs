@@ -401,6 +401,7 @@
             this.AppNotifyIcon.ContextMenuStrip = this.NotifyMenuStrip;
             this.AppNotifyIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("AppNotifyIcon.Icon")));
             this.AppNotifyIcon.Text = "GenshinNotifier";
+            this.AppNotifyIcon.Visible = true;
             this.AppNotifyIcon.DoubleClick += new System.EventHandler(this.AppNotifyIcon_DoubleClick);
             // 
             // NotifyMenuStrip

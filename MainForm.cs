@@ -202,6 +202,9 @@ namespace GenshinNotifier {
                         default:
                             break;
                     }
+                } else {
+                    e.Cancel = true;
+                    HideToTrayIcon();
                 }
             }
         }
@@ -377,7 +380,7 @@ namespace GenshinNotifier {
                 this.Show();
                 this.Activate();
                 this.ShowInTaskbar = true;
-                AppNotifyIcon.Visible = false;
+                AppNotifyIcon.Visible = true;
                 this.WindowState = FormWindowState.Normal;
                 // 调整透明度，避免界面闪烁
                 this.Opacity = 1;
