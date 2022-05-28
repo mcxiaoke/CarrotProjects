@@ -8,10 +8,10 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("CarrotCommon")]
 [assembly: AssemblyDescription("Carrot Common Library")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("CatCastle")]
 [assembly: AssemblyProduct("CarrotCommon")]
 [assembly: AssemblyCopyright("Copyright ©  CatCastle 2022")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("CatCastle")]
 [assembly: AssemblyCulture("")]
 
 // 将 ComVisible 设置为 false 会使此程序集中的类型

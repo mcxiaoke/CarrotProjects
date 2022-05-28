@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 namespace CarrotCommon {
     public static class CarrotExtensions {
 
+        public static string AsString(this object obj) => string.Join("\n",
+            obj.GetType().GetProperties().Select(prop => $"{prop.Name}: {prop.GetValue(obj, null)}"));
+
         public static string ToHumanReadableString(this TimeSpan timeSpan) {
             if (timeSpan.TotalSeconds >= 0 && timeSpan.TotalSeconds < 30) {
                 return "刚刚";
