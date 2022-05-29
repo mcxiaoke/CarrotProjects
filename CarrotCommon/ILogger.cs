@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Diagnostics;
 using Serilog;
 using Serilog.Events;
 
@@ -17,27 +18,44 @@ namespace CarrotCommon {
         public virtual void Error(string message, Exception error) { }
     }
 
-    sealed class DummyLogger : BaseLogger {
-    }
-
-    sealed class SeriLogger : BaseLogger {
+    sealed class DebugLogger : BaseLogger {
         private readonly Serilog.ILogger _logger;
 
-        public SeriLogger() {
-#if DEBUG
-            var level = LogEventLevel.Debug;
-            var name = "debug-log-.txt";
-#else
-            var level = LogEventLevel.Information;
-            var name = "log-.txt";
-#endif
+        public DebugLogger() {
+            var name = "debug.txt";
             var logOutput = Path.Combine(Storage.UserDataFolder, "logs");
             Storage.CheckOrCreateDir(logOutput);
             var logFile = Path.Combine(logOutput, name);
             _logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
+                .WriteTo.Debug()
                 .WriteTo.Console()
-                .WriteTo.Async(a => a.File(logFile, restrictedToMinimumLevel: level, rollingInterval: RollingInterval.Day))
+                .WriteTo.Async(a => a.File(logFile))
+                .CreateLogger();
+            Serilog.Log.Logger = _logger;
+        }
+
+        public override void Log(LogEventLevel lv, string message) {
+            //Debug.WriteLine(message);
+            _logger.Write(lv, message);
+        }
+        public override void Error(string message, Exception error) {
+            //Trace.WriteLine(message + " " + error.Message);
+            _logger.Error(error, message);
+        }
+    }
+
+    sealed class ReleaseLogger : BaseLogger {
+        private readonly Serilog.ILogger _logger;
+
+        public ReleaseLogger() {
+            var name = "log-.txt";
+            var logOutput = Path.Combine(Storage.UserDataFolder, "logs");
+            Storage.CheckOrCreateDir(logOutput);
+            var logFile = Path.Combine(logOutput, name);
+            _logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.Async(a => a.File(logFile, rollingInterval: RollingInterval.Month))
                 .CreateLogger();
             Serilog.Log.Logger = _logger;
         }
@@ -52,11 +70,11 @@ namespace CarrotCommon {
     }
 
     public static class Logger {
-        //#if DEBUG
-        static readonly ILogger Default = new SeriLogger();
-        //#else
-        //         static ILogger Default = new DummyLogger();
-        //#endif
+#if DEBUG
+        static readonly ILogger Default = new DebugLogger();
+#else
+        static readonly ILogger Default = new ReleaseLogger();
+#endif
 
         public static void Verbose(string m) => Default.Log(LogEventLevel.Verbose, m);
         public static void Debug(string m) => Default.Log(LogEventLevel.Debug, m);
