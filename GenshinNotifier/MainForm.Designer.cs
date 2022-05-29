@@ -89,7 +89,8 @@
             this.MainLayout.Controls.Add(this.ResinNameL, 0, 1);
             this.MainLayout.Controls.Add(this.AccountValueL, 0, 0);
             this.MainLayout.Dock = System.Windows.Forms.DockStyle.Top;
-            this.MainLayout.Location = new System.Drawing.Point(10, 10);
+            this.MainLayout.Location = new System.Drawing.Point(8, 8);
+            this.MainLayout.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MainLayout.Name = "MainLayout";
             this.MainLayout.Padding = new System.Windows.Forms.Padding(2);
             this.MainLayout.RowCount = 10;
@@ -103,8 +104,8 @@
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
             this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 10F));
-            this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.MainLayout.Size = new System.Drawing.Size(634, 525);
+            this.MainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 15F));
+            this.MainLayout.Size = new System.Drawing.Size(558, 425);
             this.MainLayout.TabIndex = 1;
             // 
             // UpdatedValueL
@@ -112,10 +113,11 @@
             this.UpdatedValueL.AutoSize = true;
             this.UpdatedValueL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.UpdatedValueL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.UpdatedValueL.Location = new System.Drawing.Point(320, 471);
+            this.UpdatedValueL.Location = new System.Drawing.Point(281, 381);
+            this.UpdatedValueL.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.UpdatedValueL.Name = "UpdatedValueL";
-            this.UpdatedValueL.Padding = new System.Windows.Forms.Padding(10);
-            this.UpdatedValueL.Size = new System.Drawing.Size(308, 51);
+            this.UpdatedValueL.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.UpdatedValueL.Size = new System.Drawing.Size(272, 41);
             this.UpdatedValueL.TabIndex = 19;
             this.UpdatedValueL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -124,10 +126,11 @@
             this.UpdatedNameL.AutoSize = true;
             this.UpdatedNameL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.UpdatedNameL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.UpdatedNameL.Location = new System.Drawing.Point(6, 471);
+            this.UpdatedNameL.Location = new System.Drawing.Point(5, 381);
+            this.UpdatedNameL.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.UpdatedNameL.Name = "UpdatedNameL";
-            this.UpdatedNameL.Padding = new System.Windows.Forms.Padding(10);
-            this.UpdatedNameL.Size = new System.Drawing.Size(307, 51);
+            this.UpdatedNameL.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.UpdatedNameL.Size = new System.Drawing.Size(271, 41);
             this.UpdatedNameL.TabIndex = 18;
             this.UpdatedNameL.Text = "更新时间";
             this.UpdatedNameL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -137,10 +140,11 @@
             this.TransformerValueL.AutoSize = true;
             this.TransformerValueL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.TransformerValueL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.TransformerValueL.Location = new System.Drawing.Point(320, 419);
+            this.TransformerValueL.Location = new System.Drawing.Point(281, 339);
+            this.TransformerValueL.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.TransformerValueL.Name = "TransformerValueL";
-            this.TransformerValueL.Padding = new System.Windows.Forms.Padding(10);
-            this.TransformerValueL.Size = new System.Drawing.Size(308, 51);
+            this.TransformerValueL.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.TransformerValueL.Size = new System.Drawing.Size(272, 41);
             this.TransformerValueL.TabIndex = 17;
             this.TransformerValueL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -149,10 +153,11 @@
             this.TransformerNameL.AutoSize = true;
             this.TransformerNameL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.TransformerNameL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.TransformerNameL.Location = new System.Drawing.Point(6, 419);
+            this.TransformerNameL.Location = new System.Drawing.Point(5, 339);
+            this.TransformerNameL.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.TransformerNameL.Name = "TransformerNameL";
-            this.TransformerNameL.Padding = new System.Windows.Forms.Padding(10);
-            this.TransformerNameL.Size = new System.Drawing.Size(307, 51);
+            this.TransformerNameL.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.TransformerNameL.Size = new System.Drawing.Size(271, 41);
             this.TransformerNameL.TabIndex = 16;
             this.TransformerNameL.Text = "参量质变仪";
             this.TransformerNameL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -162,10 +167,11 @@
             this.DiscountTaskValueL.AutoSize = true;
             this.DiscountTaskValueL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.DiscountTaskValueL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.DiscountTaskValueL.Location = new System.Drawing.Point(320, 367);
+            this.DiscountTaskValueL.Location = new System.Drawing.Point(281, 297);
+            this.DiscountTaskValueL.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.DiscountTaskValueL.Name = "DiscountTaskValueL";
-            this.DiscountTaskValueL.Padding = new System.Windows.Forms.Padding(10);
-            this.DiscountTaskValueL.Size = new System.Drawing.Size(308, 51);
+            this.DiscountTaskValueL.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.DiscountTaskValueL.Size = new System.Drawing.Size(272, 41);
             this.DiscountTaskValueL.TabIndex = 15;
             this.DiscountTaskValueL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -174,10 +180,11 @@
             this.DiscountTaskNameL.AutoSize = true;
             this.DiscountTaskNameL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.DiscountTaskNameL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.DiscountTaskNameL.Location = new System.Drawing.Point(6, 367);
+            this.DiscountTaskNameL.Location = new System.Drawing.Point(5, 297);
+            this.DiscountTaskNameL.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.DiscountTaskNameL.Name = "DiscountTaskNameL";
-            this.DiscountTaskNameL.Padding = new System.Windows.Forms.Padding(10);
-            this.DiscountTaskNameL.Size = new System.Drawing.Size(307, 51);
+            this.DiscountTaskNameL.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.DiscountTaskNameL.Size = new System.Drawing.Size(271, 41);
             this.DiscountTaskNameL.TabIndex = 14;
             this.DiscountTaskNameL.Text = "减半周本";
             this.DiscountTaskNameL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -187,10 +194,11 @@
             this.HomeCoinValueL.AutoSize = true;
             this.HomeCoinValueL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.HomeCoinValueL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.HomeCoinValueL.Location = new System.Drawing.Point(320, 315);
+            this.HomeCoinValueL.Location = new System.Drawing.Point(281, 255);
+            this.HomeCoinValueL.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.HomeCoinValueL.Name = "HomeCoinValueL";
-            this.HomeCoinValueL.Padding = new System.Windows.Forms.Padding(10);
-            this.HomeCoinValueL.Size = new System.Drawing.Size(308, 51);
+            this.HomeCoinValueL.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.HomeCoinValueL.Size = new System.Drawing.Size(272, 41);
             this.HomeCoinValueL.TabIndex = 13;
             this.HomeCoinValueL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -199,10 +207,11 @@
             this.HomeCoinNameL.AutoSize = true;
             this.HomeCoinNameL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.HomeCoinNameL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.HomeCoinNameL.Location = new System.Drawing.Point(6, 315);
+            this.HomeCoinNameL.Location = new System.Drawing.Point(5, 255);
+            this.HomeCoinNameL.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.HomeCoinNameL.Name = "HomeCoinNameL";
-            this.HomeCoinNameL.Padding = new System.Windows.Forms.Padding(10);
-            this.HomeCoinNameL.Size = new System.Drawing.Size(307, 51);
+            this.HomeCoinNameL.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.HomeCoinNameL.Size = new System.Drawing.Size(271, 41);
             this.HomeCoinNameL.TabIndex = 12;
             this.HomeCoinNameL.Text = "洞天宝钱";
             this.HomeCoinNameL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -212,10 +221,11 @@
             this.TaskNameValueL.AutoSize = true;
             this.TaskNameValueL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.TaskNameValueL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.TaskNameValueL.Location = new System.Drawing.Point(320, 263);
+            this.TaskNameValueL.Location = new System.Drawing.Point(281, 213);
+            this.TaskNameValueL.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.TaskNameValueL.Name = "TaskNameValueL";
-            this.TaskNameValueL.Padding = new System.Windows.Forms.Padding(10);
-            this.TaskNameValueL.Size = new System.Drawing.Size(308, 51);
+            this.TaskNameValueL.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.TaskNameValueL.Size = new System.Drawing.Size(272, 41);
             this.TaskNameValueL.TabIndex = 11;
             this.TaskNameValueL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -224,10 +234,11 @@
             this.TaskNameL.AutoSize = true;
             this.TaskNameL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.TaskNameL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.TaskNameL.Location = new System.Drawing.Point(6, 263);
+            this.TaskNameL.Location = new System.Drawing.Point(5, 213);
+            this.TaskNameL.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.TaskNameL.Name = "TaskNameL";
-            this.TaskNameL.Padding = new System.Windows.Forms.Padding(10);
-            this.TaskNameL.Size = new System.Drawing.Size(307, 51);
+            this.TaskNameL.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.TaskNameL.Size = new System.Drawing.Size(271, 41);
             this.TaskNameL.TabIndex = 10;
             this.TaskNameL.Text = "每日委托";
             this.TaskNameL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -237,10 +248,11 @@
             this.ExpeditionValueL.AutoSize = true;
             this.ExpeditionValueL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ExpeditionValueL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ExpeditionValueL.Location = new System.Drawing.Point(320, 211);
+            this.ExpeditionValueL.Location = new System.Drawing.Point(281, 171);
+            this.ExpeditionValueL.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.ExpeditionValueL.Name = "ExpeditionValueL";
-            this.ExpeditionValueL.Padding = new System.Windows.Forms.Padding(10);
-            this.ExpeditionValueL.Size = new System.Drawing.Size(308, 51);
+            this.ExpeditionValueL.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.ExpeditionValueL.Size = new System.Drawing.Size(272, 41);
             this.ExpeditionValueL.TabIndex = 9;
             this.ExpeditionValueL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -249,10 +261,11 @@
             this.ExpeditionNameL.AutoSize = true;
             this.ExpeditionNameL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ExpeditionNameL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ExpeditionNameL.Location = new System.Drawing.Point(6, 211);
+            this.ExpeditionNameL.Location = new System.Drawing.Point(5, 171);
+            this.ExpeditionNameL.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.ExpeditionNameL.Name = "ExpeditionNameL";
-            this.ExpeditionNameL.Padding = new System.Windows.Forms.Padding(10);
-            this.ExpeditionNameL.Size = new System.Drawing.Size(307, 51);
+            this.ExpeditionNameL.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.ExpeditionNameL.Size = new System.Drawing.Size(271, 41);
             this.ExpeditionNameL.TabIndex = 8;
             this.ExpeditionNameL.Text = "探索派遣";
             this.ExpeditionNameL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -262,10 +275,11 @@
             this.ResinTimeValueL.AutoSize = true;
             this.ResinTimeValueL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ResinTimeValueL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ResinTimeValueL.Location = new System.Drawing.Point(320, 159);
+            this.ResinTimeValueL.Location = new System.Drawing.Point(281, 129);
+            this.ResinTimeValueL.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.ResinTimeValueL.Name = "ResinTimeValueL";
-            this.ResinTimeValueL.Padding = new System.Windows.Forms.Padding(10);
-            this.ResinTimeValueL.Size = new System.Drawing.Size(308, 51);
+            this.ResinTimeValueL.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.ResinTimeValueL.Size = new System.Drawing.Size(272, 41);
             this.ResinTimeValueL.TabIndex = 7;
             this.ResinTimeValueL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -274,10 +288,11 @@
             this.ResinTimeNameL.AutoSize = true;
             this.ResinTimeNameL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ResinTimeNameL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ResinTimeNameL.Location = new System.Drawing.Point(6, 159);
+            this.ResinTimeNameL.Location = new System.Drawing.Point(5, 129);
+            this.ResinTimeNameL.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.ResinTimeNameL.Name = "ResinTimeNameL";
-            this.ResinTimeNameL.Padding = new System.Windows.Forms.Padding(10);
-            this.ResinTimeNameL.Size = new System.Drawing.Size(307, 51);
+            this.ResinTimeNameL.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.ResinTimeNameL.Size = new System.Drawing.Size(271, 41);
             this.ResinTimeNameL.TabIndex = 6;
             this.ResinTimeNameL.Text = "预计恢复时间";
             this.ResinTimeNameL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -287,10 +302,11 @@
             this.ResinRecValueL.AutoSize = true;
             this.ResinRecValueL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ResinRecValueL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ResinRecValueL.Location = new System.Drawing.Point(320, 107);
+            this.ResinRecValueL.Location = new System.Drawing.Point(281, 87);
+            this.ResinRecValueL.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.ResinRecValueL.Name = "ResinRecValueL";
-            this.ResinRecValueL.Padding = new System.Windows.Forms.Padding(10);
-            this.ResinRecValueL.Size = new System.Drawing.Size(308, 51);
+            this.ResinRecValueL.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.ResinRecValueL.Size = new System.Drawing.Size(272, 41);
             this.ResinRecValueL.TabIndex = 5;
             this.ResinRecValueL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -299,10 +315,11 @@
             this.ResinRecNameL.AutoSize = true;
             this.ResinRecNameL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ResinRecNameL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ResinRecNameL.Location = new System.Drawing.Point(6, 107);
+            this.ResinRecNameL.Location = new System.Drawing.Point(5, 87);
+            this.ResinRecNameL.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.ResinRecNameL.Name = "ResinRecNameL";
-            this.ResinRecNameL.Padding = new System.Windows.Forms.Padding(10);
-            this.ResinRecNameL.Size = new System.Drawing.Size(307, 51);
+            this.ResinRecNameL.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.ResinRecNameL.Size = new System.Drawing.Size(271, 41);
             this.ResinRecNameL.TabIndex = 4;
             this.ResinRecNameL.Text = "全部恢复需要";
             this.ResinRecNameL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -313,10 +330,11 @@
             this.ResinValueL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ResinValueL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.ResinValueL.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.ResinValueL.Location = new System.Drawing.Point(320, 55);
+            this.ResinValueL.Location = new System.Drawing.Point(281, 45);
+            this.ResinValueL.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.ResinValueL.Name = "ResinValueL";
-            this.ResinValueL.Padding = new System.Windows.Forms.Padding(10);
-            this.ResinValueL.Size = new System.Drawing.Size(308, 51);
+            this.ResinValueL.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.ResinValueL.Size = new System.Drawing.Size(272, 41);
             this.ResinValueL.TabIndex = 3;
             this.ResinValueL.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
@@ -325,10 +343,11 @@
             this.ResinNameL.AutoSize = true;
             this.ResinNameL.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ResinNameL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.ResinNameL.Location = new System.Drawing.Point(6, 55);
+            this.ResinNameL.Location = new System.Drawing.Point(5, 45);
+            this.ResinNameL.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.ResinNameL.Name = "ResinNameL";
-            this.ResinNameL.Padding = new System.Windows.Forms.Padding(10);
-            this.ResinNameL.Size = new System.Drawing.Size(307, 51);
+            this.ResinNameL.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.ResinNameL.Size = new System.Drawing.Size(271, 41);
             this.ResinNameL.TabIndex = 2;
             this.ResinNameL.Text = "原粹树脂";
             this.ResinNameL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -338,11 +357,12 @@
             this.AccountValueL.AutoSize = true;
             this.MainLayout.SetColumnSpan(this.AccountValueL, 2);
             this.AccountValueL.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.AccountValueL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.AccountValueL.Location = new System.Drawing.Point(6, 3);
+            this.AccountValueL.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.AccountValueL.Location = new System.Drawing.Point(5, 3);
+            this.AccountValueL.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.AccountValueL.Name = "AccountValueL";
-            this.AccountValueL.Padding = new System.Windows.Forms.Padding(10);
-            this.AccountValueL.Size = new System.Drawing.Size(622, 51);
+            this.AccountValueL.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.AccountValueL.Size = new System.Drawing.Size(548, 41);
             this.AccountValueL.TabIndex = 0;
             this.AccountValueL.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.AccountValueL.DoubleClick += new System.EventHandler(this.OnAccountLabelClicked);
@@ -350,12 +370,12 @@
             // OptionButton
             // 
             this.OptionButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.OptionButton.Location = new System.Drawing.Point(514, 565);
-            this.OptionButton.Margin = new System.Windows.Forms.Padding(8, 3, 3, 3);
+            this.OptionButton.Location = new System.Drawing.Point(446, 443);
+            this.OptionButton.Margin = new System.Windows.Forms.Padding(8);
             this.OptionButton.Name = "OptionButton";
             this.OptionButton.Padding = new System.Windows.Forms.Padding(8);
-            this.OptionButton.Size = new System.Drawing.Size(130, 61);
-            this.OptionButton.TabIndex = 4;
+            this.OptionButton.Size = new System.Drawing.Size(120, 50);
+            this.OptionButton.TabIndex = 2;
             this.OptionButton.Text = "选项";
             this.OptionButton.UseVisualStyleBackColor = true;
             this.OptionButton.Click += new System.EventHandler(this.OnOptionButtonClicked);
@@ -363,11 +383,12 @@
             // RefreshButton
             // 
             this.RefreshButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.RefreshButton.Location = new System.Drawing.Point(232, 565);
+            this.RefreshButton.Location = new System.Drawing.Point(174, 443);
+            this.RefreshButton.Margin = new System.Windows.Forms.Padding(8);
             this.RefreshButton.Name = "RefreshButton";
             this.RefreshButton.Padding = new System.Windows.Forms.Padding(8);
-            this.RefreshButton.Size = new System.Drawing.Size(130, 61);
-            this.RefreshButton.TabIndex = 5;
+            this.RefreshButton.Size = new System.Drawing.Size(120, 50);
+            this.RefreshButton.TabIndex = 0;
             this.RefreshButton.Text = "刷新";
             this.RefreshButton.UseVisualStyleBackColor = true;
             this.RefreshButton.Click += new System.EventHandler(this.OnRefershButtonClicked);
@@ -375,12 +396,12 @@
             // CookieButton
             // 
             this.CookieButton.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.CookieButton.Location = new System.Drawing.Point(373, 565);
-            this.CookieButton.Margin = new System.Windows.Forms.Padding(8, 3, 3, 3);
+            this.CookieButton.Location = new System.Drawing.Point(310, 443);
+            this.CookieButton.Margin = new System.Windows.Forms.Padding(8);
             this.CookieButton.Name = "CookieButton";
-            this.CookieButton.Padding = new System.Windows.Forms.Padding(0, 8, 0, 8);
-            this.CookieButton.Size = new System.Drawing.Size(130, 61);
-            this.CookieButton.TabIndex = 3;
+            this.CookieButton.Padding = new System.Windows.Forms.Padding(8);
+            this.CookieButton.Size = new System.Drawing.Size(120, 50);
+            this.CookieButton.TabIndex = 1;
             this.CookieButton.Text = "帐号";
             this.CookieButton.UseVisualStyleBackColor = true;
             this.CookieButton.Click += new System.EventHandler(this.OnCookieButtonClicked);
@@ -388,9 +409,10 @@
             // LoadingPic
             // 
             this.LoadingPic.Image = ((System.Drawing.Image)(resources.GetObject("LoadingPic.Image")));
-            this.LoadingPic.Location = new System.Drawing.Point(13, 541);
+            this.LoadingPic.Location = new System.Drawing.Point(10, 437);
+            this.LoadingPic.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.LoadingPic.Name = "LoadingPic";
-            this.LoadingPic.Size = new System.Drawing.Size(100, 100);
+            this.LoadingPic.Size = new System.Drawing.Size(60, 60);
             this.LoadingPic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.LoadingPic.TabIndex = 5;
             this.LoadingPic.TabStop = false;
@@ -412,35 +434,35 @@
             this.MenuItemCheckin,
             this.MenuItemQuit});
             this.NotifyMenuStrip.Name = "contextMenuStrip1";
-            this.NotifyMenuStrip.Size = new System.Drawing.Size(209, 118);
+            this.NotifyMenuStrip.Size = new System.Drawing.Size(171, 94);
             // 
             // MenuItemShow
             // 
             this.MenuItemShow.Name = "MenuItemShow";
-            this.MenuItemShow.Size = new System.Drawing.Size(208, 38);
+            this.MenuItemShow.Size = new System.Drawing.Size(170, 30);
             this.MenuItemShow.Text = "显示主界面";
             this.MenuItemShow.Click += new System.EventHandler(this.MenuItemShow_Click);
             // 
             // MenuItemCheckin
             // 
             this.MenuItemCheckin.Name = "MenuItemCheckin";
-            this.MenuItemCheckin.Size = new System.Drawing.Size(208, 38);
+            this.MenuItemCheckin.Size = new System.Drawing.Size(170, 30);
             this.MenuItemCheckin.Text = "米游社签到";
             this.MenuItemCheckin.Click += new System.EventHandler(this.MenuItemCheckin_Click);
             // 
             // MenuItemQuit
             // 
             this.MenuItemQuit.Name = "MenuItemQuit";
-            this.MenuItemQuit.Size = new System.Drawing.Size(208, 38);
+            this.MenuItemQuit.Size = new System.Drawing.Size(170, 30);
             this.MenuItemQuit.Text = "退出";
             this.MenuItemQuit.Click += new System.EventHandler(this.MenuItemQuit_Click);
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 24F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
-            this.ClientSize = new System.Drawing.Size(654, 649);
+            this.ClientSize = new System.Drawing.Size(574, 507);
             this.Controls.Add(this.CookieButton);
             this.Controls.Add(this.LoadingPic);
             this.Controls.Add(this.RefreshButton);
@@ -448,9 +470,10 @@
             this.Controls.Add(this.MainLayout);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
             this.MaximizeBox = false;
             this.Name = "MainForm";
-            this.Padding = new System.Windows.Forms.Padding(10);
+            this.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Activated += new System.EventHandler(this.OnFormActivated);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFormClosing);

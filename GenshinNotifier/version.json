@@ -4,14 +4,14 @@
   "id": 20220527,
   "name": "CarrotNotifier",
   "program": "CarrotNotifier.exe",
-  "version": "0.7.0",
-  "changelog": "获取实时便签，每日米游社签到，树脂和任务提醒，发送系统通知，程序自动更新等基本功能可用，发布测试版",
+  "version": "0.8.148",
+  "changelog": "获取实时便签，每日米游社签到，树脂和任务提醒，发送系统通知，程序自动更新等基本功能可用。",
   "sha256sum": "AFB437D44F07FB5757586D477EE61A3E5A53F6376C730C45813DA346632BE953",
   "created_at": "2022-05-27T18:16:16Z",
   "new_url": "https://gitee.com/osap/CarrotProjects/raw/master/GenshinNotifier/version.json",
   "project_url": "https://gitee.com/osap/CarrotProjects/tree/master/GenshinNotifier",
   "updater_url": null,
   "download_size": 1456658,
-  "download_url": "https://api.bitbucket.org/2.0/repositories/obitcat/carrotprojects/downloads/CarrotNotifier-0.7.0.zip"
+  "download_url": "https://api.bitbucket.org/2.0/repositories/obitcat/carrotprojects/downloads/CarrotNotifier-0.8.148.zip"
 
 }

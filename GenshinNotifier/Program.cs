@@ -24,10 +24,6 @@ namespace GenshinNotifier {
                 UDPService.SendUDP(Storage.AppGuidStr);
                 return;
             }
-
-#if DEBUG
-            //NativeHelper.AllocConsoleWithFix();
-#endif
             CheckSettingsUpgrade();
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);

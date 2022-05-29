@@ -15,8 +15,8 @@ namespace GenshinNotifier {
         private string OldCookie;
 
         private static string COOKIE_GUIDE =
-            @"使用说明：
-浏览器隐身模式打开米游社 http://bbs.mihoyo.com/ys/ 登录你的帐号，新标签页再打开 https://user.mihoyo.com/ 再次登录，按下键盘上的F12打开开发者工具，点击控制台，输入 document.cookie 按回车，复制出现的字符串；将复制好的Cookie字符串粘贴到输入框，点击保存。";
+            @"说明：
+浏览器隐身模式打开 http://bbs.mihoyo.com/ys/ 登录，新标签页打开 https://user.mihoyo.com/ 再次登录，按下F12打开开发者工具，点击控制台，输入 document.cookie 按回车，复制出现的字符串，粘贴到输入框，点击保存。 https://gitee.com/osap/CarrotProjects/issues/I59RIY 这里有详细说明。";
 
         public event EventHandler Handlers;
 

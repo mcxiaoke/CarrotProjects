@@ -217,7 +217,6 @@ namespace GenshinNotifier {
             Settings.Default.Save();
             UDPService.Handlers -= OnNewInstance;
             UDPService.StopUDP();
-            NativeHelper.FreeConsole();
         }
 
         private void OnSettingValueChanged(object sender, PropertyChangedEventArgs e) {
@@ -231,7 +230,7 @@ namespace GenshinNotifier {
 
         void ShowCookieDialog() {
             var cd = new CookieDialog {
-                Location = new Point(this.Location.X + 120, this.Location.Y + 80),
+                Location = new Point(this.Location.X + 80, this.Location.Y + 120),
                 Owner = this
             };
             cd.Handlers += OnCookieChanged;
@@ -269,7 +268,7 @@ namespace GenshinNotifier {
             if (IsRefreshingData) { return; }
             Logger.Debug($"OnOptionButtonClicked");
             var cd = new OptionForm {
-                Location = new Point(this.Location.X + 120, this.Location.Y + 80),
+                Location = new Point(this.Location.X + 80, this.Location.Y + 120),
                 Owner = this
             };
             cd.ShowDialog();
