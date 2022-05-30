@@ -15,16 +15,13 @@ namespace GenshinNotifier {
         private string OldCookie;
 
         private static string COOKIE_GUIDE =
-            @"说明：
-浏览器隐身模式打开 http://bbs.mihoyo.com/ys/ 登录，新标签页打开 https://user.mihoyo.com/ 再次登录，按下F12打开开发者工具，点击控制台，输入 document.cookie 按回车，复制出现的字符串，粘贴到输入框，点击保存。 https://gitee.com/osap/CarrotProjects/issues/I59RIY 这里有详细说明。";
+            @"Cookie获取方法：浏览器隐身模式登录 http://bbs.mihoyo.com/ys/ 再登录 https://user.mihoyo.com/ 开开发者工具控制台输入 document.cookie 复制文本。 https://gitee.com/osap/CarrotProjects/issues/I59RIY 这里有详细的说明和动图演示。";
 
         public event EventHandler Handlers;
 
         public CookieDialog() {
             InitializeComponent();
             OldCookie = DataController.Default.Cookie;
-            this.CookieTextBox.Text = OldCookie;
-            this.CookieLabel.Text = COOKIE_GUIDE;
             Logger.Debug("CookieDialog.InitializeComponent");
         }
 
@@ -35,10 +32,32 @@ namespace GenshinNotifier {
         private void CookieDialog_Shown(object sender, EventArgs e) {
             Logger.Debug("CookieDialog_Shown");
             // 必备字段只有两个 cookie_token 和 account_id
+            this.CookieTextBox.Text = OldCookie;
+            this.CookieLabel.Text = COOKIE_GUIDE;
+            this.ClearButton.Enabled = !string.IsNullOrWhiteSpace(OldCookie);
+            var user = DataController.Default.UserCached;
+            if (user != null) {
+                this.Text = $"当前帐号：{user.Nickname} / {user.RegionName}({user.Server}) / {user.GameUid}";
+            }
         }
 
-        private void NoButton_Click(object sender, EventArgs e) {
-            Close();
+
+        private void ClearButton_Click(object sender, EventArgs e) {
+            var cd = new ConfirmDialog("登出确认", "清空Cookie", "我再想想");
+            var ret = cd.ShowDialog();
+            switch (ret) {
+                case DialogResult.No:
+                    // clear button
+                    Handlers?.Invoke(this, new SimpleEventArgs(null));
+                    Close();
+                    break;
+                case DialogResult.Yes:
+                // think button
+                case DialogResult.Cancel:
+                default:
+                    break;
+            }
+
         }
 
         private async void YesButton_Click(object sender, EventArgs e) {
@@ -79,5 +98,6 @@ namespace GenshinNotifier {
                 Handlers -= d;
             }
         }
+
     }
 }

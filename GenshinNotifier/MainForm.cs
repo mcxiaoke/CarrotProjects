@@ -187,7 +187,7 @@ namespace GenshinNotifier {
             }
             if (e.CloseReason == CloseReason.UserClosing) {
                 if (Settings.Default.OptionCloseConfirm) {
-                    var cd = new ConfirmDialog();
+                    var cd = new ConfirmDialog("退出确认", "最小化到系统托盘", "直接退出");
                     var ret = cd.ShowDialog();
                     //Logger.Debug($"ConfirmDialog {e.CloseReason} {ret}");
                     switch (ret) {
@@ -242,6 +242,12 @@ namespace GenshinNotifier {
         async void OnCookieChanged(object sender, EventArgs e) {
             var evt = e as SimpleEventArgs;
             var newCookie = evt.Value;
+            if (string.IsNullOrWhiteSpace(newCookie)) {
+                // clear cookie event
+                DataController.Default.ClearUserData();
+                Application.Restart();
+                return;
+            }
             var oldCookie = DataController.Default.Cookie;
             if (newCookie != oldCookie) {
                 Logger.Debug($"OnCookieChanged newCookie={newCookie}");

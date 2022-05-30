@@ -189,6 +189,9 @@
     </Compile>
     <None Include="Publish.cmd" />
     <None Include="README.md" />
+    <None Include="SharpUpdater.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="version.json" />
   </ItemGroup>
   <ItemGroup>
@@ -196,6 +199,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="publish.txt" />
+    <Content Include="ScreenShots\000.jpg" />
+    <Content Include="ScreenShots\001.jpg" />
+    <Content Include="ScreenShots\002.jpg" />
+    <Content Include="ScreenShots\003.jpg" />
+    <Content Include="ScreenShots\004.jpg" />
     <None Include="Assets\carrot_512.ico" />
     <None Include="Assets\carrot_512.png" />
     <Content Include="FodyWeavers.xml" />
@@ -268,4 +276,9 @@
   <PropertyGroup>
     <PostBuildEvent>cd $(ProjectDir)\bin &amp; 7z a -tzip $(TargetName)-$(ConfigurationName).zip Release/ -xr!backups -xr!temp</PostBuildEvent>
   </PropertyGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties version_1json__JsonSchema="" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>
