@@ -77,6 +77,11 @@ namespace CarrotVSNumber {
             Console.WriteLine($"### {productName} {productVersion} ({companyName}) ###");
             Console.WriteLine("############################################");
             Core.Log($"command: {o}");
+            //todo
+            // need detect project frameworkd
+            // .net and .net core do not use AssemblyInfo.cs
+            // they use FileVersion property in .csproj xml file
+            // distinct by TargetFramework and root Project property
             var filepath = o.Target ?? @"Properties\AssemblyInfo.cs";
             var file = Path.GetFullPath(filepath);
             if (!File.Exists(file)) {

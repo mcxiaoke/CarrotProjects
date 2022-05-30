@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Diagnostics;
 using System.IO.Compression;
 using System.Drawing;
+using CarrotCommon;
 
 namespace SharpUpdater {
     internal static class SharpUtils {
@@ -56,7 +57,7 @@ namespace SharpUpdater {
             var destPath = Path.GetFullPath(zipDest);
             if (!File.Exists(zipPath)) { return; }
             var backupPath = backupOld ? Path.Combine(destPath, "backups") : null;
-            Console.WriteLine($"UnzipFile \nSRC={zipPath} \nDST={destPath} \nbackup={backupPath} " +
+            Logger.Debug($"UnzipFile \nSRC={zipPath} \nDST={destPath} \nbackup={backupPath} " +
                 $"\nstrip={stripPrefix} prefix={prefixStr}");
 
             CheckOrCreateDirectory(destPath);
@@ -71,31 +72,31 @@ namespace SharpUpdater {
                         prefix = prefixStr;
                     } else {
                         var fileNames = entries.Select(e => e.FullName);
-                        //Console.WriteLine(string.Join("\n", fileNames.ToArray()));
+                        //Logger.Debug(string.Join("\n", fileNames.ToArray()));
                         var prefixFound = GetCommonStringPrefix(fileNames);
                         if (prefixFound != null && prefixFound.EndsWith("/")) {
                             prefix = prefixFound;
                         }
                     }
                 }
-                Console.WriteLine($"UnzipFile prefix={prefix}");
+                Logger.Debug($"UnzipFile prefix={prefix}");
                 var selfExePath = ExecutablePath;
                 foreach (ZipArchiveEntry entry in entries) {
-                    //Console.WriteLine(entry.FullName);
+                    //Logger.Debug(entry.FullName);
                     if (entry.Length == 0) {
-                        Console.WriteLine("UnzipFile skip " + entry.FullName);
+                        Logger.Debug("UnzipFile skip " + entry.FullName);
                         continue;
                     }
                     var fullName = entry.FullName;
-                    //Console.WriteLine($"fullName old={fullName}");
+                    //Logger.Debug($"fullName old={fullName}");
                     if (!string.IsNullOrWhiteSpace(prefix)) {
                         if (fullName.StartsWith(prefix)) {
                             fullName = fullName.Remove(0, prefix.Length);
                         }
-                        //Console.WriteLine($"fullName new={fullName}");
+                        //Logger.Debug($"fullName new={fullName}");
                     }
                     string entryDestination = Path.GetFullPath(Path.Combine(destPath, fullName));
-                    Console.WriteLine($"dest={entryDestination}");
+                    Logger.Debug($"dest={entryDestination}");
                     if (File.Exists(entryDestination)) {
                         if (entryDestination == selfExePath) {
                             // current update is running, cannot replace
@@ -104,7 +105,7 @@ namespace SharpUpdater {
                             if (File.Exists(entryDestination)) {
                                 File.Delete(entryDestination);
                             }
-                            Console.WriteLine("UnzipFile pending " + entryDestination);
+                            Logger.Debug("UnzipFile pending " + entryDestination);
                         } else {
                             if (backupOld) {
                                 var rp = SimpleRelativePath(destPath, entryDestination);
@@ -116,20 +117,20 @@ namespace SharpUpdater {
                                 if (!Directory.Exists(destinationBackupDir)) {
                                     Directory.CreateDirectory(destinationBackupDir);
                                 }
-                                Console.WriteLine($"backup={destinationBackupPath}");
+                                Logger.Debug($"backup={destinationBackupPath}");
                                 File.Copy(entryDestination, destinationBackupPath);
                             } else {
                                 File.Delete(entryDestination);
                             }
                         }
                     }
-                    Console.WriteLine("UnzipFile ==> " + entryDestination);
+                    Logger.Debug("UnzipFile ==> " + entryDestination);
                     FileInfo fileInfo = new FileInfo(entryDestination);
                     fileInfo.Directory.Create();
                     entry.ExtractToFile(entryDestination, true);
                 }
             }
-            Console.WriteLine($"UnzipFile done.");
+            Logger.Debug($"UnzipFile done.");
         }
 
         public static string FormatFileSize(long lSize) {
@@ -176,13 +177,13 @@ namespace SharpUpdater {
         }
 
         public static Exception StopProcessByPath(string fullpath) {
-            Console.WriteLine($"StopProcessByPath fullpath={fullpath}");
+            Logger.Debug($"StopProcessByPath fullpath={fullpath}");
             var fileName = Path.GetFileName(fullpath);
             var moduleName = Path.GetFileNameWithoutExtension(fileName);
             try {
                 Process[] existing = Process.GetProcessesByName(moduleName);
                 foreach (Process p in existing) {
-                    Console.WriteLine($"StopProcessByName process={p.ProcessName} {p.Id} {p.MainModule.FileName} {p.MainModule.ModuleName}");
+                    Logger.Debug($"StopProcessByName process={p.ProcessName} {p.Id} {p.MainModule.FileName} {p.MainModule.ModuleName}");
                     string path = p.MainModule.FileName;
                     if (path == fullpath) {
                         p.Kill();
@@ -191,7 +192,7 @@ namespace SharpUpdater {
                 }
                 return null;
             } catch (Exception ex) {
-                Console.WriteLine($"StopProcessByPath error={ex}");
+                Logger.Debug($"StopProcessByPath error={ex}");
                 return ex;
             }
         }

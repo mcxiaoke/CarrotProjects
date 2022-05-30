@@ -155,7 +155,19 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>CarrotVSNumber.exe --days --yes --file $(ProjectDir)\Properties\AssemblyInfo.cs</PreBuildEvent>
+    <PreBuildEvent>if $(ConfigurationName) == Release (
+   echo "Release build, do versoin number change"
+    CarrotVSNumber.exe --inc --yes --file $(ProjectDir)\Properties\AssemblyInfo.cs
+) ELSE (
+    echo "Debug build, Skip versoin number change"
+)</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>if $(ConfigurationName) == Release (
+    cd $(ProjectDir)\bin &amp; 7z a -tzip $(TargetName)-$(ConfigurationName).zip Release/ -xr!backups -xr!temp
+) ELSE (
+    echo "Debug build, Skip zip output package"
+)</PostBuildEvent>
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
