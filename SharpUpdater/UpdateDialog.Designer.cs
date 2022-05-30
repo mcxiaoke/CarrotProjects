@@ -34,11 +34,11 @@
             // BigButton
             // 
             this.BigButton.Enabled = false;
-            this.BigButton.Font = new System.Drawing.Font("微软雅黑", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.BigButton.Location = new System.Drawing.Point(25, 432);
+            this.BigButton.Font = new System.Drawing.Font("微软雅黑", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.BigButton.Location = new System.Drawing.Point(12, 409);
             this.BigButton.Margin = new System.Windows.Forms.Padding(16);
             this.BigButton.Name = "BigButton";
-            this.BigButton.Size = new System.Drawing.Size(724, 72);
+            this.BigButton.Size = new System.Drawing.Size(711, 60);
             this.BigButton.TabIndex = 0;
             this.BigButton.TabStop = false;
             this.BigButton.Text = "检查更新";
@@ -51,12 +51,12 @@
             this.BigTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.BigTextBox.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.BigTextBox.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.BigTextBox.Location = new System.Drawing.Point(25, 25);
+            this.BigTextBox.Location = new System.Drawing.Point(12, 9);
             this.BigTextBox.Margin = new System.Windows.Forms.Padding(16);
             this.BigTextBox.Name = "BigTextBox";
             this.BigTextBox.ReadOnly = true;
             this.BigTextBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.BigTextBox.Size = new System.Drawing.Size(724, 345);
+            this.BigTextBox.Size = new System.Drawing.Size(711, 358);
             this.BigTextBox.TabIndex = 2;
             this.BigTextBox.TabStop = false;
             this.BigTextBox.Text = "";
@@ -64,9 +64,9 @@
             // 
             // AProgressBar
             // 
-            this.AProgressBar.Location = new System.Drawing.Point(25, 389);
+            this.AProgressBar.Location = new System.Drawing.Point(12, 366);
             this.AProgressBar.Name = "AProgressBar";
-            this.AProgressBar.Size = new System.Drawing.Size(724, 24);
+            this.AProgressBar.Size = new System.Drawing.Size(711, 24);
             this.AProgressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.AProgressBar.TabIndex = 3;
             this.AProgressBar.Visible = false;
@@ -74,7 +74,7 @@
             // LoadingPic
             // 
             this.LoadingPic.Image = ((System.Drawing.Image)(resources.GetObject("LoadingPic.Image")));
-            this.LoadingPic.Location = new System.Drawing.Point(339, 254);
+            this.LoadingPic.Location = new System.Drawing.Point(320, 247);
             this.LoadingPic.Margin = new System.Windows.Forms.Padding(16);
             this.LoadingPic.Name = "LoadingPic";
             this.LoadingPic.Size = new System.Drawing.Size(100, 100);
@@ -84,9 +84,9 @@
             // 
             // UpdateDialog
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(13F, 28F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(774, 529);
+            this.ClientSize = new System.Drawing.Size(738, 484);
             this.Controls.Add(this.LoadingPic);
             this.Controls.Add(this.AProgressBar);
             this.Controls.Add(this.BigTextBox);

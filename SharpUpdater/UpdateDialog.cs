@@ -36,32 +36,35 @@ namespace SharpUpdater {
         public UpdateDialog(CommandOptions options) {
             InitializeComponent();
             ParseOptions(options);
-            Console.WriteLine(Process.GetCurrentProcess().MainModule.ModuleName);
+            Logger.Info(Process.GetCurrentProcess().MainModule.ModuleName);
         }
 
         private void ParseOptions(CommandOptions options) {
             myConfig = new SharpConfig(options.Name, options.URL);
-            Console.WriteLine($"UpdateDialog sc={myConfig}");
+            Logger.Info($"UpdateDialog sc={myConfig}");
             if (myConfig.Malformed && !string.IsNullOrWhiteSpace(options.ConfigFile)) {
                 myConfig = SharpConfig.Read(options.ConfigFile);
-                Console.WriteLine($"UpdateDialog config={myConfig}");
+                Logger.Info($"UpdateDialog config={myConfig}");
             }
             if (myConfig.Malformed) {
                 myConfig = SharpConfig.Read();
-                Console.WriteLine($"UpdateDialog default={myConfig}");
+                Logger.Info($"UpdateDialog default={myConfig}");
+            }
+            if (myConfig == null) {
+                myConfig = new SharpConfig();
             }
 
-            Console.WriteLine($"UpdateDialog final={myConfig}");
+            Logger.Info($"UpdateDialog final={myConfig}");
         }
 
         private async void UpdateDialog_Load(object sender, EventArgs e) {
-            if (myConfig.Malformed) {
+            if (myConfig == null || myConfig.Malformed) {
                 SetFatalStatusInfo("启动参数错误：" +
                     $"\n\n使用命令行参数：" +
                     $"\n-u/--url version-info-url" +
                     "\n-n/--name application-name" +
                     "\n-c/--config local-config-file" +
-                    "\n\n使用配置文件: \nSharpUpdater.json file in application directory.");
+                    "\n\n使用配置文件: \nSharpUpdater.json");
             } else {
                 await CheckUpdate();
             }
@@ -76,7 +79,7 @@ namespace SharpUpdater {
         }
 
         private void UpdateDialog_Shown(object sender, EventArgs e) {
-            this.Text = $"{myConfig.Name ?? "App"} Updater";
+            this.Text = $"{myConfig.Name ?? "Sharp"} Updater";
         }
 
 
@@ -84,7 +87,7 @@ namespace SharpUpdater {
             try {
                 return FileVersionInfo.GetVersionInfo(path);
             } catch (Exception ex) {
-                Console.WriteLine(ex);
+                Logger.Error("ReadFileVersion", ex);
                 return null;
             }
         }
@@ -129,7 +132,7 @@ namespace SharpUpdater {
             BigTextBox.Text = string.Empty;
             using (var client = new WebClient()) {
                 var url = versionUrl ?? myConfig.URL;
-                Console.WriteLine($"CheckUpdate url={url} ");
+                Logger.Info($"CheckUpdate url={url} ");
                 try {
                     var text = await client.DownloadStringTaskAsync(new Uri(url));
                     var info = JsonConvert.DeserializeObject<VersionInfo>(text);
@@ -138,7 +141,7 @@ namespace SharpUpdater {
                         return;
                     }
                     updateVersionInfo = info;
-                    Console.WriteLine($"CheckUpdate info={info}");
+                    Logger.Info($"CheckUpdate info={info}");
                     var exePath = Path.Combine(SharpConfig.AppBase, info.Program);
                     if (!File.Exists(exePath)) {
                         SetRetryStatusInfo($"文件错误：可执行文件 [{info.Program}] 不存在！\n\n" +
@@ -146,7 +149,7 @@ namespace SharpUpdater {
                         $"如果你曾经给文件更名，请改回 {info.Program} 后重试");
                         return;
                     }
-                    Console.WriteLine($"CheckUpdate exePath={exePath}");
+                    Logger.Info($"CheckUpdate exePath={exePath}");
                     var localFile = ReadFileVersion(exePath);
                     SharpConfig.Write(new SharpConfig(localFile.ProductName, url));
                     var localVer = SemVersion.Parse(localFile.ProductVersion, SemVersionStyles.Any);
@@ -157,7 +160,7 @@ namespace SharpUpdater {
 
                     bool hasNew = info.HasUpdate && localVer < remoteVer;
 
-                    Console.WriteLine($"CheckUpdate end {DateTime.Now}");
+                    Logger.Info($"CheckUpdate end {DateTime.Now}");
                     currentUpdateStatus = hasNew ? UpdateStatus.READY : UpdateStatus.QUIT;
                     Invoke(new Action(() => {
                         this.Text = hasNew ? $"发现新版本" : "当前已经是最新版";
@@ -166,14 +169,14 @@ namespace SharpUpdater {
                         BigButton.Text = hasNew ? "开始更新" : "退出";
                     }));
                 } catch (Exception ex) {
-                    Console.WriteLine($"CheckUpdate failed error={ex.Message}");
+                    Logger.Info($"CheckUpdate failed error={ex.Message}");
                     SetRetryStatusInfo($"遇到错误：{ex.Message}\n\n{url}\n{ex}");
                 }
             }
         }
 
         private void BigTextBox_LinkClicked(object sender, LinkClickedEventArgs e) {
-            Console.WriteLine($"InfoTextBox_LinkClicked {e.LinkText}");
+            Logger.Info($"InfoTextBox_LinkClicked {e.LinkText}");
             Process.Start(e.LinkText);
         }
 
@@ -182,10 +185,10 @@ namespace SharpUpdater {
         private async Task<(string, Exception)> DownloadFileAsync(VersionInfo info, IProgress<int> progress) {
             // url for test
             Uri uri = new Uri((info.DownloadUrl));
-            Console.WriteLine($"DownloadFileAsync url={uri}");
+            Logger.Info($"DownloadFileAsync url={uri}");
             string filepath = Path.Combine(SharpConfig.AppBase, $"UpdatePackage_{info.Version}.zip");
             //string filepath = Path.GetTempFileName();
-            Console.WriteLine($"DownloadFileAsync dest={filepath}");
+            Logger.Info($"DownloadFileAsync dest={filepath}");
             // make io operations async
             try {
                 await Task.Run(() => {
@@ -194,7 +197,7 @@ namespace SharpUpdater {
                     }
                 });
             } catch (Exception ex) {
-                Console.WriteLine($"DownloadFileAsync error1={ex}");
+                Logger.Info($"DownloadFileAsync error1={ex}");
                 return (null, ex);
             }
 
@@ -204,10 +207,10 @@ namespace SharpUpdater {
                         progress?.Report(e.ProgressPercentage);
                     };
                     await client.DownloadFileTaskAsync(uri, filepath);
-                    Console.WriteLine($"DownloadFileAsync file={filepath}");
+                    Logger.Info($"DownloadFileAsync file={filepath}");
                     return (filepath, null);
                 } catch (Exception ex) {
-                    Console.WriteLine($"DownloadFileAsync error2={ex}");
+                    Logger.Info($"DownloadFileAsync error2={ex}");
                     return (null, ex);
                 }
             }
@@ -218,7 +221,7 @@ namespace SharpUpdater {
             var program = info.Program;
             var zipPath = Path.GetFullPath(filepath);
             var destPath = Path.GetFullPath(SharpConfig.AppBase);
-            Console.WriteLine($"InstallUpdateAsync file={filepath}");
+            Logger.Info($"InstallUpdateAsync file={filepath}");
             return await Task.Run(() => {
                 try {
                     var found = SharpUtils.ZipFileFind(zipPath, program);
@@ -231,7 +234,7 @@ namespace SharpUpdater {
                     //File.Delete(zipPath);
                     return null;
                 } catch (Exception ex) {
-                    Console.WriteLine($"InstallUpdateAsync error={ex.Message}");
+                    Logger.Info($"InstallUpdateAsync error={ex.Message}");
                     return ex;
                 }
             });
@@ -239,7 +242,7 @@ namespace SharpUpdater {
 
         private Exception StopRunningProgram(VersionInfo info) {
             var fullpath = Path.Combine(SharpConfig.AppBase, info.Program);
-            Console.WriteLine($"StopRunningProgram fullpath={fullpath}");
+            Logger.Info($"StopRunningProgram fullpath={fullpath}");
             return SharpUtils.StopProcessByPath(fullpath);
         }
 

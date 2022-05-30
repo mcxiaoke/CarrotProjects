@@ -106,6 +106,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="version.json" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="App.config" />
@@ -156,4 +157,9 @@
   <PropertyGroup>
     <PreBuildEvent>CarrotVSNumber.exe --days --yes --file $(ProjectDir)\Properties\AssemblyInfo.cs</PreBuildEvent>
   </PropertyGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties version_1json__JsonSchema="" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>
