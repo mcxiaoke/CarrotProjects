@@ -18,14 +18,13 @@ namespace GenshinNotifier {
     static class AutoUpdater {
 
 
-        public static string ProjectUrl = "https://gitee.com/osap/GenshinNotifier";
+        public static string ProjectUrl = "https://gitee.com/osap/CarrotProjects";
 
         public static readonly List<string> VersionUrls = new List<string>(){
-            "https://gitee.com/osap/GenshinNotifier/raw/master/version.json",
-            "https://bitbucket.org/obitcat/carrotnotifier/raw/master/version.json",
-            "https://raw.fastgit.org/mcxiaoke/CarrotNotifier/master/version.json",
-            "https://fastly.jsdelivr.net/gh/mcxiaoke/CarrotNotifier@master/version.json",
-            "https://raw.githubusercontent.com/mcxiaoke/CarrotNotifier/master/version.json"
+            "https://gitee.com/osap/CarrotProjects/raw/master/GenshinNotifier/version.json",
+            "https://bitbucket.org/obitcat/carrotprojects/raw/master/GenshinNotifier/version.json",
+            "https://raw.fastgit.org/mcxiaoke/CarrotProjects/master/GenshinNotifier/version.json",
+            "https://raw.githubusercontent.com/mcxiaoke/CarrotProjects/master/GenshinNotifier/version.json"
         };
 
         public static string UpdaterConfigFileName = "SharpUpdater.json";
