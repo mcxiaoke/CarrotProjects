@@ -89,9 +89,12 @@ namespace GenshinNotifier {
 
         // Creates the error message and displays it.
         private static DialogResult ShowThreadExceptionDialog(string title, Exception e) {
-            string errorMsg = "An application error occurred. Please contact the adminstrator " +
-                "with the following information:\n\n";
-            errorMsg = errorMsg + e.Message + "\n\nStack Trace:\n" + e.StackTrace;
+            string errorMsg = "An application error occurred:\n";
+            errorMsg = errorMsg + e.Message + " Stack Trace:\n" + e.StackTrace;
+            if (e.InnerException != null) {
+                var e2 = e.InnerException;
+                errorMsg += " " + e2.StackTrace;
+            }
             return MessageBox.Show(errorMsg, title, MessageBoxButtons.OK,
                 MessageBoxIcon.Stop);
         }

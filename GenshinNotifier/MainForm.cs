@@ -171,11 +171,9 @@ namespace GenshinNotifier {
             UpdateUIControlsUseCache();
             var note = DataController.Default.NoteCached;
             var needRefresh = note != null && (DateTime.Now - note.CreatedAt).TotalMilliseconds > SchedulerController.INTERVAL_NOTE;
-
             if (needRefresh) {
                 await RefreshDailyNote(null, null);
             }
-            ToastNotificationManagerCompat.History.Clear();
         }
 
         private void OnFormClosing(object sender, FormClosingEventArgs e) {

@@ -13,6 +13,7 @@ using Windows.System;
 using GenshinLib;
 using CarrotCommon;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace GenshinNotifier {
 
@@ -57,11 +58,13 @@ namespace GenshinNotifier {
         public DateTime StartAt;
         public DateTime LastCheckedAt;
         public DateTime LastNotifyAt;
+        public DateTime LastSignAt;
 
         public RemindStatus() {
             StartAt = DateTime.MinValue;
             LastCheckedAt = DateTime.MinValue;
             LastNotifyAt = DateTime.MinValue;
+            LastSignAt = DateTime.MinValue;
         }
 
         public override string ToString() => JsonConvert.SerializeObject(this);
@@ -80,6 +83,7 @@ namespace GenshinNotifier {
         public const int INTERVAL_CHECK = 5 * TIME_ONE_MINUTE_MS;
         public const int INTERVAL_NOTE = 30 * TIME_ONE_MINUTE_MS;
         public const int INTERVAL_USER = 4 * TIME_ONE_HOUR_MS;
+        public const int INTERVAL_SIGN = 2 * TIME_ONE_HOUR_MS;
 
         public static SchedulerController Default {
             get { return lazy.Value; }
@@ -88,14 +92,14 @@ namespace GenshinNotifier {
        new Lazy<SchedulerController>(() => new SchedulerController());
 
         private readonly RemindConfig Config;
-        private readonly RemindConfig MuteConfig;
         private readonly RemindStatus Status;
         private System.Timers.Timer ATimer;
+        private string TodaySigned = null;
+
         private static int ToastId = 0;
 
         private SchedulerController() {
             Config = new RemindConfig();
-            MuteConfig = new RemindConfig();
             Status = new RemindStatus();
         }
 
@@ -153,12 +157,14 @@ namespace GenshinNotifier {
             ATimer.Start();
             Status.StartAt = DateTime.Now;
             Status.LastCheckedAt = DateTime.MinValue;
+            Status.LastSignAt = DateTime.MinValue;
         }
 
         public void Stop() {
             Logger.Debug("SchedulerController.Stop");
             Status.StartAt = DateTime.MinValue;
             Status.LastCheckedAt = DateTime.MinValue;
+            Status.LastSignAt = DateTime.MinValue;
             ATimer.Stop();
             ATimer.Dispose();
             SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
@@ -175,28 +181,30 @@ namespace GenshinNotifier {
             // for debug, only mute 60 seconds
             //muteOffset = DateTimeOffset.Now.AddSeconds(60);
             Logger.Debug($"MuteToday util={muteOffset.ToLocalTime()}");
-            CacheStore.Add(MuteKey, "muted", muteOffset);
+            CacheStore.Add(GetMuteKey(), "muted", muteOffset);
         }
 
-        public void UnMuteToday() => CacheStore.Remove(MuteKey);
+        public void UnMuteToday() => CacheStore.Remove(GetMuteKey());
 
-        private bool IsMutedToday => CacheStore.Get(MuteKey) != null;
+        private bool IsMutedToday => CacheStore.Get(GetMuteKey()) != null;
 
-        private string MuteKey => "mute_" + DateTime.Now.ToShortDateString();
+        private string GetMuteKey() {
+            return "mute_" + DateTime.Now.ToShortDateString();
+        }
 
         private void CheckTimerEvent(object sender, ElapsedEventArgs e) {
             LoadConfig();
-            Logger.Info($"CheckTimerEvent " +
+            Logger.Debug($"CheckTimerEvent " +
                 $"last={Status.LastCheckedAt} " +
                 $"enabled={Config.Enabled} " +
                 $"ready={DataController.Default.Ready} " +
                 $"muted={IsMutedToday}");
             if (!Config.Enabled) { return; }
-            if (IsMutedToday) { return; }
             if (!DataController.Default.Ready) { return; }
             Task.Run(async () => {
                 await CheckUser();
                 await CheckDailyNote("CheckTimerEvent");
+                await CheckSignReward();
             }).Wait();
         }
 
@@ -205,11 +213,20 @@ namespace GenshinNotifier {
             Task.Run(async () => {
                 ShortcutHelper.EnableAutoStart(Settings.Default.OptionAutoStart);
                 await CheckSharpUpdater();
-                await Task.Delay(TIME_ONE_SECOND_MS * 5);
+                await Task.Delay(TIME_ONE_SECOND_MS * 3);
                 await CheckSignReward();
                 await Task.Delay(TIME_ONE_SECOND_MS * 10);
                 await CheckDailyNote("FirstCheck");
             });
+        }
+
+        private static FileVersionInfo ReadFileVersion(string path) {
+            try {
+                return FileVersionInfo.GetVersionInfo(path);
+            } catch (Exception ex) {
+                Logger.Error("ReadFileVersion", ex);
+                return null;
+            }
         }
 
         private async Task CheckSharpUpdater() {
@@ -220,6 +237,7 @@ namespace GenshinNotifier {
                     return;
                 }
                 try {
+                    var oldVer = ReadFileVersion(exe)?.ProductVersion;
                     var exeOld = exe + ".old";
                     if (File.Exists(exeOld)) {
                         File.Delete(exeOld);
@@ -230,7 +248,9 @@ namespace GenshinNotifier {
                     if (File.Exists(exePending)) {
                         File.Move(exePending, exe);
                     }
-                    Logger.Debug($"CheckSharpUpdater replaced success");
+                    File.Delete(exeOld);
+                    var newVer = ReadFileVersion(exe)?.ProductVersion;
+                    Logger.Info($"CheckSharpUpdater replaced old={oldVer} new={newVer}");
                 } catch (Exception ex) {
                     Logger.Debug($"CheckSharpUpdater error={ex?.Message}");
                 }
@@ -243,7 +263,7 @@ namespace GenshinNotifier {
             var userCheckElapsed = (DateTime.Now - userLastUpdateAt).TotalMilliseconds;
             if (userCheckElapsed > INTERVAL_USER + TIME_ONE_MINUTE_MS) {
                 var (user, ex) = await DataController.Default.GetGameRoleInfo();
-                Logger.Debug($"CheckUser refresh uid={user?.GameUid} err={ex?.Message}");
+                Logger.Info($"CheckUser refresh uid={user?.GameUid} err={ex?.Message}");
             }
         }
 
@@ -268,32 +288,49 @@ namespace GenshinNotifier {
 
         // {"retcode":0,"message":"OK","data":{"total_sign_day":26,"today":"2022-05-27","is_sign":true,"first_bind":false,"is_sub":false,"
         private async Task CheckSignReward() {
-            if (!DataController.Default.Ready) {
+            if (!Settings.Default.OptionCheckinOnStart) {
+                Logger.Debug($"CheckSignReward not enabled, skip");
                 return;
             }
-            if (Settings.Default.OptionCheckinOnStart) {
-                try {
-                    var (result, error) = await DataController.Default.PostSignReward();
-                    Logger.Debug($"CheckSignReward result={result} error={error?.Message}");
-                    dynamic obj = JsonConvert.DeserializeObject(result ?? error?.Message);
-                    if (obj["retcode"] == 0 && obj["data"] != null) {
-                        var title = $"本月已连续签到 {obj.data.total_sign_day} 天";
-                        var text = $"今天是 {DateTime.Now.ToLongDateString()}\n记得到游戏里领取邮件奖励哦！";
-                        ShowSignOKNotification(title, text);
-                    } else {
-                        ShowSignErrorNotification($"遇到错误 {obj.message}", result ?? error?.Message);
-                    }
-
-                } catch (Exception ex) {
-                    Logger.Debug($"CheckSignReward error={ex}");
-                    ShowSignErrorNotification($"遇到错误 {ex.GetType()}", ex.Message);
+            var checkElapsed = (DateTime.Now - Status.LastSignAt);
+            Logger.Debug($"CheckSignReward checkElapsed={checkElapsed.TotalMinutes}");
+            if (checkElapsed.TotalMilliseconds < INTERVAL_SIGN - TIME_ONE_MINUTE_MS) { return; }
+            Status.LastSignAt = DateTime.Now;
+            var todayStr = DateTime.Now.ToString("yyyy-MM-dd");
+            if (todayStr == TodaySigned) {
+                Logger.Debug($"CheckSignReward today signed, skip {TodaySigned}");
+                return;
+            }
+            if (DateTime.Now.Hour >= 0 && DateTime.Now.Hour <= 6) {
+                // skip on night
+                Logger.Debug($"CheckSignReward skip night 0-6");
+                return;
+            }
+            try {
+                var (result, error) = await DataController.Default.PostSignReward();
+                Logger.Info($"CheckSignReward result={result} error={error?.Message}");
+                dynamic obj = JsonConvert.DeserializeObject(result ?? error?.Message);
+                if (obj["retcode"] == 0 && obj["data"] != null) {
+                    var title = $"本月已连续签到 {obj.data.total_sign_day} 天";
+                    var text = $"今天是 {DateTime.Now.ToLongDateString()}\n记得到游戏里领取邮件奖励哦！";
+                    ShowSignOKNotification(title, text);
+                    TodaySigned = todayStr;
+                } else if (obj["retcode"] == -5003) {
+                    // today signed already
+                    TodaySigned = todayStr;
+                } else {
+                    ShowSignErrorNotification($"遇到错误 {obj.message}", result ?? error?.Message);
                 }
-            } else {
-                Logger.Debug($"CheckSignReward not enabled, skip");
+
+            } catch (Exception ex) {
+                Logger.Debug($"CheckSignReward error={ex}");
+                ShowSignErrorNotification($"遇到错误 {ex.GetType()}", ex.Message);
             }
         }
 
         private void ShowSignOKNotification(string title, string text) {
+            if (!Settings.Default.OptionEnableNotifications) { return; }
+            if (IsMutedToday) { return; }
             var image = AppUtils.IconFilePath;
             var user = DataController.Default.UserCached;
             var toast = new ToastContentBuilder()
@@ -311,6 +348,8 @@ namespace GenshinNotifier {
         }
 
         private void ShowSignErrorNotification(string title, string text) {
+            if (!Settings.Default.OptionEnableNotifications) { return; }
+            if (IsMutedToday) { return; }
             var image = AppUtils.IconFilePath;
             var user = DataController.Default.UserCached;
             var toast = new ToastContentBuilder()
@@ -332,6 +371,8 @@ namespace GenshinNotifier {
                 $"uid={user?.GameUid} " +
                 $"resin={note?.CurrentResin} " +
                 $"enabled={Config.Enabled}");
+            if (!Settings.Default.OptionEnableNotifications) { return; }
+            if (IsMutedToday) { return; }
             var now = DateTime.Now;
             var title = new List<string>();
             var text = new List<string>();
