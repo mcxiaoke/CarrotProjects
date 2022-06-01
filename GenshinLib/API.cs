@@ -148,7 +148,7 @@ namespace GenshinLib {
                 Logger.Info($"[API][{rid}][Req] {method} {url} ({UID})");
                 var response = await client.SendAsync(request);
                 var json = await response.Content.ReadAsStringAsync();
-                Logger.Debug($"[API][{rid}][Res] {url} {response.StatusCode} @{json.SafeSubstring(0, 128)}@");
+                Logger.Debug($"[API][{rid}][Res] {response.StatusCode} @{json.SafeSubstring(0, 128)}@");
                 if ((int)response.StatusCode >= 500) {
                     throw new ServerException($"Server Error {response.StatusCode}");
                 } else if (response.IsSuccessStatusCode) {

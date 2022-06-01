@@ -170,7 +170,7 @@ namespace GenshinNotifier {
             if (IsRefreshingData) { return; }
             UpdateUIControlsUseCache();
             var note = DataController.Default.NoteCached;
-            var needRefresh = note != null && (DateTime.Now - note.CreatedAt).TotalMilliseconds > SchedulerController.INTERVAL_NOTE;
+            var needRefresh = note != null && (DateTime.Now - note.CreatedAt).TotalMilliseconds > SchedulerController.TIME_ONE_MINUTE_MS * 5;
             if (needRefresh) {
                 await RefreshDailyNote(null, null);
             }
@@ -409,8 +409,9 @@ namespace GenshinNotifier {
             RestoreFromTrayIcon();
         }
 
-        private void MenuItemCheckin_Click(object sender, EventArgs e) {
-
+        private async void MenuItemCheckin_Click(object sender, EventArgs e) {
+            Logger.Debug($"MenuItemCheckin_Click");
+            await SchedulerController.Default.ManualSignReward();
         }
 
         private void MenuItemQuit_Click(object sender, EventArgs e) {

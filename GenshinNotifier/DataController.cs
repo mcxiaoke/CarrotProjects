@@ -153,7 +153,7 @@ namespace GenshinNotifier {
         }
 
 
-        public async Task<(string, Exception)> PostSignReward() {
+        public async Task<(int, string, Exception)> PostSignReward() {
             if (string.IsNullOrEmpty(Cookie)) {
                 return default;
             }
@@ -162,15 +162,15 @@ namespace GenshinNotifier {
             dynamic obj = JsonConvert.DeserializeObject(result);
             // retcode == 0 success sign
             // retcode == -5003 already sign
-            if (obj.retcode == 0) {
+            if (obj.retcode == 0 || obj.retcode == -5003) {
                 (result, error) = await Api.GetSignReward();
                 Logger.Debug($"DataController.PostSignReward reward={result} error={error?.Message}");
                 dynamic robj = JsonConvert.DeserializeObject(result);
                 if (robj.retcode == 0) {
-                    return (result, error);
+                    return (obj.retcode, result, error);
                 }
             }
-            return (result, error);
+            return (obj.retcode, result, error);
         }
 
         public static async Task<UserGameRole> ValidateCookie(string tempCookie) {
