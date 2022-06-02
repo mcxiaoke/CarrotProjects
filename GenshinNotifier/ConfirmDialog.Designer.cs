@@ -68,7 +68,7 @@
             this.Name = "ConfirmDialog";
             this.ShowIcon = false;
             this.ShowInTaskbar = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Title";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.ConfirmDialog_Load);

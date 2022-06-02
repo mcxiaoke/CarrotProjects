@@ -119,6 +119,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GlobalState.cs" />
     <Compile Include="AppUtils.cs" />
     <Compile Include="AutoUpdater.cs" />
     <Compile Include="CustomApplicationContext.cs" />

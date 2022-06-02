@@ -164,6 +164,7 @@ namespace GenshinNotifier {
 
         private async void OnVisibleChanged(object sender, EventArgs e) {
             Logger.Debug($"OnVisibleChanged() visible={this.Visible} formLoaded={IsFormLoaded}");
+            GlobalState.MainFormVisible = this.Visible;
             if (!this.Visible) { return; }
             if (!IsFormLoaded) { return; }
             if (!DataController.Default.Ready) { return; }
@@ -185,7 +186,10 @@ namespace GenshinNotifier {
             }
             if (e.CloseReason == CloseReason.UserClosing) {
                 if (Settings.Default.OptionCloseConfirm) {
-                    var cd = new ConfirmDialog("退出确认", "最小化到系统托盘", "直接退出");
+                    var cd = new ConfirmDialog("退出确认", "最小化到系统托盘", "直接退出") {
+                        Location = new Point(this.Location.X + 80, this.Location.Y + 120),
+                        Owner = this
+                    };
                     var ret = cd.ShowDialog();
                     //Logger.Debug($"ConfirmDialog {e.CloseReason} {ret}");
                     switch (ret) {

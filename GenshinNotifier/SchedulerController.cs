@@ -110,9 +110,9 @@ namespace GenshinNotifier {
             LoadConfig();
             Setup();
             Start();
-            SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
-            SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
             CheckOnLaunch();
+            SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
+            SystemEvents.SessionSwitch += SystemEvents_SessionSwitchAsync;
         }
 
         void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e) {
@@ -129,9 +129,14 @@ namespace GenshinNotifier {
             }
         }
 
-        private void SystemEvents_SessionSwitch(object sender, EventArgs e) {
+        private void SystemEvents_SessionSwitchAsync(object sender, EventArgs e) {
             var args = e as SessionSwitchEventArgs;
             Logger.Debug($"===> {args.Reason} {DateTime.Now}");
+            if (args.Reason == SessionSwitchReason.SessionUnlock) {
+                if (!GlobalState.MainFormVisible) {
+                    CheckOnSessionUnlock();
+                }
+            }
         }
 
         private void LoadConfig() {
@@ -170,7 +175,7 @@ namespace GenshinNotifier {
             ATimer.Stop();
             ATimer.Dispose();
             SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
-            SystemEvents.SessionSwitch -= SystemEvents_SessionSwitch;
+            SystemEvents.SessionSwitch -= SystemEvents_SessionSwitchAsync;
         }
 
         public void MuteToday() {
@@ -219,6 +224,17 @@ namespace GenshinNotifier {
                 await CheckSignReward("CheckOnLaunch");
                 await Task.Delay(TIME_ONE_SECOND_MS * 10);
                 await CheckDailyNote("CheckOnLaunch");
+            });
+        }
+
+        private void CheckOnSessionUnlock() {
+            if (!GlobalState.MainFormVisible) { return; }
+            Logger.Debug("SchedulerController.CheckOnSessionUnlock");
+            Task.Run(async () => {
+                await Task.Delay(TIME_ONE_SECOND_MS * 5);
+                await CheckSignReward("CheckOnSessionUnlock");
+                await Task.Delay(TIME_ONE_SECOND_MS * 5);
+                await CheckDailyNote("CheckOnSessionUnlock");
             });
         }
 
