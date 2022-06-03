@@ -6,6 +6,10 @@
 
 Carrot Game DailyNote Notifier for Genshin Impact on Windows 10
 
+## 版本
+
+**0.8.153** 20220603 签到功能优化，改进系统通知，自动更新微调 [点击下载](https://gitee.com/osap/CarrotProjects/attach_files/1084007/download/CarrotNotifier-0.8.153.zip)    
+
 ## 功能
 
 - 获取米游社实时便签信息，主界面展示原粹树脂、洞天宝钱、每日任务、减半周本、探索派遣等个人状态
