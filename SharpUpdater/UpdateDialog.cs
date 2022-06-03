@@ -33,6 +33,8 @@ namespace SharpUpdater {
         private VersionInfo updateVersionInfo;
         private UpdateStatus currentUpdateStatus = UpdateStatus.NONE;
 
+        private static string ProjectUrl = "https://gitee.com/osap/CarrotProjects/tree/master/SharpUpdater";
+
         public UpdateDialog(CommandOptions options) {
             InitializeComponent();
             ParseOptions(options);
@@ -64,7 +66,8 @@ namespace SharpUpdater {
                     $"\n-u/--url version-info-url" +
                     "\n-n/--name application-name" +
                     "\n-c/--config local-config-file" +
-                    "\n\n使用配置文件: \nSharpUpdater.json");
+                    "\n\n使用配置文件: \nSharpUpdater.json" +
+                    $"\n\n 查看帮助: \n{ProjectUrl}");
             } else {
                 await CheckUpdate();
             }
