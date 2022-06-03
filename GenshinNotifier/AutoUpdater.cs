@@ -11,6 +11,9 @@ using Semver;
 using CarrotCommon;
 using GenshinLib;
 using System.Security.Policy;
+using GenshinNotifier.Properties;
+using Microsoft.Toolkit.Uwp.Notifications;
+using System.Diagnostics;
 
 namespace GenshinNotifier {
 
@@ -18,7 +21,8 @@ namespace GenshinNotifier {
     static class AutoUpdater {
 
 
-        public static string ProjectUrl = "https://gitee.com/osap/CarrotProjects";
+        public static string ProjectUrl = "https://gitee.com/osap/CarrotProjects/tree/master/GenshinNotifier";
+        public static string ReleaseUrl = "https://gitee.com/osap/CarrotProjects/releases";
 
         public static readonly List<string> VersionUrls = new List<string>(){
             "https://gitee.com/osap/CarrotProjects/raw/master/GenshinNotifier/version.json",
@@ -59,6 +63,21 @@ namespace GenshinNotifier {
             }
         }
 
+        public static void ShowUpdater() {
+            var updater = Path.Combine(Application.StartupPath, "SharpUpdater.exe");
+            var name = Application.ProductName;
+            var url = AutoUpdater.VersionUrls[0];
+            if (File.Exists(updater)) {
+                ProcessStartInfo startInfo = new ProcessStartInfo(updater) {
+                    WindowStyle = ProcessWindowStyle.Normal,
+                    Arguments = $"--name {name} --url \"{url}\""
+                };
+                Process.Start(startInfo);
+            } else {
+                Process.Start(AutoUpdater.ProjectUrl);
+            }
+        }
+
         public static async Task<VersionInfo> CheckUpdate() {
             return await Task.Run(async () => {
                 var url = VersionUrls[0];
@@ -67,7 +86,7 @@ namespace GenshinNotifier {
                     try {
                         var text = await client.DownloadStringTaskAsync(new Uri(url));
                         var info = JsonConvert.DeserializeObject<VersionInfo>(text);
-                        Logger.Debug($"CheckUpdate info={info}");
+                        Logger.Info($"CheckUpdate info={info}");
                         if (info.HasUpdate) {
                             var newVersion = SemVersion.Parse(info.Version, SemVersionStyles.Any);
                             var oldVersion = SemVersion.Parse(Application.ProductVersion, SemVersionStyles.Any);
@@ -75,6 +94,9 @@ namespace GenshinNotifier {
                             HasNewVersion = oldVersion < newVersion;
                             CachedVersionInfo = info;
                             WriteUpdaterConfig(url);
+                            if (HasNewVersion) {
+                                CheckNotification(info);
+                            }
                         }
                         return info;
                     } catch (Exception ex) {
@@ -82,6 +104,39 @@ namespace GenshinNotifier {
                         return null;
                     }
                 }
+            });
+        }
+
+        private static void CheckNotification(VersionInfo info) {
+            var settings = Properties.Settings.Default;
+            if (!settings.OptionAutoUpdate) { return; }
+            var savedNewVer = settings.NewVersionFound;
+            var newVer = info.Version;
+            if (newVer != savedNewVer) {
+                settings.NewVersionFound = newVer;
+                settings.Save();
+                ShowNotification(info);
+            }
+        }
+
+        private static void ShowNotification(VersionInfo info) {
+            Logger.Debug($"ShowNotification new version={info.Version}");
+            var image = AppUtils.IconFilePath;
+            var toast = new ToastContentBuilder()
+                .SetToastScenario(ToastScenario.Reminder)
+                .AddHeader($"2001", $"发现新版本 {info.Version}", "action=versionopen&id=2001")
+                .AddText($"有新版本可以更新：{Application.ProductVersion} => {info.Version}")
+                .AddText($"更新内容：{info.Changelog}")
+                .AddAttributionText(DateTime.Now.ToString("F"))
+                .AddAppLogoOverride(new Uri(image), ToastGenericAppLogoCrop.Circle)
+                .AddButton(new ToastButton()
+                .SetContent("立即更新")
+                .AddArgument("action", "update")
+                .SetBackgroundActivation());
+            toast.Show(t => {
+                t.Group = Application.ProductName;
+                t.Tag = "VersionUpdate";
+                t.ExpirationTime = DateTimeOffset.Now.AddHours(5);
             });
         }
 

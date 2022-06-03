@@ -33,7 +33,7 @@ namespace SharpUpdater {
         private VersionInfo updateVersionInfo;
         private UpdateStatus currentUpdateStatus = UpdateStatus.NONE;
 
-        private static string ProjectUrl = "https://gitee.com/osap/CarrotProjects/tree/master/SharpUpdater";
+        private static readonly string ProjectUrl = "https://gitee.com/osap/CarrotProjects/tree/master/SharpUpdater";
 
         public UpdateDialog(CommandOptions options) {
             InitializeComponent();

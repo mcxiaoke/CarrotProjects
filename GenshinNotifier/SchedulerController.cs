@@ -59,12 +59,14 @@ namespace GenshinNotifier {
         public DateTime LastCheckedAt;
         public DateTime LastNotifyAt;
         public DateTime LastSignAt;
+        public DateTime LastVersionAt;
 
         public RemindStatus() {
             StartAt = DateTime.MinValue;
             LastCheckedAt = DateTime.MinValue;
             LastNotifyAt = DateTime.MinValue;
             LastSignAt = DateTime.MinValue;
+            LastVersionAt = DateTime.MinValue;
         }
 
         public override string ToString() => JsonConvert.SerializeObject(this);
@@ -165,6 +167,7 @@ namespace GenshinNotifier {
             Status.StartAt = DateTime.Now;
             Status.LastCheckedAt = DateTime.MinValue;
             Status.LastSignAt = DateTime.MinValue;
+            Status.LastVersionAt = DateTime.MinValue;
         }
 
         public void Stop() {
@@ -172,6 +175,7 @@ namespace GenshinNotifier {
             Status.StartAt = DateTime.MinValue;
             Status.LastCheckedAt = DateTime.MinValue;
             Status.LastSignAt = DateTime.MinValue;
+            Status.LastVersionAt = DateTime.MinValue;
             ATimer.Stop();
             ATimer.Dispose();
             SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
@@ -212,6 +216,7 @@ namespace GenshinNotifier {
                 await CheckUser();
                 await CheckDailyNote("CheckTimerEvent");
                 await CheckSignReward("CheckTimerEvent");
+                await CheckVersionUpdate();
             }).Wait();
         }
 
@@ -224,6 +229,7 @@ namespace GenshinNotifier {
                 await CheckSignReward("CheckOnLaunch");
                 await Task.Delay(TIME_ONE_SECOND_MS * 10);
                 await CheckDailyNote("CheckOnLaunch");
+                await CheckVersionUpdate();
             });
         }
 
@@ -235,6 +241,7 @@ namespace GenshinNotifier {
                 await CheckSignReward("CheckOnSessionUnlock");
                 await Task.Delay(TIME_ONE_SECOND_MS * 5);
                 await CheckDailyNote("CheckOnSessionUnlock");
+                await CheckVersionUpdate();
             });
         }
 
@@ -245,6 +252,14 @@ namespace GenshinNotifier {
                 Logger.Error("ReadFileVersion", ex);
                 return null;
             }
+        }
+
+        private async Task CheckVersionUpdate() {
+            var checkElapsed = (DateTime.Now - Status.LastVersionAt);
+            if (checkElapsed.TotalMilliseconds < TIME_ONE_DAY_MS - TIME_ONE_MINUTE_MS) { return; }
+            Status.LastVersionAt = DateTime.Now;
+            Logger.Debug($"CheckVersionUpdate");
+            await AutoUpdater.CheckUpdate();
         }
 
         private async Task CheckSharpUpdater() {

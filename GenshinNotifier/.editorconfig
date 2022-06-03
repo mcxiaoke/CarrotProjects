@@ -96,6 +96,9 @@ csharp_style_unused_value_expression_statement_preference = discard_variable:sil
 # IDE0051: 删除未使用的私有成员
 dotnet_diagnostic.IDE0051.severity = none
 
+# CS0168: 声明了变量，但从未使用过
+dotnet_diagnostic.CS0168.severity = silent
+
 [*.vb]
 #### 命名样式 ####
 

@@ -238,5 +238,17 @@ namespace GenshinNotifier.Properties {
                 this["OptionAutoUpdate"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string NewVersionFound {
+            get {
+                return ((string)(this["NewVersionFound"]));
+            }
+            set {
+                this["NewVersionFound"] = value;
+            }
+        }
     }
 }

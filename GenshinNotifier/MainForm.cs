@@ -14,6 +14,7 @@ using Windows.Foundation.Collections;
 using Newtonsoft.Json;
 using GenshinLib;
 using CarrotCommon;
+using System.Diagnostics;
 
 namespace GenshinNotifier {
     public partial class MainForm : Form {
@@ -86,12 +87,6 @@ namespace GenshinNotifier {
             } else {
                 StartCookieBlinkTimer();
             }
-
-            Task.Run(async () => {
-                if (Settings.Default.OptionAutoUpdate) {
-                    await AutoUpdater.CheckUpdate();
-                }
-            });
         }
 
         private void OnFirstLaunch() {
@@ -154,6 +149,8 @@ namespace GenshinNotifier {
             } else if (action == "mute") {
                 // mute current day
                 SchedulerController.Default.MuteToday();
+            } else if (action == "update") {
+                AutoUpdater.ShowUpdater();
             }
         }
 
