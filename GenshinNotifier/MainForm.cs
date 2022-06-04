@@ -253,6 +253,7 @@ namespace GenshinNotifier {
                 DataController.Default.SaveUserData(newCookie);
                 await DataController.Default.Initialize();
                 await RefreshDailyNote(null, null);
+                await SchedulerController.Default.CheckSignReward("OnCookieChanged");
                 Logger.Debug($"OnCookieChanged data saved");
             } else {
                 Logger.Debug($"OnCookieChanged not change");

@@ -324,22 +324,18 @@ namespace GenshinNotifier {
         }
 
         // {"retcode":0,"message":"OK","data":{"total_sign_day":26,"today":"2022-05-27","is_sign":true,"first_bind":false,"is_sub":false,"
-        private async Task CheckSignReward(string source) {
-            var checkElapsed = (DateTime.Now - Status.LastSignAt);
-            if (checkElapsed.TotalMilliseconds < INTERVAL_SIGN - TIME_ONE_MINUTE_MS) { return; }
-            Logger.Debug($"CheckSignReward checkElapsed={checkElapsed.TotalMinutes} ({source})");
+        public async Task CheckSignReward(string source) {
             if (!Settings.Default.OptionCheckinOnStart) {
                 Logger.Debug($"CheckSignReward not enabled, skip");
                 return;
             }
+            var checkElapsed = (DateTime.Now - Status.LastSignAt);
+            if (checkElapsed.TotalMilliseconds < INTERVAL_SIGN - TIME_ONE_MINUTE_MS) { return; }
+            Status.LastSignAt = DateTime.Now;
+            Logger.Debug($"CheckSignReward checkElapsed={checkElapsed.TotalMinutes} ({source})");
             var todayStr = DateTime.Now.ToString("yyyy-MM-dd");
             if (todayStr == TodaySigned) {
                 Logger.Debug($"CheckSignReward today signed, skip {TodaySigned}");
-                return;
-            }
-            if (DateTime.Now.Hour >= 0 && DateTime.Now.Hour <= 6) {
-                // skip on night
-                Logger.Debug($"CheckSignReward skip night 0-6");
                 return;
             }
             await DoSignReward(false);
