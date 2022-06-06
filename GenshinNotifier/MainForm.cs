@@ -45,9 +45,7 @@ namespace GenshinNotifier {
         private async void OnFormLoad(object sender, EventArgs e) {
             Logger.Debug("OnFormLoad()");
             if (HideOnStart) {
-                //HideToTrayIcon();
-                AppNotifyIcon.Visible = true;
-                this.ShowInTaskbar = false;
+                HideToTrayIcon();
             }
             //PrintAllSettings();
             this.Text = $"{Application.ProductName} {Application.ProductVersion}";
@@ -366,17 +364,13 @@ namespace GenshinNotifier {
             LastUpdateTime = DateTime.Now;
         }
 
-        private bool HidePopupShown = false;
         private void HideToTrayIcon() {
-            AppNotifyIcon.Visible = true;
             this.Opacity = 0;
             //this.WindowState = FormWindowState.Normal;
             this.Hide();
             this.ShowInTaskbar = false;
-            if (!HidePopupShown && !HideOnStart) {
-                HidePopupShown = true;
-                //AppNotifyIcon.ShowBalloonTip(1000, "已最小化到系统托盘", "双击图标恢复", ToolTipIcon.Info);
-            }
+            this.Opacity = 1;
+            CarrotNative.ShowWindow(this.Handle, CarrotNative.SW_HIDE);
         }
 
         private void RestoreFromTrayIcon() {
@@ -386,10 +380,10 @@ namespace GenshinNotifier {
                 this.Show();
                 this.Activate();
                 this.ShowInTaskbar = true;
-                AppNotifyIcon.Visible = true;
                 this.WindowState = FormWindowState.Normal;
                 // 调整透明度，避免界面闪烁
                 this.Opacity = 1;
+                CarrotNative.ShowWindow(this.Handle, CarrotNative.SW_SHOW);
                 //NativeHelper.SetForegroundWindow(Handle);
             }
         }
