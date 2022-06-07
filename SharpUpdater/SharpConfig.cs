@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace SharpUpdater {
-    public class SharpConfig {
 
+    public class SharpConfig {
         public static string AppBase => System.AppContext.BaseDirectory;
         public const string DEFAULT_CONFIG = "SharpUpdater.json";
 
@@ -43,10 +40,12 @@ namespace SharpUpdater {
 
         [JsonProperty("name")]
         public string Name { get; set; }
+
         [JsonProperty("url")]
         public string URL { get; set; }
 
-        public SharpConfig() { }
+        public SharpConfig() {
+        }
 
         public SharpConfig(string name, string uRL) {
             Name = name;

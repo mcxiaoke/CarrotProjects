@@ -1,6 +1,6 @@
 ﻿[*.cs]
 
-# IDE0052: 删除未读的私有成员
+dotnet_diagnostic.IDE0018.severity = none
 dotnet_diagnostic.IDE0035.severity = none
 dotnet_diagnostic.IDE0044.severity = none
 dotnet_diagnostic.IDE0051.severity = none

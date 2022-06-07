@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using CarrotCommon;
+using Newtonsoft.Json;
 
 namespace GenshinLib {
+
     public sealed class CacheManager {
         private string _name;
+
         public string Name {
             get => _name;
             set => _name = string.IsNullOrEmpty(value) ? "0" : value;

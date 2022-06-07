@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using System.Text.RegularExpressions;
-using CommandLine.Text;
-using CommandLine;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
+using System.Text;
+using System.Text.RegularExpressions;
+using CommandLine;
 
 namespace CarrotVSNumber {
-
     //Match=[assembly: AssemblyFileVersion("2.0.8.23")]
     //[0] [assembly: AssemblyFileVersion("2.0.8.23")]
     //[1] [assembly: AssemblyFileVersion("
@@ -51,11 +46,11 @@ namespace CarrotVSNumber {
     // https://docs.microsoft.com/zh-cn/dotnet/standard/base-types/the-regular-expression-object-model
     internal class Program {
 
-        static void ShowHelp() {
+        private static void ShowHelp() {
             Core.Log($"Please run again with --help for more information.");
         }
 
-        static void Main(string[] args) {
+        private static void Main(string[] args) {
             var parser = new CommandLine.Parser();
             var parserResult = Parser.Default.ParseArguments<Options>(args);
             parserResult.WithParsed(HandleCommand)
@@ -175,14 +170,17 @@ namespace CarrotVSNumber {
                 case NumberPattern.AutoInc:
                     ++lastNum;
                     break;
+
                 case NumberPattern.AutoDays:
                     lastNum = Core.GetDaysFromYear2022;
                     break;
+
                 case NumberPattern.SetValue:
                     if (newValue >= 0 && newValue <= 65535) {
                         lastNum = newValue;
                     }
                     break;
+
                 case NumberPattern.None:
                 default:
                     break;
@@ -190,9 +188,6 @@ namespace CarrotVSNumber {
             lastStr = lastNum.ToString();
             parts[parts.Length - 1] = lastStr;
             return string.Join(".", parts);
-
         }
-
     }
-
 }

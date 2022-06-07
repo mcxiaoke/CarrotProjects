@@ -1,20 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using GenshinNotifier.Properties;
 using CarrotCommon;
-using GenshinLib;
+using GenshinNotifier.Properties;
 
 namespace GenshinNotifier {
-    public static class AppUtils {
 
+    public static class AppUtils {
         public static int ThreadId => System.Threading.Thread.CurrentThread.ManagedThreadId;
 
         public const string ICON_FILE_NAME = "carrot_512.png";
         public static readonly string IconFilePath = Path.Combine(Storage.UserDataFolder, "assets", ICON_FILE_NAME);
+
         public static async Task CheckLocalAssets() {
             await Task.Run(() => {
                 var assetsDir = Directory.GetParent(IconFilePath).FullName;
@@ -25,7 +22,6 @@ namespace GenshinNotifier {
                 }
             });
         }
-
 
         public static bool PropertyExists(dynamic obj, string name) {
             if (obj == null)

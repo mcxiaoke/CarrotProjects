@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace CarrotCommon {
+
     public static class CarrotExtensions {
 
         public static string AsString(this object obj) => string.Join("\n",
@@ -40,7 +40,6 @@ namespace CarrotCommon {
 
             return @this;
         }
-
 
         public static StringBuilder AppendIf(this StringBuilder @this, bool condition, string value) {
             if (condition)

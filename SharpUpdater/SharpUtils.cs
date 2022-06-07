@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using System.Windows.Forms;
 using System.Diagnostics;
-using System.IO.Compression;
 using System.Drawing;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Windows.Forms;
 using CarrotCommon;
 
 namespace SharpUpdater {
-    internal static class SharpUtils {
 
+    internal static class SharpUtils {
         public static string ExecutablePath => Process.GetCurrentProcess().MainModule.FileName;
         public static string ExecutableName => Process.GetCurrentProcess().MainModule.ModuleName;
 
@@ -196,6 +193,5 @@ namespace SharpUpdater {
                 return ex;
             }
         }
-
     }
 }

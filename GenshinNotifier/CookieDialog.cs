@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using CarrotCommon;
-using GenshinLib;
 
 namespace GenshinNotifier {
+
     public partial class CookieDialog : Form {
         private string OldCookie;
 
@@ -41,7 +34,6 @@ namespace GenshinNotifier {
             }
         }
 
-
         private void ClearButton_Click(object sender, EventArgs e) {
             var cd = new ConfirmDialog("登出确认", "清空Cookie", "我再想想");
             var ret = cd.ShowDialog();
@@ -51,13 +43,13 @@ namespace GenshinNotifier {
                     Handlers?.Invoke(this, new SimpleEventArgs(null));
                     Close();
                     break;
+
                 case DialogResult.Yes:
                 // think button
                 case DialogResult.Cancel:
                 default:
                     break;
             }
-
         }
 
         private async void YesButton_Click(object sender, EventArgs e) {
@@ -98,6 +90,5 @@ namespace GenshinNotifier {
                 Handlers -= d;
             }
         }
-
     }
 }

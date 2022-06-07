@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Net;
+using System.Text;
+using System.Threading.Tasks;
 using CarrotCommon;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace GenshinLib {
 
     public class GenshinHelper {
+
         // Guid.NewGuid().ToString("D")
         public static string DEVICE_ID = "701f23bd-3b79-4adb-85f2-0e9ac3ba3a6b";
 
@@ -42,7 +42,7 @@ namespace GenshinLib {
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var randomStr = Utility.GetRandomString(6);
             // for old salt sign reward
-            // 14bmu1mz0yuljprsfgpvjh3ju2ni468r only working on 2.7.x 
+            // 14bmu1mz0yuljprsfgpvjh3ju2ni468r only working on 2.7.x
             var str = $"salt={salt}&t={timestamp}&r={randomStr}";
             var sign = Utility.GetComputedMd5(str);
             var ds = $"{timestamp},{randomStr},{sign}";
@@ -68,6 +68,7 @@ namespace GenshinLib {
     }
 
     public class TokenException : Exception {
+
         public TokenException(string message) : base(message) {
         }
 
@@ -76,6 +77,7 @@ namespace GenshinLib {
     }
 
     public class ServerException : Exception {
+
         public ServerException(string message) : base(message) {
         }
 
@@ -84,6 +86,7 @@ namespace GenshinLib {
     }
 
     public class ClientException : Exception {
+
         public ClientException(string message) : base(message) {
         }
 
@@ -129,7 +132,8 @@ namespace GenshinLib {
         }
 
         private int RequestID = 0;
-        async Task<string> SendRequestAsync(HttpMethod method,
+
+        private async Task<string> SendRequestAsync(HttpMethod method,
            string url,
            IDictionary<string, string> queryDict,
            object bodyObj,
@@ -167,12 +171,12 @@ namespace GenshinLib {
             }
         }
 
-        async Task<string> GetAsync(string url,
+        private async Task<string> GetAsync(string url,
            IDictionary<string, string> queryDict, bool newDS = true) {
             return await SendRequestAsync(HttpMethod.Get, url, queryDict, null, newDS);
         }
 
-        async Task<string> PostAsync(string url,
+        private async Task<string> PostAsync(string url,
            IDictionary<string, string> queryDict,
            object bodyObj,
            bool newDS = true) {
@@ -196,7 +200,6 @@ namespace GenshinLib {
                 error = ex;
             }
             return (data, error);
-
         }
 
         public async Task<(string, Exception)> GetSignReward() {
@@ -257,7 +260,6 @@ namespace GenshinLib {
                 error = ex;
             }
             return (data, error);
-
         }
 
         // base user info, prepare for other request

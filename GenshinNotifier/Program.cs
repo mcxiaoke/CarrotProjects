@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
-using Microsoft.Toolkit.Uwp.Notifications;
 using CarrotCommon;
-using Carrot.ProCom.Common;
-using Carrot.ProCom.Net;
-using Carrot.ProCom.Pipe;
-using System.IO.Pipes;
-using System.Threading.Tasks;
+using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace GenshinNotifier {
 
@@ -21,7 +15,7 @@ namespace GenshinNotifier {
         /// 应用程序的主入口点。
         /// </summary>
         [STAThread]
-        static void Main(string[] args) {
+        private static void Main(string[] args) {
             Mutex mutex = new Mutex(true, @"Global\" + Storage.AppGuidStr, out bool onlyInstance);
             if (!onlyInstance) {
                 MessageBox.Show("检测到另一个实例正在运行，请勿重复开启！", Application.ProductName, MessageBoxButtons.OK);
@@ -52,7 +46,6 @@ namespace GenshinNotifier {
 
             GC.KeepAlive(mutex);
         }
-
 
         private static void CheckSettingsUpgrade() {
             if (Properties.Settings.Default.UpgradeRequired) {

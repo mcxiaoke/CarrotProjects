@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
-using System.Security.Cryptography;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 using CarrotCommon;
 
 namespace CarrotHashCli {
 
-
     public static class Extensions {
+
         public static string Fixed(this string value, int totalWidth, char paddingChar = ' ') {
             if (value is null)
                 return new string(paddingChar, totalWidth);
@@ -24,7 +20,6 @@ namespace CarrotHashCli {
     }
 
     public class Program {
-
         private const long FILE_SIZE_1G = 1024 * 1024 * 1024;
 
         private static void HashFile(string filepath) {
@@ -77,9 +72,6 @@ namespace CarrotHashCli {
                 return;
             }
             args.ToList().FindAll(it => !string.IsNullOrWhiteSpace(it)).ForEach(it => HashFile(it));
-
         }
-
-
     }
 }

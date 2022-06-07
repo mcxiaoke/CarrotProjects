@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Text;
+﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using CarrotCommon;
+using Newtonsoft.Json;
 
 namespace GenshinLib {
 
@@ -12,6 +12,7 @@ namespace GenshinLib {
     /// 冷却中     可使用
     /// </summary>
     public class RecoveryTime {
+
         /// <summary>
         /// 日
         /// </summary>
@@ -76,6 +77,7 @@ namespace GenshinLib {
     /// 参量质变仪
     /// </summary>
     public class Transformer {
+
         /// <summary>
         /// 是否拥有该道具
         /// </summary>
@@ -144,17 +146,19 @@ namespace GenshinLib {
         }
     }
 
-
     public class DailyNote {
 
         public static string GetDayName(int days) {
             switch (days) {
                 case 0:
                     return "今天";
+
                 case 1:
                     return "明天";
+
                 case 2:
                     return "后天";
+
                 default:
                     return $"{days}天";
             }
@@ -162,9 +166,13 @@ namespace GenshinLib {
 
         // added for convenince
         public bool ResinDiscountAllUsed => ResinDiscountUsedNum >= ResinDiscountNumLimit;
+
         public bool ResinAlmostFull(int offset = 8) => CurrentResin >= MaxResin - offset;
+
         public bool ResinFull => CurrentResin >= MaxResin;
+
         public bool HomeCoinAlmostFull(int offset = 100) => CurrentHomeCoin >= MaxHomeCoin - offset;
+
         public bool HomeCoinFull => CurrentHomeCoin >= MaxHomeCoin;
         public bool DailyTaskAllFinished => FinishedTaskNum >= TotalTaskNum;
         public bool ExpeditionAllFinished => Expeditions?.FindAll(it => it.RemainedTime == "0").Count >= CurrentExpeditionNum;

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CarrotVSNumber {
+
     internal class Core {
 
         public static void Log(params string[] strings) {
@@ -22,7 +19,6 @@ namespace CarrotVSNumber {
         public static int GetDaysFromYear2022 => GetDaysFromDate(new DateTime(2022, 1, 1));
         public static int GetDaysFromYear2000 => GetDaysFromDate(new DateTime(2000, 1, 1));
 
-
         public static int ParseInt(string str) {
             try {
                 return Int32.Parse(str);
@@ -30,7 +26,6 @@ namespace CarrotVSNumber {
                 return -1;
             }
         }
-
     }
 
     public enum NumberPattern {

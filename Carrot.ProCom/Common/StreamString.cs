@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
+﻿using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Carrot.ProCom.Common {
 
     // Defines the data protocol for reading and writing strings on our stream
     public class StreamString {
-
         private const string MAGIC = "@::@";
 
         private Stream ioStream;
@@ -22,7 +16,6 @@ namespace Carrot.ProCom.Common {
         }
 
         public string ReadString() {
-
             int length = streamEncoding.GetByteCount(MAGIC);
             byte[] result = new byte[length];
             ioStream.Read(result, 0, result.Length);

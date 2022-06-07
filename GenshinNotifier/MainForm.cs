@@ -1,25 +1,18 @@
 ﻿using System;
-using System.Text;
+using System.ComponentModel;
 using System.Configuration;
 using System.Drawing;
-using System.Linq;
-using System.IO;
-using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using GenshinNotifier.Properties;
-using System.ComponentModel;
-using Microsoft.Toolkit.Uwp.Notifications;
-using Windows.Foundation.Collections;
-using Newtonsoft.Json;
-using GenshinLib;
 using CarrotCommon;
-using Carrot.ProCom.Net;
-using System.Diagnostics;
+using GenshinLib;
+using GenshinNotifier.Properties;
+using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace GenshinNotifier {
-    public partial class MainForm : Form {
 
+    public partial class MainForm : Form {
         private bool IsRefreshingData = false;
         private DateTime LastUpdateTime = DateTime.MinValue;
         private readonly bool HideOnStart = false;
@@ -77,6 +70,7 @@ namespace GenshinNotifier {
         }
 
         private bool IsFormLoaded;
+
         private void OnFormShow(object sender, EventArgs e) {
             Logger.Debug($"OnFormShow() hide={HideOnStart}");
             IsFormLoaded = true;
@@ -99,6 +93,7 @@ namespace GenshinNotifier {
         }
 
         private System.Timers.Timer CookieBlinkTimer;
+
         private void StartCookieBlinkTimer() {
             //Logger.Debug("StartCookieBlinkTimer");
             CookieBlinkTimer = new System.Timers.Timer {
@@ -152,7 +147,6 @@ namespace GenshinNotifier {
             }
         }
 
-
         private void OnFormActivated(object sender, EventArgs e) {
             Logger.Debug($"OnFormActivated() visible={this.Visible} state={this.WindowState}");
         }
@@ -192,11 +186,13 @@ namespace GenshinNotifier {
                             // close button
                             e.Cancel = true;
                             break;
+
                         case DialogResult.No:
                             // hide button
                             e.Cancel = true;
                             HideToTrayIcon();
                             break;
+
                         default:
                             break;
                     }
@@ -223,7 +219,7 @@ namespace GenshinNotifier {
             }
         }
 
-        void ShowCookieDialog() {
+        private void ShowCookieDialog() {
             var cd = new CookieDialog {
                 Location = new Point(this.Location.X + 80, this.Location.Y + 120),
                 Owner = this
@@ -234,7 +230,7 @@ namespace GenshinNotifier {
             Logger.Debug("ShowCookieDialog");
         }
 
-        async void OnCookieChanged(object sender, EventArgs e) {
+        private async void OnCookieChanged(object sender, EventArgs e) {
             var evt = e as SimpleEventArgs;
             var newCookie = evt.Value;
             if (string.IsNullOrWhiteSpace(newCookie)) {
@@ -254,19 +250,18 @@ namespace GenshinNotifier {
             } else {
                 Logger.Debug($"OnCookieChanged not change");
             }
-
         }
 
-        async void OnRefershButtonClicked(object sender, EventArgs e) {
+        private async void OnRefershButtonClicked(object sender, EventArgs e) {
             await RefreshDailyNote(sender, e);
         }
 
-        void OnCookieButtonClicked(object sender, EventArgs e) {
+        private void OnCookieButtonClicked(object sender, EventArgs e) {
             if (IsRefreshingData) { return; }
             ShowCookieDialog();
         }
 
-        void OnOptionButtonClicked(object sender, EventArgs e) {
+        private void OnOptionButtonClicked(object sender, EventArgs e) {
             if (IsRefreshingData) { return; }
             Logger.Debug($"OnOptionButtonClicked");
             var cd = new OptionForm {
@@ -276,15 +271,14 @@ namespace GenshinNotifier {
             cd.ShowDialog();
         }
 
-        void UpdateRefreshState(bool refreshing) {
+        private void UpdateRefreshState(bool refreshing) {
             IsRefreshingData = refreshing;
             this.RefreshButton.Enabled = !refreshing;
             this.CookieButton.Enabled = !refreshing;
             this.LoadingPic.Visible = refreshing;
         }
 
-
-        async Task RefreshDailyNote(object sender, EventArgs e) {
+        private async Task RefreshDailyNote(object sender, EventArgs e) {
             Logger.Debug("RefreshDailyNote");
             UpdateRefreshState(true);
             var user = DataController.Default.UserCached;
@@ -295,13 +289,13 @@ namespace GenshinNotifier {
             UpdateRefreshState(false);
         }
 
-        void UpdateUIControlsUseCache() {
+        private void UpdateUIControlsUseCache() {
             var user = DataController.Default.UserCached;
             var note = DataController.Default.NoteCached;
             UpdateUIControls(user, note);
         }
 
-        void UpdateUIControls(UserGameRole user, DailyNote note) {
+        private void UpdateUIControls(UserGameRole user, DailyNote note) {
             if (user == null || note == null) {
                 Logger.Debug($"UpdateUIControls skip null data");
                 return;

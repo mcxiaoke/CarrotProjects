@@ -1,26 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CarrotCommon;
+using Microsoft.Toolkit.Uwp.Notifications;
 using Newtonsoft.Json;
 using Semver;
-using CarrotCommon;
-using GenshinLib;
-using System.Security.Policy;
-using GenshinNotifier.Properties;
-using Microsoft.Toolkit.Uwp.Notifications;
-using System.Diagnostics;
 
 namespace GenshinNotifier {
 
-
-    static class AutoUpdater {
-
-
+    internal static class AutoUpdater {
         public static string ProjectUrl = "https://gitee.com/osap/CarrotProjects/tree/master/GenshinNotifier";
         public static string ReleaseUrl = "https://gitee.com/osap/CarrotProjects/releases";
 
@@ -139,7 +131,5 @@ namespace GenshinNotifier {
                 t.ExpirationTime = DateTimeOffset.Now.AddHours(5);
             });
         }
-
     }
-
 }

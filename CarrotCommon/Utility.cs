@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Security.Cryptography;
+using System.Text;
 using Newtonsoft.Json;
 
 namespace CarrotCommon {
-    public class Utility {
 
+    public class Utility {
         public static Random GlobalRandom = new Random();
 
         public static string GetRandomString2() {
@@ -75,7 +75,6 @@ namespace CarrotCommon {
             return sb.ToString();
         }
 
-
         public static Dictionary<string, string> ParseQueryString(String query) {
             Dictionary<String, String> queryDict = new Dictionary<string, string>();
             foreach (String token in query.TrimStart(new char[] { '?' }).Split(new char[] { '&' }, StringSplitOptions.RemoveEmptyEntries)) {
@@ -99,7 +98,6 @@ namespace CarrotCommon {
         }
 
         public static string GetHash(HashAlgorithm hashAlgorithm, string input) {
-
             // Convert the input string to a byte array and compute the hash.
             byte[] data = hashAlgorithm.ComputeHash(Encoding.UTF8.GetBytes(input));
 
@@ -134,6 +132,5 @@ namespace CarrotCommon {
                 return builder.ToString();
             }
         }
-
     }
 }

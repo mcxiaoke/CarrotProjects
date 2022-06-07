@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Security.Cryptography;
 using System.IO;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace CarrotCommon {
 
@@ -40,7 +37,6 @@ namespace CarrotCommon {
             return null;
         }
 
-
         public static string FileMD5(string filepath, bool toUpper = false) {
             using (HashAlgorithm hasher = MD5.Create()) {
                 return FileHash(filepath, hasher, toUpper);
@@ -58,7 +54,6 @@ namespace CarrotCommon {
                 return FileHash(filepath, hasher, toUpper);
             }
         }
-
 
         public static string FileSHA512(string filepath, bool toUpper = false) {
             using (HashAlgorithm hasher = SHA512.Create()) {
@@ -82,7 +77,6 @@ namespace CarrotCommon {
             return GetHash(Encoding.UTF8.GetBytes(text), hasher, toUpper);
         }
 
-
         public static string GetMD5(string text, bool toUpper = false) {
             using (HashAlgorithm hasher = MD5.Create()) {
                 return GetHash(text, hasher, toUpper);
@@ -101,14 +95,10 @@ namespace CarrotCommon {
             }
         }
 
-
         public static string GetSHA512(string text, bool toUpper = false) {
             using (HashAlgorithm hasher = SHA512.Create()) {
                 return GetHash(text, hasher, toUpper);
             }
         }
-
-
-
     }
 }

@@ -2,6 +2,7 @@
 using System.Windows.Forms;
 
 namespace GenshinNotifier {
+
     /// <summary>
     /// An implementation of <see cref="ApplicationContext"/>.
     /// https://mking.net/blog/setting-a-winforms-form-to-be-hidden-on-startup
@@ -9,6 +10,7 @@ namespace GenshinNotifier {
     /// Application.Run(new CustomApplicationContext(new ExampleForm()));
     /// </summary>
     public class CustomApplicationContext : ApplicationContext {
+
         /// <summary>
         /// The main application form.
         /// </summary>

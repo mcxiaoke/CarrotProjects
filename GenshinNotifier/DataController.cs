@@ -1,20 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.IO;
-using Newtonsoft.Json;
-using System.Net;
 using CarrotCommon;
 using GenshinLib;
+using Newtonsoft.Json;
 
 namespace GenshinNotifier {
+
     public sealed class DataController {
+
         // https://csharpindepth.com/articles/singleton
         public static DataController Default { get { return lazy.Value; } }
+
         private static readonly Lazy<DataController> lazy =
         new Lazy<DataController>(() => new DataController());
 
@@ -24,6 +20,7 @@ namespace GenshinNotifier {
         public DailyNote NoteCached { get; private set; }
 
         private string _uid;
+
         public string UID {
             get => User?.GameUid ?? _uid;
             set => _uid = value;
@@ -152,7 +149,6 @@ namespace GenshinNotifier {
             }
         }
 
-
         public async Task<(int, string, Exception)> PostSignReward() {
             if (string.IsNullOrEmpty(Cookie)) {
                 return default;
@@ -185,7 +181,5 @@ namespace GenshinNotifier {
                 return null;
             }
         }
-
-
     }
 }

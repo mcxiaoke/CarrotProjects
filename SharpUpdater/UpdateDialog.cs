@@ -1,25 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+using System.Diagnostics;
 using System.Drawing;
-using System.Linq;
-using System.Text;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows;
-using Newtonsoft.Json;
-using System.IO;
-using System.Diagnostics;
-using System.Reflection.Emit;
-using System.Security.Policy;
-using Semver;
-using System.IO.Compression;
-using System.Reflection;
 using CarrotCommon;
+using Newtonsoft.Json;
+using Semver;
 
 namespace SharpUpdater {
+
     public enum UpdateStatus {
         NONE,
         READY,
@@ -74,9 +65,7 @@ namespace SharpUpdater {
         }
 
         private void UpdateDialog_FormClosing(object sender, FormClosingEventArgs e) {
-
         }
-
 
         private void UpdateDialog_FormClosed(object sender, FormClosedEventArgs e) {
         }
@@ -84,7 +73,6 @@ namespace SharpUpdater {
         private void UpdateDialog_Shown(object sender, EventArgs e) {
             this.Text = $"{myConfig.Name ?? "Sharp"} Updater";
         }
-
 
         private static FileVersionInfo ReadFileVersion(string path) {
             try {
@@ -128,7 +116,6 @@ namespace SharpUpdater {
             infoStr += $"★ 项目地址：{info.ProjectUrl}\n";
             infoStr += $"★ 更新说明：{info.Changelog}";
             BigTextBox.Text = infoStr;
-
         }
 
         private async Task CheckUpdate(string versionUrl = null) {
@@ -301,6 +288,5 @@ namespace SharpUpdater {
             BigButton.Enabled = true;
             BigButton.Text = "更新完成，点击启动";
         }
-
     }
 }

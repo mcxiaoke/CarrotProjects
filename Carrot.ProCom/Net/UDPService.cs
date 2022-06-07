@@ -1,19 +1,15 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
-using System.Reflection;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Diagnostics;
 using Carrot.ProCom.Common;
 
 namespace Carrot.ProCom.Net {
 
-
     public static class UDPService {
-
-        static string AppGuidStr => Const.AppGuidStr;
+        private static string AppGuidStr => Const.AppGuidStr;
 
         public static EventHandler Handlers;
         private const int Port = 56789;
@@ -39,6 +35,7 @@ namespace Carrot.ProCom.Net {
         private static bool ListenUDPNext = true;
         private const string DefaultIP = "127.0.0.1";
         private const int DefaultPort = 45678;
+
         public static void OnUDPReceived(IAsyncResult result) {
             // this is what had been passed into BeginReceive as the second parameter:
             UdpClient server = result.AsyncState as UdpClient;
@@ -80,6 +77,5 @@ namespace Carrot.ProCom.Net {
             var bytes = Encoding.UTF8.GetBytes(message ?? AppGuidStr);
             client.Send(bytes, bytes.Length, target);
         }
-
     }
 }

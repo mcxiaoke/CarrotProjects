@@ -4,8 +4,8 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace CarrotCommon {
-    public static class Storage {
 
+    public static class Storage {
         public static string AppGuidStr => AppGuid.ToString("B").ToUpper();
 
         /// <summary>
@@ -18,6 +18,7 @@ namespace CarrotCommon {
                 return new Guid((attr[0] as GuidAttribute).Value);
             }
         }
+
         /// <summary>
         /// Get the current assembly Guid.
         /// <remarks>
@@ -33,6 +34,7 @@ namespace CarrotCommon {
                 return new Guid((attr[0] as GuidAttribute).Value);
             }
         }
+
         /// <summary>
         /// Get the current user data folder
         /// </summary>
@@ -44,6 +46,7 @@ namespace CarrotCommon {
                 return CheckOrCreateDir(dir);
             }
         }
+
         /// <summary>
         /// Get the current user roaming data folder
         /// </summary>
@@ -55,6 +58,7 @@ namespace CarrotCommon {
                 return CheckOrCreateDir(dir);
             }
         }
+
         /// <summary>
         /// Get all users data folder
         /// </summary>
@@ -66,6 +70,7 @@ namespace CarrotCommon {
                 return CheckOrCreateDir(dir);
             }
         }
+
         /// <summary>
         /// Check the specified folder, and create if it doesn't exist.
         /// </summary>

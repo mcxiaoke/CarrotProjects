@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.IO.Pipes;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Carrot.ProCom.Common;
 
@@ -33,9 +29,9 @@ namespace Carrot.ProCom.Pipe {
         public static PipeService Default {
             get { return lazy.Value; }
         }
+
         private static readonly Lazy<PipeService> lazy =
        new Lazy<PipeService>(() => new PipeService());
-
 
         public EventHandler Handlers;
         public PipeMessageHandler MessageHandler;
@@ -43,7 +39,6 @@ namespace Carrot.ProCom.Pipe {
         private bool serverReady;
         private NamedPipeServerStream pipeServer;
         public string PipeName { get; set; }
-
 
         public PipeService() {
             Debug.WriteLine("PipeService");
@@ -111,7 +106,6 @@ namespace Carrot.ProCom.Pipe {
                 var (response, error) = SendAndReceive(pipe, message);
                 callback?.Invoke(response, error);
             });
-
         }
 
         public static (string, Exception) SendAndReceive(string pName, string message) {
@@ -131,10 +125,6 @@ namespace Carrot.ProCom.Pipe {
                 Debug.WriteLine($"PipeService.SendAndReceive {pName} error={ex.Message}");
                 return (null, ex);
             }
-
         }
-
-
-
     }
 }

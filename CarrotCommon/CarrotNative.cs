@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CarrotCommon {
+
     public class CarrotNative {
 
         // https://www.cnblogs.com/hbccdf/p/csharp_debug_induction.html
@@ -42,16 +39,16 @@ namespace CarrotCommon {
         [DllImport("kernel32.dll")]
         public static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
 
-        const uint ENABLE_QUICK_EDIT = 0x0040;
+        private const uint ENABLE_QUICK_EDIT = 0x0040;
 
         // STD_INPUT_HANDLE (DWORD): -10 is the standard input device.
-        const int STD_INPUT_HANDLE = -10;
+        private const int STD_INPUT_HANDLE = -10;
 
         [DllImport("kernel32.dll", SetLastError = true)]
-        static extern IntPtr GetStdHandle(int nStdHandle);
+        private static extern IntPtr GetStdHandle(int nStdHandle);
 
         [DllImport("kernel32.dll")]
-        static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
+        private static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
 
         public static bool FixConsoleMode() {
             IntPtr consoleHandle = GetStdHandle(STD_INPUT_HANDLE);
@@ -90,6 +87,7 @@ namespace CarrotCommon {
 
         //https://docs.microsoft.com/zh-cn/windows/win32/api/winuser/nf-winuser-showwindow
         public const int SW_HIDE = 0;
+
         public const int SW_SHOWNORMAL = 1;
         public const int SW_SHOWMINIMIZED = 2;
         public const int SW_SHOWMAXIMIZED = 3;
@@ -117,13 +115,16 @@ namespace CarrotCommon {
 
         [DllImport("user32.dll", SetLastError = true)]
         public static extern int SetWindowLong(IntPtr hWnd, int nIndex, IntPtr dwNewLong);
+
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr FindWindow(string lpWindowClass, string lpWindowName);
+
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr FindWindowEx(IntPtr parentHandle, IntPtr childAfter, string className, string windowTitle);
+
         public const int GWL_HWNDPARENT = -8;
+
         [DllImport("user32.dll")]
         public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
-
     }
 }

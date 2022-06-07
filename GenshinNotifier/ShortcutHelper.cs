@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using IWshRuntimeLibrary;
 using CarrotCommon;
+using IWshRuntimeLibrary;
 
 namespace GenshinNotifier {
-    static class ShortcutHelper {
+
+    internal static class ShortcutHelper {
         public static string ProgramFileName => Process.GetCurrentProcess().MainModule.FileName;
         public static string ProgramModuleName => Process.GetCurrentProcess().MainModule.ModuleName;
 
@@ -77,7 +76,6 @@ namespace GenshinNotifier {
                 Logger.Error("CreateShortcut", ex);
                 return false;
             }
-
         }
 
         public static List<string> GetExistsShortcuts(string directory, string targetPath) {
@@ -106,6 +104,5 @@ namespace GenshinNotifier {
                 System.IO.File.Delete(path);
             }
         }
-
     }
 }

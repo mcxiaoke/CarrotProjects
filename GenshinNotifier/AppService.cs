@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO.Pipes;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Carrot.ProCom.Common;
-using Carrot.ProCom.Net;
 using Carrot.ProCom.Pipe;
 using CarrotCommon;
 
 namespace GenshinNotifier {
-    static class AppService {
 
+    internal static class AppService {
         public static MainForm appMainForm;
 
         public static void Start() {
@@ -36,6 +32,7 @@ namespace GenshinNotifier {
         public static string CmdShowWindow = $"{Const.CMD_PREFIX}/action/showWindow";
         public static string CmdDailyNoteInfo = $"{Const.CMD_PREFIX}/api/dailyNote/info";
         public static string CmdDailyNoteRefresh = $"{Const.CMD_PREFIX}/api/dailyNote/refresh";
+
         private static bool InterceptPipeMessage(NamedPipeServerStream server, string message) {
             Debug.WriteLine($"InterceptPipeMessage message={message}");
             if (string.IsNullOrEmpty(message) || !message.StartsWith(Const.CMD_PREFIX)) {
@@ -43,7 +40,7 @@ namespace GenshinNotifier {
             }
             if (string.Compare(message, CmdDailyNoteInfo, true) == 0) {
                 Debug.WriteLine("InterceptPipeMessage CmdDailyNoteInfo");
-                //  dailynote info cmd, return cached user and dailynote 
+                //  dailynote info cmd, return cached user and dailynote
                 var user = DataController.Default.UserCached;
                 var note = DataController.Default.NoteCached;
                 var obj = new { note, user };
@@ -76,13 +73,10 @@ namespace GenshinNotifier {
                     Debug.WriteLine($"OnPipeMessage failed={args.Error}");
                 } else {
                     Debug.WriteLine($"OnPipeMessage message={args.Message}");
-
                 }
             } catch (Exception ex) {
                 Debug.WriteLine($"OnPipeMessage error={ex.Message}");
             }
         }
-
-
     }
 }

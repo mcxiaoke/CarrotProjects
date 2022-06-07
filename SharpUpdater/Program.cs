@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using CommandLine.Text;
 using CommandLine;
-using Newtonsoft.Json;
 
 namespace SharpUpdater {
 
     public class CommandOptions {
+
         [Option('v', "verbose", Required = false, HelpText = "输出详细的信息")]
         public bool Verbose { get; set; }
 
@@ -29,9 +25,8 @@ namespace SharpUpdater {
 
     internal static class Program {
 
-
         [STAThread]
-        static void Main(string[] args) {
+        private static void Main(string[] args) {
             Parser.Default.ParseArguments<CommandOptions>(args)
               .WithParsed(options => {
                   //Console.WriteLine(options);

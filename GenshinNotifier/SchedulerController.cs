@@ -1,23 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows.Forms;
+using CarrotCommon;
+using GenshinLib;
 using GenshinNotifier.Properties;
-using Newtonsoft.Json;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Microsoft.Win32;
-using Windows.System;
-using GenshinLib;
-using CarrotCommon;
-using System.Windows.Forms;
-using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace GenshinNotifier {
 
-    sealed class RemindConfig {
+    internal sealed class RemindConfig {
         public bool NotificationEnabled;
         public bool ResinEnabled;
         public bool HomeCoinEnabled;
@@ -28,18 +26,23 @@ namespace GenshinNotifier {
 
         // resin max = 160, every 30 miniutes
         public const int ResinMax = 160;
+
         public const int ResinThreshold = ResinMax - 8;
+
         // home coin max = 2400, every 30 minutes
         public const int HomeCoinMax = 2400;
+
         public const int HomeCoinThreshold = HomeCoinMax - 50;
+
         // daily task, remind after 20:00 night
         public const int DailyTaskAfterHour = 20;
+
         // weekly discount, remind on sunday 12:00
         public const DayOfWeek DiscountAfterDay = DayOfWeek.Sunday;
+
         public const int DiscountAfterHour = 12;
         // expedition max = 5
         // transformer reached
-
 
         public bool Enabled => NotificationEnabled &&
             (ResinEnabled
@@ -54,7 +57,7 @@ namespace GenshinNotifier {
         }
     }
 
-    sealed class RemindStatus {
+    internal sealed class RemindStatus {
         public DateTime StartAt;
         public DateTime LastCheckedAt;
         public DateTime LastNotifyAt;
@@ -79,6 +82,7 @@ namespace GenshinNotifier {
         //INTERVAL_NOTE every 30 minutes
         //INTERVAL_USER everty 4 hours;
         public const int TIME_ONE_SECOND_MS = 1000;
+
         public const int TIME_ONE_MINUTE_MS = 60 * TIME_ONE_SECOND_MS;
         public const int TIME_ONE_HOUR_MS = 60 * TIME_ONE_MINUTE_MS;
         public const int TIME_ONE_DAY_MS = 24 * TIME_ONE_HOUR_MS;
@@ -90,6 +94,7 @@ namespace GenshinNotifier {
         public static SchedulerController Default {
             get { return lazy.Value; }
         }
+
         private static readonly Lazy<SchedulerController> lazy =
        new Lazy<SchedulerController>(() => new SchedulerController());
 
@@ -117,14 +122,16 @@ namespace GenshinNotifier {
             SystemEvents.SessionSwitch += SystemEvents_SessionSwitchAsync;
         }
 
-        void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e) {
+        private void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e) {
             switch (e.Mode) {
                 case PowerModes.Resume:
                     Logger.Debug($"===> Resume {DateTime.Now}");
                     break;
+
                 case PowerModes.Suspend:
                     Logger.Debug($"===> Suspend {DateTime.Now}");
                     break;
+
                 case PowerModes.StatusChange:
                     Logger.Debug($"===>  StatusChange {DateTime.Now}");
                     break;
@@ -362,7 +369,6 @@ namespace GenshinNotifier {
                 } else {
                     ShowSignErrorNotification($"遇到错误 {obj.message}", result ?? error?.Message);
                 }
-
             } catch (Exception ex) {
                 Logger.Debug($"DoSignReward error={ex}");
                 ShowSignErrorNotification($"遇到错误 {ex.GetType()}", ex.Message);

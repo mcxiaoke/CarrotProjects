@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace CarrotVSNumber {
-    internal class Test {
 
+    internal class Test {
 
         private static void TestRegexMatch() {
             var name = "AssemblyInfo.cs";

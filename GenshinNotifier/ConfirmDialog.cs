@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GenshinNotifier {
+
     public partial class ConfirmDialog : Form {
         private string TitleText;
         private string TextA;
         private string TextB;
-
 
         public ConfirmDialog(string title, string textA, string textB) {
             this.TitleText = title;
@@ -35,6 +28,5 @@ namespace GenshinNotifier {
         private void ButtonB_Click(object sender, EventArgs e) {
             Close();
         }
-
     }
 }
