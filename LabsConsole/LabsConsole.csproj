@@ -8,4 +8,17 @@
     <FileVersion>1.0.1</FileVersion>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="DeviceId" Version="6.2.0" />
+    <PackageReference Include="DeviceId.Windows" Version="6.2.0" />
+    <PackageReference Include="DeviceId.Windows.Wmi" Version="6.2.0" />
+    <PackageReference Include="HardwareInformation" Version="5.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Carrot.Device\Carrot.Device.csproj" />
+    <ProjectReference Include="..\CarrotCommon\CarrotCommon.csproj" />
+  </ItemGroup>
+
 </Project>
