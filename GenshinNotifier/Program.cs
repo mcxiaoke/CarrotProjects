@@ -4,6 +4,11 @@ using System.Threading;
 using System.Windows.Forms;
 using Microsoft.Toolkit.Uwp.Notifications;
 using CarrotCommon;
+using Carrot.ProCom.Common;
+using Carrot.ProCom.Net;
+using Carrot.ProCom.Pipe;
+using System.IO.Pipes;
+using System.Threading.Tasks;
 
 namespace GenshinNotifier {
 
@@ -21,10 +26,11 @@ namespace GenshinNotifier {
             if (!onlyInstance) {
                 MessageBox.Show("检测到另一个实例正在运行，请勿重复开启！", Application.ProductName, MessageBoxButtons.OK);
                 // bring prev instance to front
-                UDPService.SendUDP(Storage.AppGuidStr);
+                //UDPService.SendUDP(Storage.AppGuidStr);
+                AppService.SendCmdShowWindow();
                 return;
             }
-            CheckSettingsUpgrade();
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             // add exception handler
@@ -32,18 +38,21 @@ namespace GenshinNotifier {
             Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
-            UDPService.BeginUDP();
-
+            CheckSettingsUpgrade();
+            AppService.Start();
             bool shouldHide = (args.Length == 1 && args[0] == "--autostart");
-            Application.Run(new CustomApplicationContext(new MainForm(shouldHide), shouldHide));
+            var mainForm = new MainForm(shouldHide);
+            AppService.appMainForm = mainForm;
+            Application.Run(new CustomApplicationContext(mainForm, shouldHide));
+            AppService.Stop();
 
             ToastNotificationManagerCompat.Uninstall();
             SchedulerController.Default.Stop();
             Logger.Close();
-            UDPService.StopUDP();
-            //NativeHelper.FreeConsole();
+
             GC.KeepAlive(mutex);
         }
+
 
         private static void CheckSettingsUpgrade() {
             if (Properties.Settings.Default.UpgradeRequired) {
@@ -61,29 +70,16 @@ namespace GenshinNotifier {
         private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e) {
             try {
                 Exception ex = (Exception)e.ExceptionObject;
-                Logger.Error("UnhandledException", ex);
-                string errorMsg = "An application error occurred. Please contact the owner " +
-                    "with the following information:\n\n";
+                //Logger.Error("UnhandledException", ex);
+                //string errorMsg = "An application error occurred. Please contact the owner " +
+                //    "with the following information:\n\n";
 
-                using (EventLog eventLog = new EventLog("Application")) {
-                    eventLog.Source = "Application";
-                    eventLog.WriteEntry(errorMsg + ex.Message + "\n\nStack Trace:\n" + ex.StackTrace, EventLogEntryType.Warning, 101, 1);
-                }
-#if DEBUG
-                MessageBox.Show("Fatal Non-UI Error",
-    "Fatal Non-UI Error. Could not write the error to the event log. Reason: "
-    + ex.StackTrace, MessageBoxButtons.OK, MessageBoxIcon.Stop);
-#endif
+                //using (EventLog eventLog = new EventLog("Application")) {
+                //    eventLog.Source = "Application";
+                //    eventLog.WriteEntry(errorMsg + ex.Message + "\n\nStack Trace:\n" + ex.StackTrace, EventLogEntryType.Warning, 101, 1);
+                //}
+                MessageBox.Show(ex.GetType().Name + ":\n" + ex.StackTrace, "Fatal Non-UI Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             } catch (Exception exc) {
-#if DEBUG
-                try {
-                    MessageBox.Show("Fatal Non-UI Error",
-                        "Fatal Non-UI Error. Could not write the error to the event log. Reason: "
-                        + exc.Message, MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                } finally {
-                    Application.Exit();
-                }
-#endif
             }
         }
 

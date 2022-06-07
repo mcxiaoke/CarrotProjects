@@ -14,6 +14,7 @@ using Windows.Foundation.Collections;
 using Newtonsoft.Json;
 using GenshinLib;
 using CarrotCommon;
+using Carrot.ProCom.Net;
 using System.Diagnostics;
 
 namespace GenshinNotifier {
@@ -65,7 +66,6 @@ namespace GenshinNotifier {
                 AccountValueL.ForeColor = Color.Blue;
             }
             await AppUtils.CheckLocalAssets();
-            UDPService.Handlers += OnNewInstance;
             SchedulerController.Default.Initialize();
             ToastNotificationManagerCompat.OnActivated += OnNotificationActivated;
             Settings.Default.PropertyChanged += OnSettingValueChanged;
@@ -91,8 +91,8 @@ namespace GenshinNotifier {
             Logger.Info("OnFirstLaunch");
         }
 
-        private void OnNewInstance(object sender, EventArgs e) {
-            Logger.Debug($"OnNewInstance() {sender}");
+        public void ShowWindowAsync(object sender, EventArgs e) {
+            Logger.Debug($"ShowWindowAsync() {sender}");
             Invoke(new Action(() => {
                 RestoreFromTrayIcon();
             }));
@@ -166,7 +166,7 @@ namespace GenshinNotifier {
             if (IsRefreshingData) { return; }
             UpdateUIControlsUseCache();
             var note = DataController.Default.NoteCached;
-            var needRefresh = note != null && (DateTime.Now - note.CreatedAt).TotalMilliseconds > SchedulerController.TIME_ONE_MINUTE_MS * 5;
+            var needRefresh = note == null || (DateTime.Now - note.CreatedAt).TotalMilliseconds > SchedulerController.TIME_ONE_MINUTE_MS * 5;
             if (needRefresh) {
                 await RefreshDailyNote(null, null);
             }
@@ -212,8 +212,6 @@ namespace GenshinNotifier {
             IsFormLoaded = false;
             Settings.Default.PropertyChanged -= OnSettingValueChanged;
             Settings.Default.Save();
-            UDPService.Handlers -= OnNewInstance;
-            UDPService.StopUDP();
         }
 
         private void OnSettingValueChanged(object sender, PropertyChangedEventArgs e) {
@@ -292,6 +290,7 @@ namespace GenshinNotifier {
             var user = DataController.Default.UserCached;
             var (note, _) = await DataController.Default.GetDailyNote();
             Logger.Debug($"RefreshDailyNote user={user?.GameUid} resin={note?.CurrentResin}");
+            LastUpdateTime = DateTime.Now;
             UpdateUIControls(user, note);
             UpdateRefreshState(false);
         }
@@ -360,8 +359,6 @@ namespace GenshinNotifier {
             var outdated = updateDelta.TotalMinutes > 30;
             UpdatedValueL.Text = note.CreatedAt.ToString("T");
             UpdatedValueL.ForeColor = outdated ? colorAttention : colorNormal;
-
-            LastUpdateTime = DateTime.Now;
         }
 
         private void HideToTrayIcon() {

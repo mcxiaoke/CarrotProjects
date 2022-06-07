@@ -290,21 +290,25 @@ namespace GenshinNotifier {
             });
         }
 
-        private async Task CheckUser() {
+        private async Task CheckUser(bool forceUpdate = false) {
             var uc = DataController.Default.UserCached;
             var userLastUpdateAt = uc == null ? DateTime.MinValue : uc.CreatedAt;
             var userCheckElapsed = (DateTime.Now - userLastUpdateAt).TotalMilliseconds;
-            if (userCheckElapsed > INTERVAL_USER + TIME_ONE_MINUTE_MS) {
+            if (userCheckElapsed > INTERVAL_USER + TIME_ONE_MINUTE_MS || forceUpdate) {
                 var (user, ex) = await DataController.Default.GetGameRoleInfo();
-                Logger.Info($"CheckUser refresh uid={user?.GameUid} err={ex?.Message}");
+                Logger.Info($"CheckUser refresh force={forceUpdate} uid={user?.GameUid} err={ex?.Message}");
             }
         }
 
-        private async Task<DailyNote> CheckDailyNote(string source) {
+        private async Task<DailyNote> CheckDailyNote(string source, bool forceUpdate = false) {
             var checkElapsed = (DateTime.Now - Status.LastCheckedAt);
-            if (checkElapsed.TotalMilliseconds < INTERVAL_NOTE - TIME_ONE_MINUTE_MS) { return default; }
+            if (checkElapsed.TotalMilliseconds < INTERVAL_NOTE - TIME_ONE_MINUTE_MS) {
+                if (!forceUpdate) {
+                    return default;
+                }
+            }
             Status.LastCheckedAt = DateTime.Now;
-            Logger.Debug($"CheckDailyNote checkElapsed={checkElapsed.TotalMinutes} ({source})");
+            Logger.Debug($"CheckUser refresh force=uid=d=={checkElapsed.TotalMinutes} ({source})");
             try {
                 var user = DataController.Default.UserCached;
                 var (note, ex) = await DataController.Default.GetDailyNote();

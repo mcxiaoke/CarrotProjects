@@ -119,6 +119,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppService.cs" />
     <Compile Include="GlobalState.cs" />
     <Compile Include="AppUtils.cs" />
     <Compile Include="AutoUpdater.cs" />
@@ -153,7 +154,6 @@
     </Compile>
     <Compile Include="SchedulerController.cs" />
     <Compile Include="ShortcutHelper.cs" />
-    <Compile Include="UDPService.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -261,6 +261,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Carrot.ProCom\Carrot.ProCom.csproj">
+      <Project>{b0c3540b-9503-434c-a228-1756bad563e4}</Project>
+      <Name>Carrot.ProCom</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CarrotCommon\CarrotCommon.csproj">
       <Project>{45cc2dc5-60b2-4989-815e-5e9869e36743}</Project>
       <Name>CarrotCommon</Name>

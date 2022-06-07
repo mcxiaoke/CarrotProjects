@@ -1,7 +1,12 @@
 ﻿[*.cs]
 
 # IDE0052: 删除未读的私有成员
+dotnet_diagnostic.IDE0035.severity = none
+dotnet_diagnostic.IDE0044.severity = none
+dotnet_diagnostic.IDE0051.severity = none
 dotnet_diagnostic.IDE0052.severity = none
+dotnet_diagnostic.IDE0059.severity = none
+dotnet_diagnostic.IDE0060.severity = none
 
 [*.cs]
 #### 命名样式 ####
