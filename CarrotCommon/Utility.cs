@@ -20,7 +20,7 @@ namespace CarrotCommon {
                 .Select(s => s[GlobalRandom.Next(s.Length)]).ToArray());
         }
 
-        public static string Stringify(object value, bool indented = true) {
+        public static string Stringify(object value, bool indented = false) {
             if (value == null) { return ""; }
             var jst = new JsonSerializerSettings() {
                 DateFormatString = "yyyy'-'MM'-'dd' 'HH':'mm':'ss.FFFFFFFK",
