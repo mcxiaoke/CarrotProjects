@@ -188,7 +188,7 @@ namespace GenshinLib {
             Exception error = null;
             try {
                 CheckReady(true);
-                Logger.Debug($"PostSignReward with {User}");
+                Logger.Debug($"API.PostSignReward with {User}");
                 var url = $"{GenshinConst.TAKUMI_API}/event/bbs_sign_reward/sign";
                 var body = new Dictionary<string, string>() {
                 { "act_id","e202009291139501"},
@@ -207,7 +207,7 @@ namespace GenshinLib {
             Exception error = null;
             try {
                 CheckReady(true);
-                Logger.Debug($"GetSignReward with {User}");
+                Logger.Debug($"API.GetSignReward with {User}");
                 var url = $"{GenshinConst.TAKUMI_API}/event/bbs_sign_reward/info";
                 var query = new Dictionary<string, string>() {
                 {"region",User.Region},
@@ -226,7 +226,7 @@ namespace GenshinLib {
             Exception error = null;
             try {
                 CheckReady(true);
-                Logger.Debug($"GetMonthInfo with {User}");
+                Logger.Debug($"API.GetMonthInfo with {User}");
                 var url = $"{GenshinConst.HK4E_APK}/event/ys_ledger/monthInfo";
                 var query = new Dictionary<string, string>() {
                 {"bind_region",User.Region},
@@ -245,7 +245,7 @@ namespace GenshinLib {
             Exception error = null;
             try {
                 CheckReady(true);
-                Logger.Debug($"GetDailyNote for {User.GameUid}");
+                Logger.Debug($"API.GetDailyNote for {User.GameUid}");
                 var url = $"{GenshinConst.TAKUMI_RECORD_API}/game_record/app/genshin/api/dailyNote";
                 var query = new Dictionary<string, string>() {
                 {"server",User.Region},
@@ -265,7 +265,7 @@ namespace GenshinLib {
         // base user info, prepare for other request
         public async Task<UserGameRole> GetGameRoleInfo() {
             CheckReady(false);
-            Logger.Debug($"GetGameRoleInfo with cookie");
+            Logger.Debug($"API.GetGameRoleInfo with cookie");
             var url = $"{GenshinConst.TAKUMI_API}/binding/api/getUserGameRolesByCookie";
             var query = new Dictionary<string, string>() {
                 {"game_biz","hk4e_cn"},

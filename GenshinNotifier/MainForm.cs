@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Drawing;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CarrotCommon;
@@ -13,7 +14,16 @@ using Microsoft.Toolkit.Uwp.Notifications;
 namespace GenshinNotifier {
 
     public partial class MainForm : Form {
-        private bool IsRefreshingData = false;
+        private long _refreshing = 0;
+        public bool IsRefreshingData {
+            get {
+                return Interlocked.Read(ref _refreshing) == 1;
+            }
+            set {
+                Interlocked.Exchange(ref _refreshing, Convert.ToInt64(value));
+            }
+        }
+
         private DateTime LastUpdateTime = DateTime.MinValue;
         private readonly bool HideOnStart = false;
 
@@ -157,7 +167,7 @@ namespace GenshinNotifier {
             if (IsRefreshingData) { return; }
             UpdateUIControlsUseCache();
             var note = DataController.Default.NoteCached;
-            var needRefresh = note == null || (DateTime.Now - note.CreatedAt).TotalMilliseconds > SchedulerController.TIME_ONE_MINUTE_MS * 5;
+            var needRefresh = note != null && (DateTime.Now - note.CreatedAt).TotalMilliseconds > SchedulerController.TIME_ONE_MINUTE_MS * 5;
             if (needRefresh) {
                 await RefreshDailyNote(null, null);
             }
@@ -277,6 +287,7 @@ namespace GenshinNotifier {
 
         private async Task RefreshDailyNote(object sender, EventArgs e) {
             Logger.Debug("RefreshDailyNote");
+            if (IsRefreshingData) { return; }
             UpdateRefreshState(true);
             var user = DataController.Default.UserCached;
             var (note, _) = await DataController.Default.GetDailyNote();

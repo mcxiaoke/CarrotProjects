@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Threading;
 using CarrotCommon;
 using GenshinLib;
 using Newtonsoft.Json;
@@ -19,9 +20,27 @@ namespace GenshinNotifier {
         public UserGameRole UserCached { get; private set; }
         public DailyNote NoteCached { get; private set; }
 
-        private static object lockObj = new object();
-        private bool _userRefreshing;
-        private bool _noteRefreshing;
+        private long _userRefreshing = 0;
+        private long _noteRefreshing = 0;
+
+        public bool IsUserRefreshing {
+            get {
+                return Interlocked.Read(ref _userRefreshing) == 1;
+            }
+            set {
+                Interlocked.Exchange(ref _userRefreshing, Convert.ToInt64(value));
+            }
+        }
+
+        public bool IsNoteRefreshing {
+            get {
+                return Interlocked.Read(ref _noteRefreshing) == 1;
+            }
+            set {
+                Interlocked.Exchange(ref _noteRefreshing, Convert.ToInt64(value));
+            }
+        }
+
 
         private string _uid;
 
@@ -101,19 +120,18 @@ namespace GenshinNotifier {
         }
 
         public async Task<(UserGameRole, Exception)> Initialize() {
-            return await GetGameRoleInfo(true);
+            return await GetGameRoleInfo("Initialize", true);
         }
 
-        public async Task<(UserGameRole, Exception)> GetGameRoleInfo(bool forInit = false) {
+        public async Task<(UserGameRole, Exception)> GetGameRoleInfo(string source, bool forInit = false) {
             if (string.IsNullOrEmpty(Cookie)) {
                 return default;
             }
-            if (_userRefreshing) {
+            if (IsUserRefreshing) {
+                Logger.Debug($"DataController.GetGameRoleInfo is refreshing, ignore ({source})");
                 return (UserCached, null);
             }
-            lock (lockObj) {
-                _userRefreshing = true;
-            }
+            IsUserRefreshing = true;
             try {
                 if (forInit) {
                     UserCached = await Cache.LoadCache2<UserGameRole>();
@@ -121,23 +139,21 @@ namespace GenshinNotifier {
                     Logger.Debug($"DataController.GetGameRoleInfo cached uid={UserCached?.GameUid} resin={NoteCached?.CurrentResin}");
                 }
                 var user = await Api.GetGameRoleInfo();
-                Logger.Info($"DataController.GetGameRoleInfo uid={UID}");
+                Logger.Info($"DataController.GetGameRoleInfo uid={UID} ({source})");
                 if (user != null) {
                     SaveUserData(null, user);
                     await Cache.SaveCache2(user);
                 }
                 return (user, null);
             } catch (TokenException ex) {
-                Logger.Error("DataController.GetGameRoleInfo", ex);
+                Logger.Error($"DataController.GetGameRoleInfo ({source})", ex);
                 ClearUserData();
                 return (null, ex);
             } catch (Exception ex) {
-                Logger.Error("DataController.GetGameRoleInfo", ex);
+                Logger.Error($"DataController.GetGameRoleInfo ({source})", ex);
                 return (null, ex);
             } finally {
-                lock (lockObj) {
-                    _userRefreshing = false;
-                }
+                IsUserRefreshing = false;
             }
         }
 
@@ -145,12 +161,11 @@ namespace GenshinNotifier {
             if (string.IsNullOrEmpty(Cookie)) {
                 return default;
             }
-            if (_noteRefreshing) {
+            if (IsNoteRefreshing) {
+                Logger.Debug($"DataController.GetDailyNote is refreshing, ignore");
                 return (NoteCached, null);
             }
-            lock (lockObj) {
-                _noteRefreshing = true;
-            }
+            IsNoteRefreshing = true;
             try {
                 var (note, error) = await Api.GetDailyNote();
                 Logger.Debug($"DataController.GetDailyNote resin={note?.CurrentResin} error={error?.Message}");
@@ -167,9 +182,7 @@ namespace GenshinNotifier {
                 Logger.Error("DataController.GetDailyNote", ex);
                 return (null, ex);
             } finally {
-                lock (lockObj) {
-                    _noteRefreshing = false;
-                }
+                IsNoteRefreshing = false;
             }
         }
 

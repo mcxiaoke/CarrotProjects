@@ -306,7 +306,7 @@ namespace GenshinNotifier {
             var userLastUpdateAt = uc == null ? DateTime.MinValue : uc.CreatedAt;
             var userCheckElapsed = (DateTime.Now - userLastUpdateAt).TotalMilliseconds;
             if (userCheckElapsed > INTERVAL_USER + TIME_ONE_MINUTE_MS || forceUpdate) {
-                var (user, ex) = await DataController.Default.GetGameRoleInfo();
+                var (user, ex) = await DataController.Default.GetGameRoleInfo("CheckUser");
                 Logger.Info($"CheckUser refresh force={forceUpdate} uid={user?.GameUid} err={ex?.Message}");
             }
         }
