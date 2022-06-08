@@ -24,7 +24,7 @@ namespace GenshinNotifier {
                 AppService.SendCmdShowWindow();
                 return;
             }
-
+            GC.KeepAlive(mutex);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             // add exception handler
@@ -33,18 +33,20 @@ namespace GenshinNotifier {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
 
             CheckSettingsUpgrade();
+
             AppService.Start();
+            SchedulerController.Default.Initialize();
+
             bool shouldHide = (args.Length == 1 && args[0] == "--autostart");
             var mainForm = new MainForm(shouldHide);
             AppService.appMainForm = mainForm;
-            Application.Run(new CustomApplicationContext(mainForm, shouldHide));
-            AppService.Stop();
+            //Application.Run(new CustomApplicationContext(mainForm, shouldHide));
+            Application.Run(mainForm);
 
+            AppService.Stop();
             ToastNotificationManagerCompat.Uninstall();
             SchedulerController.Default.Stop();
             Logger.Close();
-
-            GC.KeepAlive(mutex);
         }
 
         private static void CheckSettingsUpgrade() {
@@ -72,7 +74,9 @@ namespace GenshinNotifier {
                 //    eventLog.WriteEntry(errorMsg + ex.Message + "\n\nStack Trace:\n" + ex.StackTrace, EventLogEntryType.Warning, 101, 1);
                 //}
                 MessageBox.Show(ex.GetType().Name + ":\n" + ex.StackTrace, "Fatal Non-UI Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                Application.Exit();
             } catch (Exception exc) {
+                Application.Exit();
             }
         }
 

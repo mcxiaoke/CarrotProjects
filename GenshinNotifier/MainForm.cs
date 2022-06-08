@@ -36,8 +36,10 @@ namespace GenshinNotifier {
             Logger.Debug("---------- SETTINGS END ----------\n");
         }
 
+        private bool IsFormLoaded = false;
         private async void OnFormLoad(object sender, EventArgs e) {
             Logger.Debug("OnFormLoad()");
+            IsFormLoaded = true;
             if (HideOnStart) {
                 HideToTrayIcon();
             }
@@ -58,8 +60,6 @@ namespace GenshinNotifier {
                 AccountValueL.Text = "无帐号或Cookie失效，请点击帐号按钮设置";
                 AccountValueL.ForeColor = Color.Blue;
             }
-            await AppUtils.CheckLocalAssets();
-            SchedulerController.Default.Initialize();
             ToastNotificationManagerCompat.OnActivated += OnNotificationActivated;
             Settings.Default.PropertyChanged += OnSettingValueChanged;
             if (Settings.Default.FirstLaunch) {
@@ -69,11 +69,8 @@ namespace GenshinNotifier {
             }
         }
 
-        private bool IsFormLoaded;
-
         private void OnFormShow(object sender, EventArgs e) {
             Logger.Debug($"OnFormShow() hide={HideOnStart}");
-            IsFormLoaded = true;
             if (DataController.Default.Ready) {
                 StopCookieBlinkTimer();
             } else {
@@ -361,22 +358,22 @@ namespace GenshinNotifier {
             this.Hide();
             this.ShowInTaskbar = false;
             this.Opacity = 1;
-            CarrotNative.ShowWindow(this.Handle, CarrotNative.SW_HIDE);
+            //CarrotNative.ShowWindow(this.Handle, CarrotNative.SW_HIDE);
         }
 
         private void RestoreFromTrayIcon() {
             Logger.Debug($"RestoreFromTrayIcon() visible={Visible} window={WindowState} thread={AppUtils.ThreadId}");
-            if (!this.Visible) {
-                this.Opacity = 0;
-                this.Show();
-                this.Activate();
-                this.ShowInTaskbar = true;
-                this.WindowState = FormWindowState.Normal;
-                // 调整透明度，避免界面闪烁
-                this.Opacity = 1;
-                CarrotNative.ShowWindow(this.Handle, CarrotNative.SW_SHOW);
-                //NativeHelper.SetForegroundWindow(Handle);
-            }
+            //if (!this.Visible) {
+            this.Opacity = 0;
+            this.Show();
+            this.Activate();
+            this.ShowInTaskbar = true;
+            this.WindowState = FormWindowState.Normal;
+            // 调整透明度，避免界面闪烁
+            this.Opacity = 1;
+            //CarrotNative.ShowWindow(this.Handle, CarrotNative.SW_SHOW);
+            //NativeHelper.SetForegroundWindow(Handle);
+            //}
         }
 
         private void OnSizeChanged(object sender, EventArgs e) {

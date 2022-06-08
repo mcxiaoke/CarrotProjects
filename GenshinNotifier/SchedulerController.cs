@@ -179,12 +179,14 @@ namespace GenshinNotifier {
 
         public void Stop() {
             Logger.Debug("SchedulerController.Stop");
+            if (ATimer != null) {
+                ATimer.Stop();
+                ATimer.Dispose();
+            }
             Status.StartAt = DateTime.MinValue;
             Status.LastCheckedAt = DateTime.MinValue;
             Status.LastSignAt = DateTime.MinValue;
             Status.LastVersionAt = DateTime.MinValue;
-            ATimer.Stop();
-            ATimer.Dispose();
             SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
             SystemEvents.SessionSwitch -= SystemEvents_SessionSwitchAsync;
         }
@@ -231,6 +233,7 @@ namespace GenshinNotifier {
             Logger.Debug("SchedulerController.CheckOnLaunch");
             Task.Run(async () => {
                 ShortcutHelper.EnableAutoStart(Settings.Default.OptionAutoStart);
+                await AppUtils.CheckLocalAssets();
                 await CheckSharpUpdater();
                 await Task.Delay(TIME_ONE_SECOND_MS * 3);
                 await CheckSignReward("CheckOnLaunch");
