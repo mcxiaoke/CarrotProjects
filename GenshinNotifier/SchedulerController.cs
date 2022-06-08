@@ -234,12 +234,13 @@ namespace GenshinNotifier {
             Task.Run(async () => {
                 ShortcutHelper.EnableAutoStart(Settings.Default.OptionAutoStart);
                 await AppUtils.CheckLocalAssets();
+                await CheckUser(true);
+                await CheckDailyNote("CheckOnLaunch", true);
+                await Task.Delay(TIME_ONE_SECOND_MS * 5);
                 await CheckSharpUpdater();
-                await Task.Delay(TIME_ONE_SECOND_MS * 3);
-                await CheckSignReward("CheckOnLaunch");
-                await Task.Delay(TIME_ONE_SECOND_MS * 10);
-                await CheckDailyNote("CheckOnLaunch");
                 await CheckVersionUpdate();
+                await Task.Delay(TIME_ONE_SECOND_MS * 5);
+                await CheckSignReward("CheckOnLaunch");
             });
         }
 
@@ -318,7 +319,7 @@ namespace GenshinNotifier {
                 }
             }
             Status.LastCheckedAt = DateTime.Now;
-            Logger.Debug($"CheckUser refresh force=uid=d=={checkElapsed.TotalMinutes} ({source})");
+            Logger.Debug($"CheckUser refresh force={forceUpdate} elapsed={checkElapsed.TotalMinutes} ({source})");
             try {
                 var user = DataController.Default.UserCached;
                 var (note, ex) = await DataController.Default.GetDailyNote();

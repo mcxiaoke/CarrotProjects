@@ -19,6 +19,10 @@ namespace GenshinNotifier {
         public UserGameRole UserCached { get; private set; }
         public DailyNote NoteCached { get; private set; }
 
+        private static object lockObj = new object();
+        private bool _userRefreshing;
+        private bool _noteRefreshing;
+
         private string _uid;
 
         public string UID {
@@ -104,6 +108,12 @@ namespace GenshinNotifier {
             if (string.IsNullOrEmpty(Cookie)) {
                 return default;
             }
+            if (_userRefreshing) {
+                return (UserCached, null);
+            }
+            lock (lockObj) {
+                _userRefreshing = true;
+            }
             try {
                 if (forInit) {
                     UserCached = await Cache.LoadCache2<UserGameRole>();
@@ -124,12 +134,22 @@ namespace GenshinNotifier {
             } catch (Exception ex) {
                 Logger.Error("DataController.GetGameRoleInfo", ex);
                 return (null, ex);
+            } finally {
+                lock (lockObj) {
+                    _userRefreshing = false;
+                }
             }
         }
 
         public async Task<(DailyNote, Exception)> GetDailyNote() {
             if (string.IsNullOrEmpty(Cookie)) {
                 return default;
+            }
+            if (_noteRefreshing) {
+                return (NoteCached, null);
+            }
+            lock (lockObj) {
+                _noteRefreshing = true;
             }
             try {
                 var (note, error) = await Api.GetDailyNote();
@@ -146,6 +166,10 @@ namespace GenshinNotifier {
             } catch (Exception ex) {
                 Logger.Error("DataController.GetDailyNote", ex);
                 return (null, ex);
+            } finally {
+                lock (lockObj) {
+                    _noteRefreshing = false;
+                }
             }
         }
 
