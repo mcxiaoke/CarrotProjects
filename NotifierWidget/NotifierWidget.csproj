@@ -24,6 +24,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,6 +34,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
@@ -58,14 +60,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Helpers\StreamString.cs" />
-    <Compile Include="Helpers\PipeClient.cs" />
-    <Compile Include="Helpers\PipeServer.cs" />
+    <Compile Include="DataController.cs" />
+    <Compile Include="GlobalExceptionHandler.cs" />
+    <Compile Include="NativeMethods.cs" />
+    <Compile Include="NoSizeDecorator.cs" />
     <Compile Include="OptionPanel.xaml.cs">
       <DependentUpon>OptionPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="User32.cs" />
+    <Compile Include="ScreenUtils.cs" />
+    <Compile Include="UI.cs" />
+    <Compile Include="WidgetStyle.cs" />
     <Compile Include="WindowMessage.cs" />
+    <Compile Include="WindowUtils.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -82,6 +88,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Resource Include="styles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Resource>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -118,6 +128,10 @@
     <ProjectReference Include="..\CarrotCommon\CarrotCommon.csproj">
       <Project>{45cc2dc5-60b2-4989-815e-5e9869e36743}</Project>
       <Name>CarrotCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GenshinLib\GenshinLib.csproj">
+      <Project>{4653d482-1b33-4e7b-b15a-fdf6a5aca2de}</Project>
+      <Name>GenshinLib</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

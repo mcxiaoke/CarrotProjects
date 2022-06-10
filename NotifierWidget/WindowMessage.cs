@@ -4,6 +4,8 @@ namespace NotifierWidget {
 
     /// <summary>
     /// From http://wiki.winehq.org/List_Of_Windows_Messages
+    /// and https://www.autoitscript.com/autoit3/docs/appendix/WinMsgCodes.htm
+    /// and https://www.cnblogs.com/shangdawei/p/4014535.html
     /// </summary>
     [Flags]
     public enum WindowMessage : uint {
@@ -194,6 +196,28 @@ namespace NotifierWidget {
         WM_EXITSIZEMOVE = 0x0232,
         WM_DROPFILES = 0x0233,
         WM_MDIREFRESHMENU = 0x0234,
+
+        WM_TOUCH = 0x0240,
+        WM_NCPOINTERUPDATE = 0x0241,
+        WM_NCPOINTERDOWN = 0x0242,
+        WM_NCPOINTERUP = 0x0243,
+        WM_NCPOINTERLAST = 0x0244,
+        WM_POINTERUPDATE = 0x0245,
+        WM_POINTERDOWN = 0x0246,
+        WM_POINTERUP = 0x0247,
+        WM_POINTER_reserved_248 = 0x0248,
+        WM_POINTERENTER = 0x0249,
+        WM_POINTERLEAVE = 0x024a,
+        WM_POINTERACTIVATE = 0x024b,
+        WM_POINTERCAPTURECHANGED = 0x024c,
+        WM_TOUCHHITTESTING = 0x024d,
+        WM_POINTERWHEEL = 0x024e,
+        WM_POINTERHWHEEL = 0x024f,
+
+        WM_VISIBILITYCHANGED = 0x0270,
+        WM_VIEWSTATECHANGED = 0x0271,
+        WM_UNREGISTER_WINDOW_SERVICES = 0x0272,
+        WM_CONSOLIDATED = 0x0273,
         WM_IME_REPORT = 0x0280,
         WM_IME_SETCONTEXT = 0x0281,
         WM_IME_NOTIFY = 0x0282,
@@ -202,14 +226,19 @@ namespace NotifierWidget {
         WM_IME_SELECT = 0x0285,
         WM_IME_CHAR = 0x0286,
         WM_IME_REQUEST = 0x0288,
-        WM_IMEKEYDOWN = 0x0290,
+
         WM_IME_KEYDOWN = 0x0290,
-        WM_IMEKEYUP = 0x0291,
         WM_IME_KEYUP = 0x0291,
+
         WM_NCMOUSEHOVER = 0x02a0,
         WM_MOUSEHOVER = 0x02a1,
         WM_NCMOUSELEAVE = 0x02a2,
         WM_MOUSELEAVE = 0x02a3,
+        WM_WTSSESSION_CHANGE = 0x02b1,
+
+        WM_TABLET_LAST = 0x02df,
+        WM_DPICHANGED = 0x02e0,
+
         WM_CUT = 0x0300,
         WM_COPY = 0x0301,
         WM_PASTE = 0x0302,

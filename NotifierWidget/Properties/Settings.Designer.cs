@@ -22,5 +22,113 @@ namespace NotifierWidget.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OptionLockWidgetPos {
+            get {
+                return ((bool)(this["OptionLockWidgetPos"]));
+            }
+            set {
+                this["OptionLockWidgetPos"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OptionWindowSink {
+            get {
+                return ((bool)(this["OptionWindowSink"]));
+            }
+            set {
+                this["OptionWindowSink"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public int LastPositionX {
+            get {
+                return ((int)(this["LastPositionX"]));
+            }
+            set {
+                this["LastPositionX"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public int LastPositionY {
+            get {
+                return ((int)(this["LastPositionY"]));
+            }
+            set {
+                this["LastPositionY"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string WidgetTextNormalColor {
+            get {
+                return ((string)(this["WidgetTextNormalColor"]));
+            }
+            set {
+                this["WidgetTextNormalColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string WidgetTextHighlightColor {
+            get {
+                return ((string)(this["WidgetTextHighlightColor"]));
+            }
+            set {
+                this["WidgetTextHighlightColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string WidgetBackgroundColor {
+            get {
+                return ((string)(this["WidgetBackgroundColor"]));
+            }
+            set {
+                this["WidgetBackgroundColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool OptionTopMost {
+            get {
+                return ((bool)(this["OptionTopMost"]));
+            }
+            set {
+                this["OptionTopMost"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
+        public int WidgetTextFontSize {
+            get {
+                return ((int)(this["WidgetTextFontSize"]));
+            }
+            set {
+                this["WidgetTextFontSize"] = value;
+            }
+        }
     }
 }
