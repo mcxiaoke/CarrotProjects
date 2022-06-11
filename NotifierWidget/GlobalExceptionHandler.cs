@@ -24,7 +24,9 @@ namespace NotifierWidget {
         /// </summary>
         /// <param name="e">The unhandled exception</param>
         public void OnUnhandledException(Exception e) {
-            Debug.WriteLine($"{e.GetType().Name} {e.Message} {e.StackTrace}");
+            Debug.WriteLine($"------\nOnUnhandledException:\n{e.GetType().Name}\n{e.Message}\n{e.StackTrace}\n------");
+            Application.Current.Shutdown();
+            //Environment.Exit(0);
         }
 
         /// <summary>

@@ -60,14 +60,21 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ComparableExtensions.cs" />
     <Compile Include="DataController.cs" />
     <Compile Include="GlobalExceptionHandler.cs" />
+    <Compile Include="MiscUtils.cs" />
+    <Compile Include="Monitor.cs" />
     <Compile Include="NativeMethods.cs" />
     <Compile Include="NoSizeDecorator.cs" />
     <Compile Include="OptionPanel.xaml.cs">
       <DependentUpon>OptionPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="OptionWindow.xaml.cs">
+      <DependentUpon>OptionWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ScreenUtils.cs" />
+    <Compile Include="SettingBindingExtension.cs" />
     <Compile Include="UI.cs" />
     <Compile Include="WidgetStyle.cs" />
     <Compile Include="WindowMessage.cs" />
@@ -85,6 +92,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="OptionPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="OptionWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

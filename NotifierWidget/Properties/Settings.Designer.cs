@@ -49,10 +49,10 @@ namespace NotifierWidget.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
-        public int LastPositionX {
+        [global::System.Configuration.DefaultSettingValueAttribute("NaN")]
+        public double LastPositionX {
             get {
-                return ((int)(this["LastPositionX"]));
+                return ((double)(this["LastPositionX"]));
             }
             set {
                 this["LastPositionX"] = value;
@@ -61,10 +61,10 @@ namespace NotifierWidget.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
-        public int LastPositionY {
+        [global::System.Configuration.DefaultSettingValueAttribute("NaN")]
+        public double LastPositionY {
             get {
-                return ((int)(this["LastPositionY"]));
+                return ((double)(this["LastPositionY"]));
             }
             set {
                 this["LastPositionY"] = value;
@@ -73,61 +73,25 @@ namespace NotifierWidget.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string WidgetTextNormalColor {
-            get {
-                return ((string)(this["WidgetTextNormalColor"]));
-            }
-            set {
-                this["WidgetTextNormalColor"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string WidgetTextHighlightColor {
-            get {
-                return ((string)(this["WidgetTextHighlightColor"]));
-            }
-            set {
-                this["WidgetTextHighlightColor"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string WidgetBackgroundColor {
-            get {
-                return ((string)(this["WidgetBackgroundColor"]));
-            }
-            set {
-                this["WidgetBackgroundColor"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool OptionTopMost {
+        public bool OptionWidgetTopMost {
             get {
-                return ((bool)(this["OptionTopMost"]));
+                return ((bool)(this["OptionWidgetTopMost"]));
             }
             set {
-                this["OptionTopMost"] = value;
+                this["OptionWidgetTopMost"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("-1")]
-        public int WidgetTextFontSize {
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string WidgetStyle {
             get {
-                return ((int)(this["WidgetTextFontSize"]));
+                return ((string)(this["WidgetStyle"]));
             }
             set {
-                this["WidgetTextFontSize"] = value;
+                this["WidgetStyle"] = value;
             }
         }
     }

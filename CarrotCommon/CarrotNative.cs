@@ -126,5 +126,7 @@ namespace CarrotCommon {
 
         [DllImport("user32.dll")]
         public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+
+
     }
 }

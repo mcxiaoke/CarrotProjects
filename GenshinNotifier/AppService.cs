@@ -52,8 +52,8 @@ namespace GenshinNotifier {
                 Debug.WriteLine("InterceptPipeMessage CmdDailyNoteRefresh");
                 // dailynote refresh cmd, refresh user and dailynote
                 Task.Run(async () => {
-                    await DataController.Default.GetGameRoleInfo("InterceptPipeMessage");
                     await DataController.Default.GetDailyNote();
+                    //await DataController.Default.GetGameRoleInfo("InterceptPipeMessage");
                 });
                 return true;
             } else if (string.Compare(message, CmdShowWindow, true) == 0) {

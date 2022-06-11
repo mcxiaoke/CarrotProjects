@@ -21,41 +21,66 @@ namespace NotifierWidget {
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
     public partial class MainWindow : Window {
-        private bool _windowSink;
-        private bool _lockWidgetPos;
-        private bool _makeTopMost;
         private IntPtr _windowHandle;
         private HwndSource _wndSource;
+        private bool _windowSink = false;
+        private double _lastPosX;
+        private double _lastPosY;
 
         public MainWindow() {
             InitializeComponent();
-            _lockWidgetPos = Settings.Default.OptionLockWidgetPos;
-            _windowSink = Settings.Default.OptionWindowSink;
-            _makeTopMost = Settings.Default.OptionTopMost;
-            Settings.Default.PropertyChanged += Default_PropertyChanged;
-
-
+            InitLocation();
             this.Loaded += MainWindow_Loaded;
-            this.Unloaded += MainWindow_Unloaded;
-            //btnA.BorderBrush = System.Windows.Media.Brushes.Transparent;
-            //btnA.BorderThickness = new Thickness(0);
-
-            this.Topmost = _makeTopMost;
+            this.ContentRendered += MainWindow_ContentRendered;
+            this.LocationChanged += MainWindow_LocationChanged;
+            this.Closing += MainWindow_Closing;
+            this.Closed += MainWindow_Closed;
+            // apply settings to ui
+            this.cxmItemLock.IsChecked = Settings.Default.OptionLockWidgetPos;
+            this.cxmItemTop.IsChecked = Settings.Default.OptionWidgetTopMost;
+            this.Topmost = Settings.Default.OptionWidgetTopMost;
+            Settings.Default.PropertyChanged += Default_PropertyChanged;
+            Debug.WriteLine($"MainWindow lock={Settings.Default.OptionLockWidgetPos} top={Settings.Default.OptionWidgetTopMost}");
         }
 
-        private void Default_PropertyChanged(object sender, PropertyChangedEventArgs e) {
-            Debug.WriteLine($"PropertyChanged {e.PropertyName} = {Settings.Default[e.PropertyName]}");
+        private void MainWindow_ContentRendered(object sender, EventArgs e) {
+            Debug.WriteLine("MainWindow_ContentRendered");
         }
 
-        private void MainWindow_Unloaded(object sender, RoutedEventArgs e) {
-            Debug.WriteLine("MainWindow_Unloaded");
+        private void MainWindow_LocationChanged(object sender, EventArgs e) {
+            //Debug.WriteLine($"MainWindow_LocationChanged {this.Left} {this.Top}");
+        }
+
+
+
+        private void MainWindow_Closing(object sender, CancelEventArgs e) {
+            var workAreaWidth = SystemParameters.WorkArea.Width;
+            var workAreaHeight = SystemParameters.WorkArea.Height;
+            var fixedX = MiscUtils.Clamp(this.Left, 0, workAreaWidth - this.Width - 10);
+            var fixedY = MiscUtils.Clamp(this.Top, 0, workAreaHeight - this.Height - 10);
+            Debug.WriteLine($"MainWindow_Closing {this.Left}->{fixedX} {this.Top}->{fixedY}");
+            Settings.Default.LastPositionX = fixedX;
+            Settings.Default.LastPositionY = fixedY;
+            Settings.Default.Save();
+        }
+
+        private void MainWindow_Closed(object sender, EventArgs e) {
+            Debug.WriteLine($"MainWindow_Closed {this.Left} {this.Top}");
             _wndSource.RemoveHook(WndProc);
             _wndSource.Dispose();
             StopTimer();
         }
 
+        private void Default_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+            Debug.WriteLine($"PropertyChanged {e.PropertyName} = {Settings.Default[e.PropertyName]} {this.IsLoaded} {this.IsVisible}");
+            if (e.PropertyName == "OptionWidgetTopMost") {
+                this.Topmost = Settings.Default.OptionWidgetTopMost;
+            }
+        }
+
         private void MainWindow_Loaded(object sender, RoutedEventArgs e) {
             Debug.WriteLine("MainWindow_Loaded");
+            SetLocation();
             // https://tyrrrz.me/blog/wndproc-in-wpf
             // https://pingfu.net/receive-wndproc-messages-in-wpf
             //_windowHandle = new WindowInteropHelper(this).Handle;
@@ -73,12 +98,36 @@ namespace NotifierWidget {
             }
             RefreshData();
             StartTimer();
-
-            foreach (DictionaryEntry kvp in this.Resources) {
-                Debug.WriteLine("{0} = {1} {2}", kvp.Key, kvp.Value, kvp.Value.GetType().Name);
-            }
-
         }
+
+        private void InitLocation() {
+            _lastPosX = Settings.Default.LastPositionX;
+            _lastPosY = Settings.Default.LastPositionY;
+            Debug.WriteLine($"InitLocation settings left={_lastPosX} top={_lastPosY}");
+        }
+
+        private void SetLocation() {
+            var left = _lastPosX;
+            var top = _lastPosY;
+            if (double.IsNaN(left) || double.IsNaN(top)) {
+                //var screenWidth = SystemParameters.PrimaryScreenWidth;
+                //var screenHeight = SystemParameters.PrimaryScreenHeight;
+                var workAreaWidth = SystemParameters.WorkArea.Width;
+                var workAreaHeight = SystemParameters.WorkArea.Height;
+                //var taskBarHeight = screenHeight - workAreaHeight;
+                var windowWidth = this.Width;
+                var windowHeight = this.Height;
+                left = workAreaWidth - windowWidth - 10;
+                top = (workAreaHeight - windowHeight) / 2;
+                Settings.Default.LastPositionX = left;
+                Settings.Default.LastPositionY = top;
+            }
+            Debug.WriteLine($"SetLocation to left={left} top={top} w={this.Width} h={this.Height}");
+            this.Left = left;
+            this.Top = top;
+        }
+
+        #region timer and data refresh
 
         private const int TIME_ONE_SECOND_MS = 1000;
         private const int TIME_ONE_MINUTE_MS = 60 * TIME_ONE_SECOND_MS;
@@ -111,7 +160,7 @@ namespace NotifierWidget {
             Task.Run(() => {
                 if (forceUpdate) {
                     Service.Refresh();
-                    Task.Delay(6000);
+                    Task.Delay(10000);
                 }
                 var data = Service.GetData();
                 Debug.WriteLine($"RefreshData uid={data?.User?.GameUid} resin={data?.Note?.CurrentResin}");
@@ -179,6 +228,8 @@ namespace NotifierWidget {
             lbUpdateAtValue.Foreground = outdated ? colorAttention : colorNormal;
         }
 
+        #endregion
+
         protected override void OnSourceInitialized(EventArgs e) {
             base.OnSourceInitialized(e);
             Debug.WriteLine("OnSourceInitialized");
@@ -195,9 +246,9 @@ namespace NotifierWidget {
                     //if (ox == windowPos.x && oy == windowPos.y) { break; }
                     Debug.WriteLine($"WM_WINDOWPOSCHANGING x={windowPos.x} y={windowPos.y} " +
                         $"cx={windowPos.cx} cy={windowPos.cy}");
-                    windowPos.hwndInsertAfter = new IntPtr(HWND_BOTTOM);
-                    windowPos.flags &= ~(uint)SWP_NOZORDER;
-                    handled = true;
+                    //windowPos.hwndInsertAfter = new IntPtr(HWND_BOTTOM);
+                    //windowPos.flags &= ~(uint)SWP_NOZORDER;
+                    //handled = true;
                     break;
                 case WindowMessage.WM_DPICHANGED:
                     var rc = (RECT*)lParam.ToPointer();
@@ -218,8 +269,14 @@ namespace NotifierWidget {
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e) {
-            Debug.WriteLine($"Window_MouseDown {e.ChangedButton} {e.ButtonState} {e.ClickCount}");
-            if (_lockWidgetPos) { return; }
+            var lockPos = Settings.Default.OptionLockWidgetPos;
+            Debug.WriteLine($"Window_MouseDown lockPos={lockPos} button={e.ChangedButton} " +
+                $"state={e.ButtonState} count={e.ClickCount}");
+            if (e.ChangedButton == MouseButton.Left && e.ClickCount == 2) {
+                RefreshData(forceUpdate: true);
+                return;
+            }
+            if (lockPos) { return; }
             switch (e.ChangedButton) {
                 case MouseButton.Left:
                     NativeMethods.ReleaseCapture();
@@ -236,47 +293,22 @@ namespace NotifierWidget {
             Close();
         }
 
-        private void CxmItemLock_Checked(object sender, RoutedEventArgs e) {
-            Debug.WriteLine("CxmItemLock_Checked");
-            _lockWidgetPos = true;
-            Settings.Default.OptionLockWidgetPos = true;
-            Settings.Default.Save();
-        }
-
-        private void CxmItemLock_Unchecked(object sender, RoutedEventArgs e) {
-            Debug.WriteLine("CxmItemLock_Unchecked");
-            _lockWidgetPos = false;
-            Settings.Default.OptionLockWidgetPos = false;
-            Settings.Default.Save();
-        }
-
         private void CxmItemRefresh_Click(object sender, RoutedEventArgs e) {
             Debug.WriteLine("CxmItemRefresh_Click");
+            if (!this.IsLoaded) { return; }
             RefreshData(forceUpdate: true);
         }
 
         private void CxmItemOption_Click(object sender, RoutedEventArgs e) {
             Debug.WriteLine("CxmItemOption_Click");
+            if (!this.IsLoaded) { return; }
+            OptionWindow option = new OptionWindow();
+            option.Show();
         }
 
         private void CxmItemAbout_Click(object sender, RoutedEventArgs e) {
             Debug.WriteLine("CxmItemAbout_Click");
-        }
-
-        private void CxmItemTop_Checked(object sender, RoutedEventArgs e) {
-            Debug.WriteLine("CxmItemTop_Checked");
-            Settings.Default.OptionTopMost = true;
-            Settings.Default.Save();
-            _makeTopMost = true;
-            this.Topmost = true;
-        }
-
-        private void CxmItemTop_Unchecked(object sender, RoutedEventArgs e) {
-            Debug.WriteLine("CxmItemTop_Unchecked");
-            Settings.Default.OptionTopMost = false;
-            Settings.Default.Save();
-            _makeTopMost = false;
-            this.Topmost = false;
+            if (!this.IsLoaded) { return; }
         }
     }
 }

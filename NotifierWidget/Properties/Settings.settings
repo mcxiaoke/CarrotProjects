@@ -8,26 +8,17 @@
     <Setting Name="OptionWindowSink" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="LastPositionX" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">-1</Value>
+    <Setting Name="LastPositionX" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">NaN</Value>
     </Setting>
-    <Setting Name="LastPositionY" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">-1</Value>
+    <Setting Name="LastPositionY" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">NaN</Value>
     </Setting>
-    <Setting Name="WidgetTextNormalColor" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="WidgetTextHighlightColor" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="WidgetBackgroundColor" Type="System.String" Scope="User">
-      <Value Profile="(Default)" />
-    </Setting>
-    <Setting Name="OptionTopMost" Type="System.Boolean" Scope="User">
+    <Setting Name="OptionWidgetTopMost" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
-    <Setting Name="WidgetTextFontSize" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">-1</Value>
+    <Setting Name="WidgetStyle" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>
