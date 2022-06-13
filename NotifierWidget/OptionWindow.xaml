@@ -5,7 +5,34 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:NotifierWidget" mc:Ignorable="d" Title="Notifier Widget Options"
         Height="450" Width="600" WindowStartupLocation="CenterScreen" Topmost="True">
-    <Grid>
-
-    </Grid>
+    <StackPanel Background="#FF708090">
+        <ComboBox x:Name="cmbColors">
+            <ComboBox.Resources>
+                <local:ColorToSolidBrushConverter x:Key="ColorBrushConverter" />
+            </ComboBox.Resources>
+            <ComboBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid Loaded="ComboBox_Table_Loaded" />
+                </ItemsPanelTemplate>
+            </ComboBox.ItemsPanel>
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Border Width="20" Height="20" Margin="6,0,6,0"
+                                Background="{Binding Value, Converter={StaticResource ColorBrushConverter}}"
+                                BorderBrush="Black" BorderThickness="1" />
+                        <Label Content="{Binding Key}" />
+                        <!--<TextBlock VerticalAlignment="Center">
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{}{0} {1}">
+                                    <Binding Path="Key" />
+                                    <Binding Path="Value" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>-->
+                    </StackPanel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+    </StackPanel>
 </Window>

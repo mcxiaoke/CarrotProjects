@@ -99,6 +99,15 @@ dotnet_diagnostic.IDE0051.severity = none
 # CS0168: 声明了变量，但从未使用过
 dotnet_diagnostic.CS0168.severity = silent
 
+# RCS1036: Remove unnecessary blank line.
+dotnet_diagnostic.RCS1036.severity = none
+
+# RCS1213: Remove unused member declaration.
+dotnet_diagnostic.RCS1213.severity = none
+
+# RCS1214: Unnecessary interpolated string.
+dotnet_diagnostic.RCS1214.severity = none
+
 [*.vb]
 #### 命名样式 ####
 

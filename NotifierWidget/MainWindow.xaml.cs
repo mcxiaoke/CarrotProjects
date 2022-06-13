@@ -1,19 +1,16 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
-using System.Windows.Controls;
-using System.Diagnostics;
-using System.ComponentModel;
-using System.Threading;
-using System.Threading.Tasks;
-using static NotifierWidget.NativeMethods;
-using NotifierWidget.Properties;
 using GenshinLib;
-using System.Timers;
-using System.Collections;
+using NotifierWidget.Properties;
+using static NotifierWidget.NativeMethods;
 
 namespace NotifierWidget {
 
@@ -50,8 +47,6 @@ namespace NotifierWidget {
         private void MainWindow_LocationChanged(object sender, EventArgs e) {
             //Debug.WriteLine($"MainWindow_LocationChanged {this.Left} {this.Top}");
         }
-
-
 
         private void MainWindow_Closing(object sender, CancelEventArgs e) {
             var workAreaWidth = SystemParameters.WorkArea.Width;
@@ -132,6 +127,7 @@ namespace NotifierWidget {
         private const int TIME_ONE_SECOND_MS = 1000;
         private const int TIME_ONE_MINUTE_MS = 60 * TIME_ONE_SECOND_MS;
         private System.Timers.Timer refreshTimer;
+
         private void StartTimer() {
             StopTimer();
             Debug.WriteLine($"StartTimer");
@@ -228,14 +224,14 @@ namespace NotifierWidget {
             lbUpdateAtValue.Foreground = outdated ? colorAttention : colorNormal;
         }
 
-        #endregion
+        #endregion timer and data refresh
 
         protected override void OnSourceInitialized(EventArgs e) {
             base.OnSourceInitialized(e);
             Debug.WriteLine("OnSourceInitialized");
         }
 
-        unsafe IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled) {
+        private unsafe IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled) {
             if (!_windowSink) { return IntPtr.Zero; }
             var message = (WindowMessage)msg;
             switch (message) {
@@ -250,17 +246,21 @@ namespace NotifierWidget {
                     //windowPos.flags &= ~(uint)SWP_NOZORDER;
                     //handled = true;
                     break;
+
                 case WindowMessage.WM_DPICHANGED:
                     var rc = (RECT*)lParam.ToPointer();
                     Debug.WriteLine($"WM_DPICHANGED x={rc->Left} y={rc->Top} cx={rc->Width} cy={rc->Height}");
                     //SetWindowPos(_windowHandle, IntPtr.Zero, 0, 0, rc->Right, rc->Left, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOZORDER);
                     break;
+
                 case WindowMessage.WM_NCHITTEST:
                     Debug.WriteLine($"WM_NCHITTEST");
                     break;
+
                 case WindowMessage.WM_NCLBUTTONDOWN:
                     Debug.WriteLine($"WM_NCLBUTTONDOWN");
                     break;
+
                 default:
                     break;
             }

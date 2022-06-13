@@ -132,7 +132,6 @@
                         Grid.Column="2" Grid.Row="7">---</Label>
                 <Label Style="{StaticResource GridLabelValueStyle}" x:Name="lbUpdateAtValue"
                         Grid.Column="2" Grid.Row="8">---</Label>
-
             </Grid>
             <Grid x:Name="layoutFooter">
                 <Label x:Name="lbFooter" Foreground="{StaticResource TextColorBrush}" FontSize="12"

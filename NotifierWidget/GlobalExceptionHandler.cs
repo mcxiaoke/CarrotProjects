@@ -5,7 +5,9 @@ using System.Windows;
 using System.Windows.Threading;
 
 namespace NotifierWidget {
+
     public class GlobalExceptionHandler {
+
         public GlobalExceptionHandler() {
             this.Setup();
         }
@@ -45,7 +47,6 @@ namespace NotifierWidget {
         /// <param name="msg">The message to be logged.</param>
         protected void Log(string msg) => Debug.WriteLine(msg);
 
-
         /// <summary>
         /// This method is invoked whenever there is an unhandled
         /// exception on a delegate that was posted to be executed
@@ -60,14 +61,13 @@ namespace NotifierWidget {
         /// <summary>
         /// This event is invoked whenever there is an unhandled
         /// exception in the default AppDomain. It is invoked for
-        /// exceptions on any thread that was created on the AppDomain. 
+        /// exceptions on any thread that was created on the AppDomain.
         /// </summary>
         private void OnAppDomainUnhandledException(object sender, UnhandledExceptionEventArgs e) {
             Exception exc = ExtractExceptionObject(e);
             Log($"Unhandled exception on current AppDomain (IsTerminating = {e.IsTerminating}): {exc}");
             OnUnhandledException(exc);
         }
-
 
         /// <summary>
         /// This method is called when a faulted task, which has the
@@ -92,7 +92,7 @@ namespace NotifierWidget {
         }
 
         /// <summary>
-        /// This method extracts the exception instance of the AppDomains 
+        /// This method extracts the exception instance of the AppDomains
         /// <see cref="UnhandledExceptionEventArgs"/> object. If the exception
         /// is not of type System.Exception, it will be wrapped in a new Exception object.
         /// </summary>

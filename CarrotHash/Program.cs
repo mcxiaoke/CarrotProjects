@@ -19,7 +19,7 @@ namespace CarrotHashCli {
         }
     }
 
-    public class Program {
+    public static class Program {
         private const long FILE_SIZE_1G = 1024 * 1024 * 1024;
 
         private static void HashFile(string filepath) {
@@ -38,10 +38,10 @@ namespace CarrotHashCli {
             if (file.Length > FILE_SIZE_1G) {
                 decimal gbSize = Convert.ToDecimal(file.Length) / FILE_SIZE_1G;
                 Console.WriteLine("{0,-10} {1}", "Warning:".Fixed(10), $"File is too large, over {gbSize:F3}GB, " +
-                    $"computing hash may take a long time, contine? (yes/no)");
+                    "computing hash may take a long time, contine? (yes/no)");
                 Console.Write("{0,-10}", "Choice: ");
                 var answer = Console.ReadLine();
-                if (answer.ToLower() != "yes") {
+                if (!string.Equals(answer, "yes", StringComparison.OrdinalIgnoreCase)) {
                     Console.WriteLine("{0,-10} {1}", "Action:", "User abort.");
                     return;
                 }

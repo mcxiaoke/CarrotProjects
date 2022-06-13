@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CarrotCommon;
@@ -73,10 +73,10 @@ namespace GenshinNotifier {
         public static async Task<VersionInfo> CheckUpdate() {
             return await Task.Run(async () => {
                 var url = VersionUrls[0];
-                using (var client = new WebClient()) {
+                using (var client = new HttpClient()) {
                     Logger.Debug($"CheckUpdate info url={url}");
                     try {
-                        var text = await client.DownloadStringTaskAsync(new Uri(url));
+                        var text = await client.GetStringAsync(new Uri(url));
                         var info = JsonConvert.DeserializeObject<VersionInfo>(text);
                         Logger.Info($"CheckUpdate info={info}");
                         if (info.HasUpdate) {

@@ -34,9 +34,7 @@ namespace SharpUpdater {
                   Application.SetCompatibleTextRenderingDefault(false);
                   Application.Run(new UpdateDialog(options));
               })
-              .WithNotParsed(errors => {
-                  Application.Exit();
-              });
+              .WithNotParsed(_ => Application.Exit());
         }
     }
 }

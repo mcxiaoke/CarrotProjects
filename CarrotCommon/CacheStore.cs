@@ -4,7 +4,7 @@ using System.Runtime.Caching;
 namespace CarrotCommon {
 
     public static class CacheStore {
-        private static ObjectCache _cache = MemoryCache.Default;
+        private static readonly ObjectCache _cache = MemoryCache.Default;
 
         public static bool Add(string key, object value) {
             return _cache.Add(key, value, null);

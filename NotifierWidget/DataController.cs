@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Carrot.ProCom.Common;
 using Carrot.ProCom.Pipe;
-using CarrotCommon;
 using GenshinLib;
 using Newtonsoft.Json;
 
@@ -18,14 +13,14 @@ namespace NotifierWidget {
     }
 
     internal static class Service {
-
         public const string MAIN_APP_GUID = "{82761839-E200-402E-8C1D-2FDE9571239C}";
         public const string PIPE_NAME = MAIN_APP_GUID;
 
         // from Carrot Notifier AppService.cs
-        public static string CmdShowWindow = $"{Const.CMD_PREFIX}/action/showWindow";
-        public static string CmdDailyNoteInfo = $"{Const.CMD_PREFIX}/api/dailyNote/info";
-        public static string CmdDailyNoteRefresh = $"{Const.CMD_PREFIX}/api/dailyNote/refresh";
+        public static string CmdShowWindow = $"{ProComConst.CMD_PREFIX}/action/showWindow";
+
+        public static string CmdDailyNoteInfo = $"{ProComConst.CMD_PREFIX}/api/dailyNote/info";
+        public static string CmdDailyNoteRefresh = $"{ProComConst.CMD_PREFIX}/api/dailyNote/refresh";
 
         public static void Refresh() {
             try {
@@ -46,7 +41,6 @@ namespace NotifierWidget {
                     return default;
                 }
                 return JsonConvert.DeserializeObject<DataBox>(response);
-
             } catch (Exception ex) {
                 Debug.WriteLine($"GetData error={ex.StackTrace}");
                 return default;

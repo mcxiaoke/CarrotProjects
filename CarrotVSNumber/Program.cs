@@ -44,7 +44,7 @@ namespace CarrotVSNumber {
 
     // https://docs.microsoft.com/zh-cn/visualstudio/msbuild/property-functions?view=vs-2022
     // https://docs.microsoft.com/zh-cn/dotnet/standard/base-types/the-regular-expression-object-model
-    internal class Program {
+    internal static class Program {
 
         private static void ShowHelp() {
             Core.Log($"Please run again with --help for more information.");
@@ -135,7 +135,7 @@ namespace CarrotVSNumber {
         }
 
         public static string ReplaceVersionNumber(string content, NumberPattern np, int newValue) {
-            string pv = @"(\d+\.\d+\.\d+(\.\d+)?)";
+            const string pv = @"(\d+\.\d+\.\d+(\.\d+)?)";
             string pattern = $@"(^.+AssemblyFileVersion\(""){pv}(""\)\])";
             var match = Regex.Match(content, pattern, RegexOptions.Multiline);
             //Core.Log("Match={0}", match.Value);

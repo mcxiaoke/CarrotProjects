@@ -4,14 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NotifierWidget {
 
     // https://www.wpftutorial.net/ScreenResolutions.html
     // WPF replacemenet for Screen.AllScreens()
-    public class Monitor {
+    public sealed class Monitor {
+
         #region Dll imports
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
@@ -41,21 +40,22 @@ namespace NotifierWidget {
             internal Rect rcMonitor = new Rect();
             internal Rect rcWork = new Rect();
             internal int dwFlags = 0;
+
             [MarshalAs(UnmanagedType.ByValArray, SizeConst = 32)]
             internal char[] szDevice = new char[32];
         }
 
         private const int MonitorinfofPrimary = 0x00000001;
 
-        #endregion
+        #endregion Dll imports
 
         public static HandleRef NullHandleRef = new HandleRef(null, IntPtr.Zero);
 
-        public System.Windows.Rect Bounds { get; private set; }
-        public System.Windows.Rect WorkingArea { get; private set; }
-        public string Name { get; private set; }
+        public System.Windows.Rect Bounds { get; }
+        public System.Windows.Rect WorkingArea { get; }
+        public string Name { get; }
 
-        public bool IsPrimary { get; private set; }
+        public bool IsPrimary { get; }
 
         private Monitor(IntPtr monitor, IntPtr hdc) {
             var info = new MonitorInfoEx();
@@ -82,7 +82,7 @@ namespace NotifierWidget {
         }
 
         private class MonitorEnumCallback {
-            public ArrayList Monitors { get; private set; }
+            public ArrayList Monitors { get; }
 
             public MonitorEnumCallback() {
                 Monitors = new ArrayList();

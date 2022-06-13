@@ -25,8 +25,8 @@ namespace CarrotCommon {
         private readonly Serilog.ILogger _logger;
 
         public DebugLogger() {
-            var name = "debug.txt";
-            var logOutput = Path.Combine(Storage.UserDataFolder, "logs");
+            const string name = "debug.txt";
+            var logOutput = Path.Combine(AppInfo.LocalAppDataPath, "logs");
             Storage.CheckOrCreateDir(logOutput);
             var logFile = Path.Combine(logOutput, name);
             _logger = new LoggerConfiguration()
@@ -53,8 +53,8 @@ namespace CarrotCommon {
         private readonly Serilog.ILogger _logger;
 
         public ReleaseLogger() {
-            var name = "log-.txt";
-            var logOutput = Path.Combine(Storage.UserDataFolder, "logs");
+            const string name = "log-.txt";
+            var logOutput = Path.Combine(AppInfo.LocalAppDataPath, "logs");
             Storage.CheckOrCreateDir(logOutput);
             var logFile = Path.Combine(logOutput, name);
             _logger = new LoggerConfiguration()
@@ -77,7 +77,7 @@ namespace CarrotCommon {
 #if DEBUG
         private static readonly ILogger Default = new DebugLogger();
 #else
-        static readonly ILogger Default = new ReleaseLogger();
+        private static readonly ILogger Default = new ReleaseLogger();
 #endif
 
         public static void Verbose(string m) => Default.Log(LogEventLevel.Verbose, m);

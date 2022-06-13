@@ -1,6 +1,5 @@
-﻿using System.Diagnostics;
-using System.Threading.Tasks;
-using System;
+﻿using System;
+using System.Diagnostics;
 using System.Windows;
 using NotifierWidget.Properties;
 
@@ -11,7 +10,6 @@ namespace NotifierWidget {
     /// </summary>
     public partial class App : Application {
         private GlobalExceptionHandler _handler;
-
 
         public App() {
             _handler = new GlobalExceptionHandler();
@@ -43,6 +41,5 @@ namespace NotifierWidget {
         private void App_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e) {
             Debug.WriteLine("App_LoadCompleted");
         }
-
     }
 }

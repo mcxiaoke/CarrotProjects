@@ -1,175 +1,66 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{262B016C-4DE1-4E3E-8C3C-18DA5CF08C52}</ProjectGuid>
     <OutputType>WinExe</OutputType>
+    <TargetFrameworks>net472;net5.0-windows;net6.0-windows</TargetFrameworks>
+    <UseWPF>true</UseWPF>
+    <AutoGenerateBindingRedirects>True</AutoGenerateBindingRedirects>
     <RootNamespace>NotifierWidget</RootNamespace>
     <AssemblyName>NotifierWidget</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-  </ItemGroup>
-  <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Compile Include="ComparableExtensions.cs" />
-    <Compile Include="DataController.cs" />
-    <Compile Include="GlobalExceptionHandler.cs" />
-    <Compile Include="MiscUtils.cs" />
-    <Compile Include="Monitor.cs" />
-    <Compile Include="NativeMethods.cs" />
-    <Compile Include="NoSizeDecorator.cs" />
-    <Compile Include="OptionPanel.xaml.cs">
-      <DependentUpon>OptionPanel.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="OptionWindow.xaml.cs">
-      <DependentUpon>OptionWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ScreenUtils.cs" />
-    <Compile Include="SettingBindingExtension.cs" />
-    <Compile Include="UI.cs" />
-    <Compile Include="WidgetStyle.cs" />
-    <Compile Include="WindowMessage.cs" />
-    <Compile Include="WindowUtils.cs" />
-    <Page Include="MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="OptionPanel.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="OptionWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Resource Include="styles.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Resource>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="app.manifest" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Carrot.ProCom\Carrot.ProCom.csproj">
-      <Project>{b0c3540b-9503-434c-a228-1756bad563e4}</Project>
-      <Name>Carrot.ProCom</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\CarrotCommon\CarrotCommon.csproj">
-      <Project>{45cc2dc5-60b2-4989-815e-5e9869e36743}</Project>
-      <Name>CarrotCommon</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GenshinLib\GenshinLib.csproj">
-      <Project>{4653d482-1b33-4e7b-b15a-fdf6a5aca2de}</Project>
-      <Name>GenshinLib</Name>
-    </ProjectReference>
-  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Costura.Fody">
       <Version>5.7.0</Version>
       <PrivateAssets>all</PrivateAssets>
+      <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
     <PackageReference Include="Fody">
       <Version>6.6.2</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.330701" />
+    <PackageReference Include="Microsoft.Windows.Compatibility">
+      <Version>6.0.0</Version>
+    </PackageReference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+
+  <ItemGroup>
+    <ProjectReference Include="..\Carrot.ProCom\Carrot.ProCom.csproj" />
+    <ProjectReference Include="..\CarrotCommon\CarrotCommon.csproj" />
+    <ProjectReference Include="..\GenshinLib\GenshinLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <PropertyGroup />
   <PropertyGroup>
-    <PreBuildEvent>if $(ConfigurationName) == Release (
-   echo "Release build, do versoin number change"
-    CarrotVSNumber.exe --inc --yes --file $(ProjectDir)\Properties\AssemblyInfo.cs
-) ELSE (
-    echo "Debug build, Skip versoin number change"
-)</PreBuildEvent>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Company>CatCastle</Company>
+    <Authors>CatCastle</Authors>
+    <Copyright>Copyright © CatCastle 2022</Copyright>
+    <PackageProjectUrl>https://github.com/mcxiaoke/CarrotProjects</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mcxiaoke/CarrotProjects</RepositoryUrl>
+    <NeutralLanguage>zh-CN</NeutralLanguage>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.1</FileVersion>
+    <Version>1.0.2</Version>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup>
-    <PostBuildEvent>if $(ConfigurationName) == Release (
-    cd $(ProjectDir)\bin &amp; 7z a -tzip $(TargetName)-$(ConfigurationName).zip Release/ -xr!backups -xr!temp
-) ELSE (
-    echo "Debug build, Skip zip output package"
-)</PostBuildEvent>
-  </PropertyGroup>
+
 </Project>

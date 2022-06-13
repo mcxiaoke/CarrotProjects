@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace CarrotCommon {
 
-    public class CarrotNative {
+    public static class CarrotNative {
 
         // https://www.cnblogs.com/hbccdf/p/csharp_debug_induction.html
         [DllImport("kernel32.dll", CharSet = CharSet.Auto)]
@@ -20,8 +20,8 @@ namespace CarrotCommon {
 
         public static (int, int) GetDisplayRealSize() {
             IntPtr primary = GetDC(IntPtr.Zero);
-            int DESKTOPVERTRES = 117;
-            int DESKTOPHORZRES = 118;
+            const int DESKTOPVERTRES = 117;
+            const int DESKTOPHORZRES = 118;
             int actualPixelsX = GetDeviceCaps(primary, DESKTOPHORZRES);
             int actualPixelsY = GetDeviceCaps(primary, DESKTOPVERTRES);
             ReleaseDC(IntPtr.Zero, primary);
@@ -126,7 +126,5 @@ namespace CarrotCommon {
 
         [DllImport("user32.dll")]
         public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
-
-
     }
 }

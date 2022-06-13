@@ -14,7 +14,8 @@ namespace GenshinNotifier {
         public static void Start() {
             PipeService.Default.Handlers += OnPipeMessage;
             PipeService.Default.MessageHandler = InterceptPipeMessage;
-            PipeService.Default.StartServer();
+            Debug.WriteLine($"AppService.Start {ProComConst.PIPE_MAIN}");
+            PipeService.Default.StartServer(ProComConst.PIPE_MAIN);
         }
 
         public static void Stop() {
@@ -26,16 +27,16 @@ namespace GenshinNotifier {
 
         public static void SendCmdShowWindow() {
             Debug.WriteLine("SendCmdShowWindow");
-            PipeService.SendAndReceive(Const.AppGuidStr, CmdShowWindow);
+            PipeService.SendAndReceive(ProComConst.PIPE_MAIN, CmdShowWindow);
         }
 
-        public static string CmdShowWindow = $"{Const.CMD_PREFIX}/action/showWindow";
-        public static string CmdDailyNoteInfo = $"{Const.CMD_PREFIX}/api/dailyNote/info";
-        public static string CmdDailyNoteRefresh = $"{Const.CMD_PREFIX}/api/dailyNote/refresh";
+        public static string CmdShowWindow = $"{ProComConst.CMD_PREFIX}/action/showWindow";
+        public static string CmdDailyNoteInfo = $"{ProComConst.CMD_PREFIX}/api/dailyNote/info";
+        public static string CmdDailyNoteRefresh = $"{ProComConst.CMD_PREFIX}/api/dailyNote/refresh";
 
         private static bool InterceptPipeMessage(NamedPipeServerStream server, string message) {
             Debug.WriteLine($"InterceptPipeMessage message={message}");
-            if (string.IsNullOrEmpty(message) || !message.StartsWith(Const.CMD_PREFIX)) {
+            if (string.IsNullOrEmpty(message) || !message.StartsWith(ProComConst.CMD_PREFIX)) {
                 return false;
             }
             if (string.Compare(message, CmdDailyNoteInfo, true) == 0) {
@@ -58,7 +59,7 @@ namespace GenshinNotifier {
                 return true;
             } else if (string.Compare(message, CmdShowWindow, true) == 0) {
                 Debug.WriteLine("InterceptPipeMessage CmdShowWindow");
-                appMainForm?.ShowWindowAsync(message, EventArgs.Empty);
+                appMainForm?.ShowMyWindow(message, EventArgs.Empty);
                 return true;
             }
 

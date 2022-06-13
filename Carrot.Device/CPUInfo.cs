@@ -221,17 +221,17 @@ namespace Carrot.Device {
         public override string ToString() {
             StringBuilder str = new StringBuilder();
 
-            str.Append($"Device ID: {DeviceID}\n");
-            str.Append($"Name: {Id}\n");
-            str.Append($"Current Clock Speed (MHz): {CurrentClockSpeed}, Max. Clock Speed (MHz): {MaxClockSpeed}\n");
-            str.Append($"Architecture: {Architecture}\n");
+            str.Append("Device ID: ").Append(DeviceID).Append('\n');
+            str.Append("Name: ").Append(Id).Append('\n');
+            str.Append("Current Clock Speed (MHz): ").Append(CurrentClockSpeed).Append(", Max. Clock Speed (MHz): ").Append(MaxClockSpeed).Append('\n');
+            str.Append("Architecture: ").Append(Architecture).Append('\n');
 
             if (Manufacturer != String.Empty)
-                str.Append($"Manufacturer: {Manufacturer}\n");
+                str.Append("Manufacturer: ").Append(Manufacturer).Append('\n');
 
-            str.Append($"NumberOfCores: {NumberOfCores}\n");
-            str.Append($"Number Of Logical Processors: {NumberOfLogicalProcessors}\n");
-            str.Append($"Number Of Enabled Core: {NumberOfEnabledCore}\n");
+            str.Append("NumberOfCores: ").Append(NumberOfCores).Append('\n');
+            str.Append("Number Of Logical Processors: ").Append(NumberOfLogicalProcessors).Append('\n');
+            str.Append("Number Of Enabled Core: ").Append(NumberOfEnabledCore).Append('\n');
 
             return str.ToString();
         }

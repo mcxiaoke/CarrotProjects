@@ -10,7 +10,7 @@ namespace GenshinNotifier {
         public static int ThreadId => System.Threading.Thread.CurrentThread.ManagedThreadId;
 
         public const string ICON_FILE_NAME = "carrot_512.png";
-        public static readonly string IconFilePath = Path.Combine(Storage.UserDataFolder, "assets", ICON_FILE_NAME);
+        public static readonly string IconFilePath = Path.Combine(AppInfo.LocalAppDataPath, "assets", ICON_FILE_NAME);
 
         public static async Task CheckLocalAssets() {
             await Task.Run(() => {

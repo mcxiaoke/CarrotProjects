@@ -15,6 +15,7 @@ namespace GenshinNotifier {
 
     public partial class MainForm : Form {
         private long _refreshing = 0;
+
         public bool IsRefreshingData {
             get {
                 return Interlocked.Read(ref _refreshing) == 1;
@@ -30,9 +31,12 @@ namespace GenshinNotifier {
         public MainForm(bool shouldHide) {
             HideOnStart = shouldHide;
             //TopMost = true;
-            Logger.Debug("=======================================");
             Logger.Debug($"MainForm HideOnStart={HideOnStart}");
             InitializeComponent();
+            Logger.Debug(AppInfo.AsString());
+            Logger.Debug(AppInfo.CommonAppDataPath);
+            Logger.Debug(AppInfo.LocalAppDataPath);
+            Logger.Debug(AppInfo.RoamingAppDataPath);
         }
 
         private void PrintAllSettings() {
@@ -40,13 +44,14 @@ namespace GenshinNotifier {
             var sb = new StringBuilder();
             foreach (SettingsProperty key in Settings.Default.Properties) {
                 var value = Settings.Default[key.Name];
-                sb.Append($"\n{key.Name} = {value}");
+                sb.Append('\n').Append(key.Name).Append(" = ").Append(value);
             }
             Logger.Debug(sb.ToString());
             Logger.Debug("---------- SETTINGS END ----------\n");
         }
 
         private bool IsFormLoaded = false;
+
         private async void OnFormLoad(object sender, EventArgs e) {
             Logger.Debug("OnFormLoad()");
             IsFormLoaded = true;
@@ -92,11 +97,9 @@ namespace GenshinNotifier {
             Logger.Info("OnFirstLaunch");
         }
 
-        public void ShowWindowAsync(object sender, EventArgs e) {
+        public void ShowMyWindow(object sender, EventArgs e) {
             Logger.Debug($"ShowWindowAsync() {sender}");
-            Invoke(new Action(() => {
-                RestoreFromTrayIcon();
-            }));
+            Invoke(new Action(() => RestoreFromTrayIcon()));
         }
 
         private System.Timers.Timer CookieBlinkTimer;

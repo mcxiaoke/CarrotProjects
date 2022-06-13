@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace CarrotCommon {
 
-    public class Utility {
+    public static class Utility {
         public static Random GlobalRandom = new Random();
 
         public static string GetRandomString2() {

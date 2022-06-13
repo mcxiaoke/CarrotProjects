@@ -44,9 +44,9 @@ namespace Carrot.ProCom.Pipe {
             Debug.WriteLine("PipeService");
         }
 
-        public void StartServer(string pipeName = null) {
-            this.PipeName = pipeName ?? Const.AppGuidStr;
-            Debug.WriteLine($"PipeService.StartServer {PipeName}");
+        public void StartServer(string pName) {
+            this.PipeName = pName;
+            Debug.WriteLine($"PipeService.StartServer name={pName}");
             pipeServer = new NamedPipeServerStream(PipeName, PipeDirection.InOut, 1, PipeTransmissionMode.Message, PipeOptions.Asynchronous);
             pipeServer.BeginWaitForConnection(new AsyncCallback(OnPipeReceived), pipeServer);
             serverReady = true;
@@ -73,23 +73,23 @@ namespace Carrot.ProCom.Pipe {
                 NamedPipeServerStream server = asyncResult.AsyncState as NamedPipeServerStream;
                 Debug.WriteLine($"PipeService.OnPipeReceived {PipeName}");
                 server.EndWaitForConnection(asyncResult);
-                HandleMessageAsync(server);
+                HandleMessage(server);
             }
         }
 
-        private void HandleMessageAsync(NamedPipeServerStream server) {
+        private void HandleMessage(NamedPipeServerStream server) {
             Task.Run(() => {
                 var stream = new StreamString(server);
                 try {
                     var message = stream.ReadString();
                     bool handled = MessageHandler?.Invoke(server, message) ?? false;
                     if (!handled) {
-                        stream.WriteString(Const.RES_OK + DateTime.Now.ToString("s"));
+                        stream.WriteString(ProComConst.RES_OK + DateTime.Now.ToString("s"));
                     }
                     Debug.WriteLine($"PipeService.HandleMessage {message} (handled={handled})");
                     Handlers?.Invoke(server, new PipeServiceEventArgs(false, message));
                 } catch (Exception ex) {
-                    stream.WriteString(Const.RES_ERR + ex.Message);
+                    stream.WriteString(ProComConst.RES_ERR + ex.Message);
                     Handlers?.Invoke(server, new PipeServiceEventArgs(true, ex));
                     Debug.WriteLine($"PipeService.HandleMessage {ex.GetType().Name} {ex.Message}");
                 } finally {
@@ -100,7 +100,7 @@ namespace Carrot.ProCom.Pipe {
             });
         }
 
-        public static void SendAndReceiveAsync(string pipe, string message,
+        public static void SendAndReceiveCallback(string pipe, string message,
             Action<string, Exception> callback) {
             Task.Run(() => {
                 var (response, error) = SendAndReceive(pipe, message);

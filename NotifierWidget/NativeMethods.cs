@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 
 namespace NotifierWidget {
+
     [SuppressUnmanagedCodeSecurity]
-    static class NativeMethods {
+    internal static class NativeMethods {
         public const int GWL_EXSTYLE = -20;
         public const int WS_EX_NOACTIVATE = 0x8000000;
         public const int HWND_BOTTOM = 1;

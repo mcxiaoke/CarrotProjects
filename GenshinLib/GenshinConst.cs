@@ -1,6 +1,6 @@
 ﻿namespace GenshinLib {
 
-    public class GenshinConst {
+    public static class GenshinConst {
         public const string HK4E_APK = "https://hk4e-api.mihoyo.com";
         public const string BBS_API = "https://bbs-api.mihoyo.com";
         public const string TAKUMI_API = "https://api-takumi.mihoyo.com";

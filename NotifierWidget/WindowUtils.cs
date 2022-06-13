@@ -2,7 +2,9 @@
 using static NotifierWidget.NativeMethods;
 
 namespace NotifierWidget {
+
     public static class WindowUtils {
+
         public static void SetCommonStyles(IntPtr hwnd) {
             SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_NOACTIVATE);
             SetWindowPos(hwnd, new IntPtr(HWND_BOTTOM), 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);
@@ -24,8 +26,8 @@ namespace NotifierWidget {
 
         /// <summary>
         /// Special hack from https://www.codeproject.com/Articles/856020/Draw-behind-Desktop-Icons-in-Windows
-        /// Send 0x052C to Progman. This message directs Progman to spawn a 
-        /// WorkerW behind the desktop icons. If it is already there, nothing 
+        /// Send 0x052C to Progman. This message directs Progman to spawn a
+        /// WorkerW behind the desktop icons. If it is already there, nothing
         /// happens.
         /// </summary>
         public static void ShowBehindDesktopIcons(IntPtr hwnd) {

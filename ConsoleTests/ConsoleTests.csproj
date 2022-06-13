@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net472;net5.0-windows;net6.0-windows</TargetFrameworks>
+    <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
+    <RunAnalyzersDuringBuild>False</RunAnalyzersDuringBuild>
+    <StartupObject>ConsoleTests.Program</StartupObject>
+    <Authors>CatCastle Studio</Authors>
+    <Company>CatCastleInc</Company>
+    <Copyright>CatCastle 2022 Copyright</Copyright>
+    <AssemblyVersion></AssemblyVersion>
+    <FileVersion>1.2.3</FileVersion>
+    <NeutralLanguage>en-GB</NeutralLanguage>
+    <Version>2.7.54</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Carrot.Device\Carrot.Device.csproj" />
+    <ProjectReference Include="..\Carrot.ProCom\Carrot.ProCom.csproj" />
+    <ProjectReference Include="..\CarrotCommon\CarrotCommon.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Threading;
+using System.Threading.Tasks;
 using CarrotCommon;
 using GenshinLib;
 using Newtonsoft.Json;
@@ -40,7 +40,6 @@ namespace GenshinNotifier {
                 Interlocked.Exchange(ref _noteRefreshing, Convert.ToInt64(value));
             }
         }
-
 
         private string _uid;
 

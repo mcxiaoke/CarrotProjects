@@ -9,7 +9,7 @@ using Carrot.ProCom.Common;
 namespace Carrot.ProCom.Net {
 
     public static class UDPService {
-        private static string AppGuidStr => Const.AppGuidStr;
+        private static string AppGuidStr => ProComConst.PIPE_MAIN;
 
         public static EventHandler Handlers;
         private const int Port = 56789;

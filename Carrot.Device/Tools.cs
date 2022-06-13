@@ -7,7 +7,7 @@ namespace Carrot.Device {
     /// \class Tools
     /// Gathers static helper functions that can be used for different purposes (e.g., data storage)
     /// </summary>
-    static class Tools {
+    internal static class Tools {
 
         /// <summary>
         /// Saves a string to a file on the disk

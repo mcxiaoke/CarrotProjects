@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NotifierWidget {
-    static class ComparableExtensions {
+
+    internal static class ComparableExtensions {
+
         /// <summary>
         /// Constraints <paramref name="value" /> to the lower bound <paramref name="min" /> and the upper bound <paramref name="max" />.
         /// If <paramref name="value" /> is less than <paramref name="min" />, <paramref name="min" /> is returned.

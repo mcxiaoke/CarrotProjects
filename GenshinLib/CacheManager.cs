@@ -22,7 +22,7 @@ namespace GenshinLib {
         }
 
         public string GetCachePath(string key) {
-            var root = Storage.UserDataFolder;
+            var root = AppInfo.LocalAppDataPath;
             var dir = Path.Combine(root, "cache", Name);
             // should be async
             Storage.CheckOrCreateDir(dir);

@@ -2,7 +2,8 @@
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Net;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using CarrotCommon;
@@ -24,7 +25,13 @@ namespace SharpUpdater {
         private VersionInfo updateVersionInfo;
         private UpdateStatus currentUpdateStatus = UpdateStatus.NONE;
 
-        private static readonly string ProjectUrl = "https://gitee.com/osap/CarrotProjects/tree/master/SharpUpdater";
+        private const string ProjectUrl = "https://gitee.com/osap/CarrotProjects/tree/master/SharpUpdater";
+
+        private HttpClientHandler handler = new HttpClientHandler() { AllowAutoRedirect = true };
+
+        private HttpClient client = new HttpClient() {
+            Timeout = TimeSpan.FromSeconds(30),
+        };
 
         public UpdateDialog(CommandOptions options) {
             InitializeComponent();
@@ -51,7 +58,7 @@ namespace SharpUpdater {
         }
 
         private async void UpdateDialog_Load(object sender, EventArgs e) {
-            if (myConfig == null || myConfig.Malformed) {
+            if (myConfig?.Malformed != false) {
                 SetFatalStatusInfo("启动参数错误：" +
                     $"\n\n使用命令行参数：" +
                     $"\n-u/--url version-info-url" +
@@ -120,48 +127,46 @@ namespace SharpUpdater {
 
         private async Task CheckUpdate(string versionUrl = null) {
             BigTextBox.Text = string.Empty;
-            using (var client = new WebClient()) {
-                var url = versionUrl ?? myConfig.URL;
-                Logger.Debug($"CheckUpdate url={url} ");
-                try {
-                    var text = await client.DownloadStringTaskAsync(new Uri(url));
-                    var info = JsonConvert.DeserializeObject<VersionInfo>(text);
-                    if (VersionInfo.DataInValid(info)) {
-                        SetRetryStatusInfo($"配置错误：配置无效或缺少必须字段！\n\n{text}");
-                        return;
-                    }
-                    updateVersionInfo = info;
-                    Logger.Debug($"CheckUpdate info={info}");
-                    var exePath = Path.Combine(SharpConfig.AppBase, info.Program);
-                    if (!File.Exists(exePath)) {
-                        SetRetryStatusInfo($"文件错误：可执行文件 [{info.Program}] 不存在！\n\n" +
-                        $"当前目录 {SharpConfig.AppBase} 未找到文件名为 {info.Program} 的可执行文件，" +
-                        $"如果你曾经给文件更名，请改回 {info.Program} 后重试");
-                        return;
-                    }
-                    Logger.Debug($"CheckUpdate exePath={exePath}");
-                    var localFile = ReadFileVersion(exePath);
-                    SharpConfig.Write(new SharpConfig(localFile.ProductName, url));
-                    var localVer = SemVersion.Parse(localFile.ProductVersion, SemVersionStyles.Any);
-                    var remoteVer = SemVersion.Parse(info.Version, SemVersionStyles.Any);
-
-                    info.LocalName = localFile.ProductName;
-                    info.LocalVersion = localFile.ProductVersion;
-
-                    bool hasNew = info.HasUpdate && localVer < remoteVer;
-
-                    Logger.Debug($"CheckUpdate end {DateTime.Now}");
-                    currentUpdateStatus = hasNew ? UpdateStatus.READY : UpdateStatus.QUIT;
-                    Invoke(new Action(() => {
-                        this.Text = hasNew ? $"发现新版本" : "当前已经是最新版";
-                        SetVersionInfoTextBox(info);
-                        BigButton.Enabled = true;
-                        BigButton.Text = hasNew ? "开始更新" : "退出";
-                    }));
-                } catch (Exception ex) {
-                    Logger.Debug($"CheckUpdate failed error={ex.Message}");
-                    SetRetryStatusInfo($"遇到错误：{ex.Message}\n\n{url}\n{ex}");
+            var url = versionUrl ?? myConfig.URL;
+            Logger.Debug($"CheckUpdate url={url} ");
+            try {
+                var text = await client.GetStringAsync(new Uri(url));
+                var info = JsonConvert.DeserializeObject<VersionInfo>(text);
+                if (VersionInfo.DataInValid(info)) {
+                    SetRetryStatusInfo($"配置错误：配置无效或缺少必须字段！\n\n{text}");
+                    return;
                 }
+                updateVersionInfo = info;
+                Logger.Debug($"CheckUpdate info={info}");
+                var exePath = Path.Combine(SharpConfig.AppBase, info.Program);
+                if (!File.Exists(exePath)) {
+                    SetRetryStatusInfo($"文件错误：可执行文件 [{info.Program}] 不存在！\n\n" +
+                    $"当前目录 {SharpConfig.AppBase} 未找到文件名为 {info.Program} 的可执行文件，" +
+                    $"如果你曾经给文件更名，请改回 {info.Program} 后重试");
+                    return;
+                }
+                Logger.Debug($"CheckUpdate exePath={exePath}");
+                var localFile = ReadFileVersion(exePath);
+                SharpConfig.Write(new SharpConfig(localFile.ProductName, url));
+                var localVer = SemVersion.Parse(localFile.ProductVersion, SemVersionStyles.Any);
+                var remoteVer = SemVersion.Parse(info.Version, SemVersionStyles.Any);
+
+                info.LocalName = localFile.ProductName;
+                info.LocalVersion = localFile.ProductVersion;
+
+                bool hasNew = info.HasUpdate && localVer < remoteVer;
+
+                Logger.Debug($"CheckUpdate end {DateTime.Now}");
+                currentUpdateStatus = hasNew ? UpdateStatus.READY : UpdateStatus.QUIT;
+                Invoke(new Action(() => {
+                    this.Text = hasNew ? $"发现新版本" : "当前已经是最新版";
+                    SetVersionInfoTextBox(info);
+                    BigButton.Enabled = true;
+                    BigButton.Text = hasNew ? "开始更新" : "退出";
+                }));
+            } catch (Exception ex) {
+                Logger.Debug($"CheckUpdate failed error={ex.Message}");
+                SetRetryStatusInfo($"遇到错误：{ex.Message}\n\n{url}\n{ex}");
             }
         }
 
@@ -172,13 +177,15 @@ namespace SharpUpdater {
 
         // http://simplygenius.net/Article/AncillaryAsyncProgress
         // https://devblogs.microsoft.com/dotnet/async-in-4-5-enabling-progress-and-cancellation-in-async-apis/
-        private async Task<(string, Exception)> DownloadFileAsync(VersionInfo info, IProgress<int> progress) {
+        private async Task<(string, Exception)> DownloadFileAsync(VersionInfo info, IProgress<float> progress) {
             // url for test
-            Uri uri = new Uri((info.DownloadUrl));
+            Uri uri = new Uri(info.DownloadUrl);
             Logger.Debug($"DownloadFileAsync url={uri}");
             string filepath = Path.Combine(SharpConfig.AppBase, $"UpdatePackage_{info.Version}.zip");
             //string filepath = Path.GetTempFileName();
             Logger.Debug($"DownloadFileAsync dest={filepath}");
+            var cts = new CancellationTokenSource();
+            var ctk = cts.Token;
             // make io operations async
             try {
                 await Task.Run(() => {
@@ -191,22 +198,23 @@ namespace SharpUpdater {
                 return (null, ex);
             }
 
-            using (var client = new WebClient()) {
-                try {
-                    client.DownloadProgressChanged += (o, e) => {
-                        progress?.Report(e.ProgressPercentage);
-                    };
-                    await client.DownloadFileTaskAsync(uri, filepath);
-                    Logger.Debug($"DownloadFileAsync file={filepath}");
-                    return (filepath, null);
-                } catch (Exception ex) {
-                    Logger.Debug($"DownloadFileAsync error2={ex}");
-                    return (null, ex);
+            try {
+                // Create a file stream to store the downloaded data.
+                // This really can be any type of writeable stream.
+                using (var file = new FileStream(filepath, FileMode.Create)) {
+                    // Use the custom extension method below to download the data.
+                    // The passed progress-instance will receive the download status updates.
+                    await client.DownloadAsync(uri, file, progress, ctk);
                 }
+                Logger.Debug($"DownloadFileAsync file={filepath}");
+                return (filepath, null);
+            } catch (Exception ex) {
+                Logger.Debug($"DownloadFileAsync error2={ex}");
+                return (null, ex);
             }
         }
 
-        private async Task<Exception> InstallUpdateAsync(VersionInfo info, string filepath) {
+        private static async Task<Exception> InstallUpdateAsync(VersionInfo info, string filepath) {
             // Normalizes the path.
             var program = info.Program;
             var zipPath = Path.GetFullPath(filepath);
@@ -252,9 +260,7 @@ namespace SharpUpdater {
                 return;
             }
 
-            var p = new Progress<int>(value => {
-                AProgressBar.Value = value;
-            });
+            var p = new Progress<float>(value => AProgressBar.Value = Convert.ToInt32(value));
             BigButton.Enabled = false;
             BigButton.Text = "正在下载 ...";
             AProgressBar.Visible = true;

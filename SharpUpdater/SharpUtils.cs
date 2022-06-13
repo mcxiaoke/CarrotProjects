@@ -18,7 +18,7 @@ namespace SharpUpdater {
             box.SelectionStart = box.TextLength;
             box.SelectionLength = 0;
             box.SelectionColor = c ?? box.ForeColor;
-            box.AppendText((box.Lines.Count() == 0 ? "" : Environment.NewLine) + DateTime.Now + "\t" + s);
+            box.AppendText((box.Lines.Length == 0 ? "" : Environment.NewLine) + DateTime.Now + "\t" + s);
             box.SelectionColor = box.ForeColor;
         }
 

@@ -11,7 +11,7 @@ using Newtonsoft.Json.Linq;
 
 namespace GenshinLib {
 
-    public class GenshinHelper {
+    public static class GenshinHelper {
 
         // Guid.NewGuid().ToString("D")
         public static string DEVICE_ID = "701f23bd-3b79-4adb-85f2-0e9ac3ba3a6b";
@@ -38,7 +38,7 @@ namespace GenshinLib {
         }
 
         public static string OldDS() {
-            var salt = GenshinConst.MHY_SALT_OLD;
+            const string salt = GenshinConst.MHY_SALT_OLD;
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var randomStr = Utility.GetRandomString(6);
             // for old salt sign reward
@@ -52,7 +52,7 @@ namespace GenshinLib {
 
         public static string NewDS(IDictionary<string, string> queryDict,
             object bodyObj = null) {
-            var salt = GenshinConst.MHY_SALT_NEW;
+            const string salt = GenshinConst.MHY_SALT_NEW;
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var randomStr = Utility.GetRandomString(6);
             var query = Utility.CreateQueryString(queryDict);
@@ -74,6 +74,9 @@ namespace GenshinLib {
 
         public TokenException(string message, Exception innerException) : base(message, innerException) {
         }
+
+        public TokenException() : base() {
+        }
     }
 
     public class ServerException : Exception {
@@ -83,6 +86,9 @@ namespace GenshinLib {
 
         public ServerException(string message, Exception innerException) : base(message, innerException) {
         }
+
+        public ServerException() : base() {
+        }
     }
 
     public class ClientException : Exception {
@@ -91,6 +97,9 @@ namespace GenshinLib {
         }
 
         public ClientException(string message, Exception innerException) : base(message, innerException) {
+        }
+
+        public ClientException() : base() {
         }
     }
 

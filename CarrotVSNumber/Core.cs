@@ -2,7 +2,7 @@
 
 namespace CarrotVSNumber {
 
-    internal class Core {
+    internal static class Core {
 
         public static void Log(params string[] strings) {
             var message = string.Join(" ", strings);

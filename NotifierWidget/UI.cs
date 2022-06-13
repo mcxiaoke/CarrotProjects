@@ -3,12 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
 namespace NotifierWidget {
+
     internal static class UI {
 
         public static T GetChildOfType<T>(this DependencyObject depObj) where T :
@@ -45,7 +44,6 @@ namespace NotifierWidget {
                 }
             }
         }
-
 
         public static Color ParseColor(string hex) {
             hex = hex.Replace("#", string.Empty);

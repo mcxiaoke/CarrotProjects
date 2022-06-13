@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Windows.Forms;
+using Carrot.ProCom.Common;
 using CarrotCommon;
 using Microsoft.Toolkit.Uwp.Notifications;
 
@@ -11,12 +12,14 @@ namespace GenshinNotifier {
         // http://sanity-free.org/143/csharp_dotnet_single_instance_application.html
         // https://www.codeproject.com/Articles/32908/C-Single-Instance-App-With-the-Ability-To-Restore
 
+        public static string AppGuidStr = "{82761839-E200-402E-8C1D-2FDE9571239C}";
+
         /// <summary>
         /// 应用程序的主入口点。
         /// </summary>
         [STAThread]
         private static void Main(string[] args) {
-            Mutex mutex = new Mutex(true, @"Global\" + Storage.AppGuidStr, out bool onlyInstance);
+            Mutex mutex = new Mutex(true, @"Global\" + ProComConst.PIPE_MAIN, out bool onlyInstance);
             if (!onlyInstance) {
                 MessageBox.Show("检测到另一个实例正在运行，请勿重复开启！", Application.ProductName, MessageBoxButtons.OK);
                 // bring prev instance to front
@@ -24,13 +27,14 @@ namespace GenshinNotifier {
                 AppService.SendCmdShowWindow();
                 return;
             }
+            Logger.Debug("=======================================");
             GC.KeepAlive(mutex);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             // add exception handler
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
-            Application.ThreadException += new ThreadExceptionEventHandler(Application_ThreadException);
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
+            Application.ThreadException += Application_ThreadException;
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 
             CheckSettingsUpgrade();
 
