@@ -11,6 +11,10 @@ using System.Windows.Media;
 using GenshinLib;
 using NotifierWidget.Properties;
 using static NotifierWidget.NativeMethods;
+using Carrot.UI.Controls.Utils;
+using System.Windows.Threading;
+using System.Reflection;
+using CarrotCommon;
 
 namespace NotifierWidget {
 
@@ -28,6 +32,7 @@ namespace NotifierWidget {
             InitializeComponent();
             InitLocation();
             this.Loaded += MainWindow_Loaded;
+            this.SizeChanged += MainWindow_SizeChanged;
             this.ContentRendered += MainWindow_ContentRendered;
             this.LocationChanged += MainWindow_LocationChanged;
             this.Closing += MainWindow_Closing;
@@ -38,6 +43,10 @@ namespace NotifierWidget {
             this.Topmost = Settings.Default.OptionWidgetTopMost;
             Settings.Default.PropertyChanged += Default_PropertyChanged;
             Debug.WriteLine($"MainWindow lock={Settings.Default.OptionLockWidgetPos} top={Settings.Default.OptionWidgetTopMost}");
+        }
+
+        private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e) {
+            Debug.WriteLine($"MainWindow_SizeChanged newSize={e.NewSize}");
         }
 
         private void MainWindow_ContentRendered(object sender, EventArgs e) {
@@ -75,6 +84,8 @@ namespace NotifierWidget {
 
         private void MainWindow_Loaded(object sender, RoutedEventArgs e) {
             Debug.WriteLine("MainWindow_Loaded");
+            this.DataContext = WidgetStyle.User;
+            WidgetStyle.User.PropertyChanged += WidgetStyle_PropertyChanged;
             SetLocation();
             // https://tyrrrz.me/blog/wndproc-in-wpf
             // https://pingfu.net/receive-wndproc-messages-in-wpf
@@ -93,6 +104,18 @@ namespace NotifierWidget {
             }
             RefreshData();
             StartTimer();
+        }
+
+        private static Action EmptyDelegate = () => { };
+        private void WidgetStyle_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+            var key = e.PropertyName;
+            var value = sender.GetType().GetProperty(key).GetValue(sender);
+            Debug.WriteLine($"WidgetStyle_PropertyChanged {key} = {value}");
+            // alternative method
+            // https://stackoverflow.com/questions/20770173
+            // var prop = TypeDescriptor.GetProperties(sender)[e.PropertyName];
+            // Debug.WriteLine($"WidgetStyle_PropertyChanged other {prop.Name} = {prop.GetValue(sender)}");
+            //this.Dispatcher.Invoke(DispatcherPriority.Render, EmptyDelegate);
         }
 
         private void InitLocation() {
@@ -163,9 +186,7 @@ namespace NotifierWidget {
                 if (data == null || data.Note == null || data.User == null) {
                     return;
                 }
-                Dispatcher.Invoke(() => {
-                    UpdateUIControls(data.User, data.Note);
-                });
+                Dispatcher.Invoke(() => UpdateUIControls(data.User, data.Note));
             });
         }
 
@@ -176,23 +197,36 @@ namespace NotifierWidget {
             }
             Debug.WriteLine($"UpdateUIControls uid={user?.GameUid} resin={note?.CurrentResin}");
 
-            var colorNormal = UI.GetSolidColorBrush("#dee8f3");
-            var colorAttention = Brushes.Yellow;
+            var styleNormal = FindResource("GIStyleNormal") as Style;
+            var styleHightlight = FindResource("GIStyleHighlight") as Style;
+
             lbAccountInfo.Content = $"{user.Nickname} {user.Level}级 {user.RegionName} {user.GameUid}";
+
+            // apply resin data
             var resinMayFull = note.ResinAlmostFull();
             lbResinValue.Content = $"{note.CurrentResin}/{note.MaxResin}";
-            lbResinValue.Foreground = resinMayFull ? colorAttention : colorNormal;
             lbResinRecValue.Content = $"{note.ResinRecoveryTimeFormatted}";
-            lbResinRecValue.Foreground = resinMayFull ? colorAttention : colorNormal;
             lbResinTimeValue.Content = $"{note.ResinRecoveryTargetTimeFormatted}";
-            lbResinTimeValue.Foreground = resinMayFull ? colorAttention : colorNormal;
+            // apply resin style
+            var resinStyle = resinMayFull ? styleHightlight : styleNormal;
+#if DEBUG
+            //resinStyle = styleHightlight;
+#endif
+            lbResin.Style = resinStyle;
+            lbResinValue.Style = resinStyle;
+            lbResinRec.Style = resinStyle;
+            lbResinRecValue.Style = resinStyle;
+            lbResinTime.Style = resinStyle;
+            lbResinTimeValue.Style = resinStyle;
 
+            // apply expedition data
             var expeditionCompleted = note.ExpeditionAllFinished;
             var expeditionStr = $"{note.CurrentExpeditionNum}/{note.MaxExpeditionNum}";
             expeditionStr += expeditionCompleted ? " 已完成" : " 未完成";
             lbExpeditionValue.Content = expeditionStr;
-            lbExpeditionValue.Foreground = expeditionCompleted ? colorAttention : colorNormal;
-            lbExpedition.Foreground = lbExpeditionValue.Foreground;
+            // apply expedition style
+            lbExpedition.Style = expeditionCompleted ? styleHightlight : styleNormal;
+            lbExpeditionValue.Style = lbExpedition.Style;
 
             var taskStr = $"{note.FinishedTaskNum}/{note.TotalTaskNum}";
             if (!note.DailyTaskAllFinished) {
@@ -201,27 +235,33 @@ namespace NotifierWidget {
                 taskStr += note.IsExtraTaskRewardReceived ? " 已领取" : " 未领取";
             }
             lbDailyTaskValue.Content = taskStr;
-            lbDailyTaskValue.Foreground = note.IsExtraTaskRewardReceived ? colorNormal : colorAttention;
-            lbDailyTask.Foreground = lbDailyTaskValue.Foreground;
+
+            lbDailyTask.Style = note.IsExtraTaskRewardReceived ? styleNormal : styleHightlight;
+            lbDailyTaskValue.Style = lbDailyTask.Style;
 
             var homeCoinMayFull = note.HomeCoinAlmostFull();
             lbHomeCoinValue.Content = $"{note.CurrentHomeCoin}/{note.MaxHomeCoin}";
-            lbHomeCoinValue.Foreground = homeCoinMayFull ? colorAttention : colorNormal;
+            lbHomeCoinValue.Style = homeCoinMayFull ? styleHightlight : styleNormal;
 
             var discountAllUsed = note.ResinDiscountAllUsed;
             var discountStr = $"{note.ResinDiscountUsedNum}/{note.ResinDiscountNumLimit}";
             discountStr += discountAllUsed ? " 已完成" : " 未完成";
             lbDiscountValue.Content = discountStr;
-            lbDiscountValue.Foreground = discountAllUsed ? colorNormal : colorAttention;
+            lbDiscount.Style = discountAllUsed ? styleNormal : styleHightlight;
+            lbDiscountValue.Style = lbDiscount.Style;
 
             var transformerReady = note.TransformerReady;
             lbTransformerValue.Content = $"{note.Transformer.RecoveryTime.TimeFormatted}";
-            lbTransformerValue.Foreground = (transformerReady ? colorAttention : colorNormal);
+
+            lbTransformer.Style = (transformerReady ? styleHightlight : styleNormal);
+            lbTransformerValue.Style = lbTransformer.Style;
 
             var updateDelta = DateTime.Now - note.CreatedAt;
             var outdated = updateDelta.TotalMinutes > 30;
             lbUpdateAtValue.Content = note.CreatedAt.ToString("T");
-            lbUpdateAtValue.Foreground = outdated ? colorAttention : colorNormal;
+
+            lbUpdateAt.Style = outdated ? styleHightlight : styleNormal;
+            lbUpdateAtValue.Style = lbUpdateAt.Style;
         }
 
         #endregion timer and data refresh
@@ -272,10 +312,12 @@ namespace NotifierWidget {
             var lockPos = Settings.Default.OptionLockWidgetPos;
             Debug.WriteLine($"Window_MouseDown lockPos={lockPos} button={e.ChangedButton} " +
                 $"state={e.ButtonState} count={e.ClickCount}");
+#if DEBUG
             if (e.ChangedButton == MouseButton.Left && e.ClickCount == 2) {
                 RefreshData(forceUpdate: true);
                 return;
             }
+#endif
             if (lockPos) { return; }
             switch (e.ChangedButton) {
                 case MouseButton.Left:
@@ -290,7 +332,10 @@ namespace NotifierWidget {
 
         private void CxmItemClose_Click(object sender, RoutedEventArgs e) {
             Debug.WriteLine("CxmItemClose_Click");
-            Close();
+            if (MessageBox.Show("确定不需要桌面小组件，彻底退出吗？", "退出确认",
+                MessageBoxButton.OKCancel) == MessageBoxResult.OK) {
+                Close();
+            }
         }
 
         private void CxmItemRefresh_Click(object sender, RoutedEventArgs e) {
@@ -303,12 +348,47 @@ namespace NotifierWidget {
             Debug.WriteLine("CxmItemOption_Click");
             if (!this.IsLoaded) { return; }
             OptionWindow option = new OptionWindow();
+            option.Owner = this;
+            option.WindowStartupLocation = WindowStartupLocation.Manual;
+
+            GetDialogPosition(out double left, out double top);
+            option.Left = left;
+            option.Top = top;
             option.Show();
         }
 
         private void CxmItemAbout_Click(object sender, RoutedEventArgs e) {
             Debug.WriteLine("CxmItemAbout_Click");
             if (!this.IsLoaded) { return; }
+            Process.Start("https://gitee.com/osap/CarrotProjects");
+        }
+
+        private void GetDialogPosition(out double left, out double top) {
+            var workAreaWidth = SystemParameters.WorkArea.Width;
+            var workAreaHeight = SystemParameters.WorkArea.Height;
+            //var taskBarHeight = screenHeight - workAreaHeight;
+            var windowWidth = this.Width;
+            var windowHeight = this.Height;
+
+            var _left = this.Left - 440;
+            var _top = this.Top;
+            if (_top > workAreaHeight - 420) {
+                _top = workAreaHeight - 420;
+            }
+            left = _left;
+            top = _top;
+        }
+
+        private void CxmItemRestart_Click(object sender, RoutedEventArgs e) {
+            //ProcessStartInfo Info = new ProcessStartInfo();
+            //Info.Arguments = "/C choice /C Y /N /D Y /T 1 & START \"\" \"" + Assembly.GetEntryAssembly().Location + "\"";
+            //Info.WindowStyle = ProcessWindowStyle.Hidden;
+            //Info.CreateNoWindow = true;
+            //Info.FileName = "cmd.exe";
+            //Process.Start(Info);
+            //Process.GetCurrentProcess().Kill();
+            Process.Start(AppInfo.ExecutablePath);
+            Application.Current.Shutdown();
         }
     }
 }

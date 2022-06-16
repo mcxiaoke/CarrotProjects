@@ -11,8 +11,8 @@ using CarrotCommon;
 namespace SharpUpdater {
 
     internal static class SharpUtils {
-        public static string ExecutablePath => Process.GetCurrentProcess().MainModule.FileName;
-        public static string ExecutableName => Process.GetCurrentProcess().MainModule.ModuleName;
+        public static string ExecutablePath => AppInfo.ExecutablePath;
+        public static string ExecutableName => AppInfo.ModuleName;
 
         private static void TextBoxLog(RichTextBox box, string s, Color? c = null) {
             box.SelectionStart = box.TextLength;

@@ -1,5 +1,5 @@
 ﻿[*.cs]
-
+dotnet_diagnostic.IDE0017.severity = none
 dotnet_diagnostic.IDE0018.severity = none
 dotnet_diagnostic.IDE0035.severity = none
 dotnet_diagnostic.IDE0044.severity = none
@@ -7,10 +7,17 @@ dotnet_diagnostic.IDE0051.severity = none
 dotnet_diagnostic.IDE0052.severity = none
 dotnet_diagnostic.IDE0059.severity = none
 dotnet_diagnostic.IDE0060.severity = none
+dotnet_diagnostic.IDE0090.severity = none
+
+dotnet_diagnostic.CS0067.severity = none
 dotnet_diagnostic.CS0649.severity = none
+
 dotnet_diagnostic.RCS1036.severity = none
+dotnet_diagnostic.RCS1123.severity = none
 dotnet_diagnostic.RCS1163.severity = none
+dotnet_diagnostic.RCS1213.severity = none
 dotnet_diagnostic.RCS1214.severity = none
+dotnet_diagnostic.RCS1224.severity = none
 
 [*.cs]
 #### 命名样式 ####

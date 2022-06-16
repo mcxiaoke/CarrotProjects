@@ -1,4 +1,6 @@
-﻿namespace NotifierWidget {
+﻿using System;
+
+namespace NotifierWidget {
 
     public static class MiscUtils {
 
@@ -11,5 +13,6 @@ where T : System.IComparable<T> {
                 result = min;
             return result;
         }
+
     }
 }

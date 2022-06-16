@@ -238,7 +238,7 @@ namespace SharpUpdater {
             });
         }
 
-        private Exception StopRunningProgram(VersionInfo info) {
+        private static Exception StopRunningProgram(VersionInfo info) {
             var fullpath = Path.Combine(SharpConfig.AppBase, info.Program);
             Logger.Debug($"StopRunningProgram fullpath={fullpath}");
             return SharpUtils.StopProcessByPath(fullpath);

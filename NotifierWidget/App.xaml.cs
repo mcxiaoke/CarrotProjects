@@ -13,8 +13,6 @@ namespace NotifierWidget {
 
         public App() {
             _handler = new GlobalExceptionHandler();
-            this.Activated += App_Activated;
-            this.Deactivated += App_Deactivated;
             this.Startup += App_Startup;
             this.Exit += App_Exit;
             this.LoadCompleted += App_LoadCompleted;
@@ -27,15 +25,7 @@ namespace NotifierWidget {
 
         private void App_Startup(object sender, StartupEventArgs e) {
             Debug.WriteLine("App_Startup");
-            WidgetStyle.Default.Initialize();
-        }
-
-        private void App_Deactivated(object sender, EventArgs e) {
-            Debug.WriteLine("App_Deactivated");
-        }
-
-        private void App_Activated(object sender, EventArgs e) {
-            Debug.WriteLine("App_Activated");
+            WidgetStyle.Initialize();
         }
 
         private void App_LoadCompleted(object sender, System.Windows.Navigation.NavigationEventArgs e) {

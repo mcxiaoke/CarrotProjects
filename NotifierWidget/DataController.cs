@@ -13,8 +13,7 @@ namespace NotifierWidget {
     }
 
     internal static class Service {
-        public const string MAIN_APP_GUID = "{82761839-E200-402E-8C1D-2FDE9571239C}";
-        public const string PIPE_NAME = MAIN_APP_GUID;
+        public const string PIPE_NAME = ProComConst.PIPE_MAIN;
 
         // from Carrot Notifier AppService.cs
         public static string CmdShowWindow = $"{ProComConst.CMD_PREFIX}/action/showWindow";

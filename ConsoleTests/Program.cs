@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Threading.Tasks;
+using System.Threading;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
 using CarrotCommon;
+using System.Linq;
 
 namespace ConsoleTests {
 
     internal static class Program {
 
-        private static void Main(string[] args) {
-            Console.WriteLine("Hello, World!");
+        private static void TestAppInfo() {
             Assembly exe = Assembly.GetEntryAssembly();
             Console.WriteLine(exe.FullName);
             Console.WriteLine(exe.Location);
@@ -63,6 +65,17 @@ namespace ConsoleTests {
             Console.WriteLine(AppInfo.LocalAppDataPath);
             Console.WriteLine(AppInfo.RoamingAppDataPath);
             Console.WriteLine("--------");
+        }
+
+        private static void Main(string[] args) {
+            Console.WriteLine("Hello, World!");
+            //while (true) {
+            //    bool locked = Process.GetProcessesByName("logonui").Any();
+            //    Console.WriteLine("logonui=" + locked);
+            //    Console.WriteLine("IsWorkstationLocked=" + DesktopState.IsWorkstationLocked());
+            //    Task.Delay(2000).Wait();
+            //}
+
         }
     }
 }

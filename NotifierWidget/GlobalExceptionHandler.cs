@@ -25,7 +25,7 @@ namespace NotifierWidget {
         /// or by the GC cleaning up a faulted Task.
         /// </summary>
         /// <param name="e">The unhandled exception</param>
-        public void OnUnhandledException(Exception e) {
+        public static void OnUnhandledException(Exception e) {
             Debug.WriteLine($"------\nOnUnhandledException:\n{e.GetType().Name}\n{e.Message}\n{e.StackTrace}\n------");
             Application.Current.Shutdown();
             //Environment.Exit(0);
@@ -38,14 +38,14 @@ namespace NotifierWidget {
         /// <param name="exception">The unhandled excpetion on the applications dispatcher.</param>
         /// <returns>True if the <see cref="OnUnhandledException(Exception)"/> method should
         /// be called. False if not</returns>
-        protected bool CatchDispatcherException(Exception exception) => true;
+        protected static bool CatchDispatcherException(Exception exception) => true;
 
         /// <summary>
         /// Override this method to change the Log output of this
         /// class from the Debug.WriteLine to your needs.
         /// </summary>
         /// <param name="msg">The message to be logged.</param>
-        protected void Log(string msg) => Debug.WriteLine(msg);
+        protected static void Log(string msg) => Debug.WriteLine(msg);
 
         /// <summary>
         /// This method is invoked whenever there is an unhandled
@@ -88,7 +88,7 @@ namespace NotifierWidget {
         /// event will be invoked.
         /// </summary>
         private void OnFilterDispatcherException(object sender, DispatcherUnhandledExceptionFilterEventArgs e) {
-            e.RequestCatch = CatchDispatcherException(e.Exception);
+            e.RequestCatch = GlobalExceptionHandler.CatchDispatcherException(e.Exception);
         }
 
         /// <summary>

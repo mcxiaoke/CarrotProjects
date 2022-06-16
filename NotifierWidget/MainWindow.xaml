@@ -9,30 +9,62 @@
         Focusable="False" Title="MainWindow" SizeToContent="WidthAndHeight"
         AllowsTransparency="True" WindowStyle="None" Background="{x:Null}"
         MouseDown="Window_MouseDown" FontFamily="{StaticResource TextFontFamily}"
-        FontSize="{StaticResource TextFontSize}" ShowInTaskbar="False">
+        FontSize="{StaticResource TextFontSize}" ShowInTaskbar="False" SnapsToDevicePixels="True">
     <Window.Resources>
+        <ResourceDictionary>
+            <local:ColorToSolidBrushConverter x:Key="ColorToBrush" />
+            <Style x:Key="GIStyleBase" TargetType="Label">
+                <Setter Property="Padding" Value="0,4,0,4" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="HorizontalAlignment" Value="Stretch" />
+                <Setter Property="FontFamily" Value="{Binding TextFontFamily}" />
+                <Setter Property="FontWeight" Value="{Binding TextFontWeight}" />
+                <Setter Property="FontStyle" Value="{Binding TextFontStyle}" />
+                <Setter Property="FontSize" Value="{Binding TextFontSize}" />
+            </Style>
+            <Style x:Key="GIStyleNormal" TargetType="Label" BasedOn="{StaticResource GIStyleBase}">
+                <Setter Property="Foreground"
+                        Value="{Binding TextNormalColor,Converter={StaticResource ColorToBrush}}" />
+            </Style>
+            <Style x:Key="HeaderStyle" TargetType="Label" BasedOn="{StaticResource GIStyleNormal}">
+                <Setter Property="FontSize" Value="{Binding HeaderFontSize}" />
+                <Setter Property="FontWeight" Value="Normal" />
+                <Setter Property="FontStyle" Value="Normal" />
+            </Style>
+            <Style x:Key="FooterStyle" TargetType="Label" BasedOn="{StaticResource GIStyleNormal}">
+                <Setter Property="FontSize" Value="{Binding FooterFontSize}" />
+                <Setter Property="FontWeight" Value="Normal" />
+                <Setter Property="FontStyle" Value="Normal" />
+            </Style>
+            <Style x:Key="GIStyleHighlight" TargetType="Label"
+                    BasedOn="{StaticResource GIStyleBase}">
+                <Setter Property="Foreground"
+                        Value="{Binding TextHighlightColor,Converter={StaticResource ColorToBrush}}" />
+            </Style>
+        </ResourceDictionary>
     </Window.Resources>
-    <Border CornerRadius="10" Background="{StaticResource BackgroundColorBrush}">
+    <Window.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="锁定位置" Name="cxmItemLock" IsCheckable="True"
+                    IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=OptionLockWidgetPos}" />
+            <MenuItem Header="窗口置顶" Name="cxmItemTop" IsCheckable="True"
+                    IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=OptionWidgetTopMost}" />
+            <Separator />
+            <MenuItem Header="自定义界面" Name="cxmItemOption" Click="CxmItemOption_Click" />
+            <MenuItem Header="前往项目" Name="cxmItemAbout" Click="CxmItemAbout_Click" />
+            <Separator />
+            <MenuItem Header="重启程序" Name="cxmItemRestart" Click="CxmItemRestart_Click" />
+            <MenuItem Header="彻底退出" Name="cxmItemClose" Click="CxmItemClose_Click" />
+        </ContextMenu>
+    </Window.ContextMenu>
+    <Border CornerRadius="10"
+            Background="{Binding BackgroundColor,Converter={StaticResource ColorToBrush}}">
         <StackPanel x:Name="spLayoutBox" Orientation="Vertical" Margin="6"
                 Grid.IsSharedSizeScope="True">
             <Grid x:Name="layoutHeader">
-                <Label x:Name="lbHeader" FontSize="18" HorizontalAlignment="Stretch"
-                        Foreground="{StaticResource TextColorBrush}"
-                        HorizontalContentAlignment="Center" VerticalAlignment="Center">原神实时便签
-                    <Label.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem Header="锁定位置" Name="cxmItemLock" IsCheckable="True"
-                                    IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=OptionLockWidgetPos}" />
-                            <MenuItem Header="窗口置顶" Name="cxmItemTop" IsCheckable="True"
-                                    IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=OptionWidgetTopMost}" />
-                            <MenuItem Header="刷新" Name="cxmItemRefresh" Click="CxmItemRefresh_Click" />
-                            <Separator />
-                            <MenuItem Header="选项" Name="cxmItemOption" Click="CxmItemOption_Click" />
-                            <MenuItem Header="关于" Name="cxmItemAbout" Click="CxmItemAbout_Click" />
-                            <Separator />
-                            <MenuItem Header="退出" Name="cxmItemClose" Click="CxmItemClose_Click" />
-                        </ContextMenu>
-                    </Label.ContextMenu>
+                <Label x:Name="lbHeader" Style="{StaticResource HeaderStyle}"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                        VerticalAlignment="Center">原神实时便签
                 </Label>
             </Grid>
             <Grid x:Name="layoutAccout" Margin="0,0,0,6">
@@ -45,11 +77,10 @@
                         VerticalAlignment="Center" FontSize="12">
                     ★
                 </Label>
-                <Label Grid.Column="1" x:Name="lbAccountInfo"
-                        Foreground="{StaticResource TextColorBrush}" VerticalAlignment="Center"
-                        HorizontalAlignment="Center" FontSize="12">--- --- ---</Label>
+                <Label Grid.Column="1" x:Name="lbAccountInfo" Style="{StaticResource FooterStyle}"
+                        VerticalAlignment="Center" HorizontalAlignment="Center">--- --- ---</Label>
                 <Label x:Name="lbStar2" Grid.Column="2" Foreground="White"
-                        VerticalAlignment="Center" FontSize="12">
+                        VerticalAlignment="Center" FontSize="{Binding FooterFontSize}">
                     ★
                 </Label>
             </Grid>
@@ -59,24 +90,27 @@
                     StrokeDashArray="2 4" StrokeThickness="1" />
             <Grid x:Name="layoutContent" Margin="6">
                 <Grid.Resources>
-                    <ResourceDictionary>
-                        <Style x:Key="GridLabelNameStyle" TargetType="Label">
-                            <Setter Property="Foreground" Value="{StaticResource TextColorBrush}" />
+                    <!--<ResourceDictionary>
+                        <Style x:Key="GIStyleBase" TargetType="Label">
                             <Setter Property="Padding" Value="0,4,0,4" />
                             <Setter Property="VerticalAlignment" Value="Center" />
                             <Setter Property="HorizontalAlignment" Value="Stretch" />
-                            <Setter Property="HorizontalContentAlignment" Value="Left" />
+                            <Setter Property="FontFamily" Value="{Binding TextFontFamily}" />
+                            <Setter Property="FontWeight" Value="{Binding TextFontWeight}" />
+                            <Setter Property="FontStyle" Value="{Binding TextFontStyle}" />
+                            <Setter Property="FontSize" Value="{Binding TextFontSize}" />
                         </Style>
-                        <Style x:Key="GridLabelValueStyle" TargetType="Label">
-                            <!--<Setter Property="FontSize" Value="14" />-->
-                            <!--<Setter Property="FontWeight" Value="Bold" />-->
-                            <Setter Property="Foreground" Value="{StaticResource TextColorBrush}" />
-                            <Setter Property="Padding" Value="0,4,0,4" />
-                            <Setter Property="VerticalAlignment" Value="Center" />
-                            <Setter Property="HorizontalAlignment" Value="Stretch" />
-                            <Setter Property="HorizontalContentAlignment" Value="Right" />
+                        <Style x:Key="GIStyleNormal" TargetType="Label"
+                                BasedOn="{StaticResource GIStyleBase}">
+                            <Setter Property="Foreground"
+                                    Value="{Binding TextNormalColor,Converter={StaticResource ColorToBrush}}" />
                         </Style>
-                    </ResourceDictionary>
+                        <Style x:Key="GIStyleHighlight" TargetType="Label"
+                                BasedOn="{StaticResource GIStyleBase}">
+                            <Setter Property="Foreground"
+                                    Value="{Binding TextHighlightColor,Converter={StaticResource ColorToBrush}}" />
+                        </Style>
+                    </ResourceDictionary>-->
                 </Grid.Resources>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" MinWidth="110" SharedSizeGroup="GridContentItem" />
@@ -95,46 +129,46 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
 
-                <Label Style="{StaticResource GridLabelNameStyle}" x:Name="lbResin" Grid.Column="0"
+                <Label Style="{StaticResource GIStyleNormal}" x:Name="lbResin" Grid.Column="0"
                         Grid.Row="0">原粹树脂</Label>
-                <Label Style="{StaticResource GridLabelNameStyle}" x:Name="lbResinRec"
-                        Grid.Column="0" Grid.Row="1">全部恢复需要</Label>
-                <Label Style="{StaticResource GridLabelNameStyle}" x:Name="lbResinTime"
-                        Grid.Column="0" Grid.Row="2">预计恢复时间</Label>
-                <Label Style="{StaticResource GridLabelNameStyle}" x:Name="lbExpedition"
-                        Grid.Column="0" Grid.Row="3">探索派遣</Label>
-                <Label Style="{StaticResource GridLabelNameStyle}" x:Name="lbDailyTask"
-                        Grid.Column="0" Grid.Row="4">每日委托</Label>
-                <Label Style="{StaticResource GridLabelNameStyle}" x:Name="lbHomeCoin"
-                        Grid.Column="0" Grid.Row="5">洞天宝钱</Label>
-                <Label Style="{StaticResource GridLabelNameStyle}" x:Name="lbDiscount"
-                        Grid.Column="0" Grid.Row="6">减半周本</Label>
-                <Label Style="{StaticResource GridLabelNameStyle}" x:Name="lbTransformer"
-                        Grid.Column="0" Grid.Row="7">参量质变仪</Label>
-                <Label Style="{StaticResource GridLabelNameStyle}" x:Name="lbUpdateAt"
-                        Grid.Column="0" Grid.Row="8">更新时间</Label>
+                <Label Style="{StaticResource GIStyleNormal}" x:Name="lbResinRec" Grid.Column="0"
+                        Grid.Row="1">全部恢复需要</Label>
+                <Label Style="{StaticResource GIStyleNormal}" x:Name="lbResinTime" Grid.Column="0"
+                        Grid.Row="2">预计恢复时间</Label>
+                <Label Style="{StaticResource GIStyleNormal}" x:Name="lbExpedition" Grid.Column="0"
+                        Grid.Row="3">探索派遣</Label>
+                <Label Style="{StaticResource GIStyleNormal}" x:Name="lbDailyTask" Grid.Column="0"
+                        Grid.Row="4">每日委托</Label>
+                <Label Style="{StaticResource GIStyleNormal}" x:Name="lbHomeCoin" Grid.Column="0"
+                        Grid.Row="5">洞天宝钱</Label>
+                <Label Style="{StaticResource GIStyleNormal}" x:Name="lbDiscount" Grid.Column="0"
+                        Grid.Row="6">减半周本</Label>
+                <Label Style="{StaticResource GIStyleNormal}" x:Name="lbTransformer" Grid.Column="0"
+                        Grid.Row="7">参量质变仪</Label>
+                <Label Style="{StaticResource GIStyleNormal}" x:Name="lbUpdateAt" Grid.Column="0"
+                        Grid.Row="8">更新时间</Label>
 
-                <Label Style="{StaticResource GridLabelValueStyle}" x:Name="lbResinValue"
-                        Grid.Column="2" Grid.Row="0">---</Label>
-                <Label Style="{StaticResource GridLabelValueStyle}" x:Name="lbResinRecValue"
-                        Grid.Column="2" Grid.Row="1">---</Label>
-                <Label Style="{StaticResource GridLabelValueStyle}" x:Name="lbResinTimeValue"
-                        Grid.Column="2" Grid.Row="2">---</Label>
-                <Label Style="{StaticResource GridLabelValueStyle}" x:Name="lbExpeditionValue"
-                        Grid.Column="2" Grid.Row="3">---</Label>
-                <Label Style="{StaticResource GridLabelValueStyle}" x:Name="lbDailyTaskValue"
-                        Grid.Column="2" Grid.Row="4">---</Label>
-                <Label Style="{StaticResource GridLabelValueStyle}" x:Name="lbHomeCoinValue"
-                        Grid.Column="2" Grid.Row="5">---</Label>
-                <Label Style="{StaticResource GridLabelValueStyle}" x:Name="lbDiscountValue"
-                        Grid.Column="2" Grid.Row="6">---</Label>
-                <Label Style="{StaticResource GridLabelValueStyle}" x:Name="lbTransformerValue"
-                        Grid.Column="2" Grid.Row="7">---</Label>
-                <Label Style="{StaticResource GridLabelValueStyle}" x:Name="lbUpdateAtValue"
-                        Grid.Column="2" Grid.Row="8">---</Label>
+                <Label HorizontalAlignment="Right" Style="{StaticResource GIStyleNormal}"
+                        x:Name="lbResinValue" Grid.Column="2" Grid.Row="0">---</Label>
+                <Label HorizontalAlignment="Right" Style="{StaticResource GIStyleNormal}"
+                        x:Name="lbResinRecValue" Grid.Column="2" Grid.Row="1">---</Label>
+                <Label HorizontalAlignment="Right" Style="{StaticResource GIStyleNormal}"
+                        x:Name="lbResinTimeValue" Grid.Column="2" Grid.Row="2">---</Label>
+                <Label HorizontalAlignment="Right" Style="{StaticResource GIStyleNormal}"
+                        x:Name="lbExpeditionValue" Grid.Column="2" Grid.Row="3">---</Label>
+                <Label HorizontalAlignment="Right" Style="{StaticResource GIStyleNormal}"
+                        x:Name="lbDailyTaskValue" Grid.Column="2" Grid.Row="4">---</Label>
+                <Label HorizontalAlignment="Right" Style="{StaticResource GIStyleNormal}"
+                        x:Name="lbHomeCoinValue" Grid.Column="2" Grid.Row="5">---</Label>
+                <Label HorizontalAlignment="Right" Style="{StaticResource GIStyleNormal}"
+                        x:Name="lbDiscountValue" Grid.Column="2" Grid.Row="6">---</Label>
+                <Label HorizontalAlignment="Right" Style="{StaticResource GIStyleNormal}"
+                        x:Name="lbTransformerValue" Grid.Column="2" Grid.Row="7">---</Label>
+                <Label HorizontalAlignment="Right" Style="{StaticResource GIStyleNormal}"
+                        x:Name="lbUpdateAtValue" Grid.Column="2" Grid.Row="8">---</Label>
             </Grid>
             <Grid x:Name="layoutFooter">
-                <Label x:Name="lbFooter" Foreground="{StaticResource TextColorBrush}" FontSize="12"
+                <Label x:Name="lbFooter" Style="{StaticResource FooterStyle}"
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                         VerticalAlignment="Center">Powered by Carrot Notifier</Label>
             </Grid>
