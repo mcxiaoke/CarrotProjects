@@ -37,8 +37,7 @@
             </Style>
         </Grid.Resources>
 
-        <GroupBox Margin="0,0,0,6" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Header="效果预览"
-                Background="Black">
+        <GroupBox Margin="0,0,0,6" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Header="效果预览">
             <Grid Margin="6" x:Name="previewLayout" Loaded="PreviewLayout_Loaded"
                     Background="{Binding BackgroundColor,Converter={StaticResource ColorToBrush}}">
                 <Grid.Resources>

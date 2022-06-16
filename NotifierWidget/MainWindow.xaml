@@ -53,8 +53,8 @@
             <MenuItem Header="自定义界面" Name="cxmItemOption" Click="CxmItemOption_Click" />
             <MenuItem Header="前往项目" Name="cxmItemAbout" Click="CxmItemAbout_Click" />
             <Separator />
-            <MenuItem Header="重启程序" Name="cxmItemRestart" Click="CxmItemRestart_Click" />
-            <MenuItem Header="彻底退出" Name="cxmItemClose" Click="CxmItemClose_Click" />
+            <MenuItem Header="重启小组件" Name="cxmItemRestart" Click="CxmItemRestart_Click" />
+            <MenuItem Header="关闭小组件" Name="cxmItemClose" Click="CxmItemClose_Click" />
         </ContextMenu>
     </Window.ContextMenu>
     <Border CornerRadius="10"

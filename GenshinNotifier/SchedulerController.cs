@@ -189,6 +189,7 @@ namespace GenshinNotifier {
             Status.LastVersionAt = DateTime.MinValue;
             SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
             SystemEvents.SessionSwitch -= SystemEvents_SessionSwitchAsync;
+            CheckQuitWidget();
         }
 
         public void MuteToday() {
@@ -237,6 +238,7 @@ namespace GenshinNotifier {
                 await CheckUser(true);
                 await CheckDailyNote("CheckOnLaunch", true);
                 await Task.Delay(TIME_ONE_SECOND_MS * 5);
+                await CheckWidgetApp();
                 await CheckSharpUpdater();
                 await CheckVersionUpdate();
                 await Task.Delay(TIME_ONE_SECOND_MS * 5);
@@ -271,6 +273,33 @@ namespace GenshinNotifier {
             Status.LastVersionAt = DateTime.Now;
             Logger.Debug($"CheckVersionUpdate");
             await AutoUpdater.CheckUpdate();
+        }
+
+        public const string WIDGET_NAME = "NotifierWidget";
+        private async Task CheckWidgetApp() {
+            await Task.Run(() => {
+                var exe = Path.Combine(System.AppContext.BaseDirectory, WIDGET_NAME + ".exe");
+                Logger.Debug($"CheckWidgetApp {exe}");
+                if (!File.Exists(exe)) {
+                    return;
+                }
+                var proc = Process.GetProcessesByName(WIDGET_NAME);
+                Logger.Debug($"CheckWidgetApp {exe} running={proc?.Length}");
+                if (proc == null || proc.Length == 0) {
+                    Process.Start(exe);
+                }
+            });
+        }
+
+        private static void CheckQuitWidget() {
+            var processes = Process.GetProcessesByName(WIDGET_NAME);
+            foreach (var p in processes) {
+                Debug.WriteLine($"CheckQuitWidget {p.Id} {p.ProcessName} {p.MainModule.FileName}");
+                var exe = Path.Combine(System.AppContext.BaseDirectory, WIDGET_NAME + ".exe");
+                if (p.MainModule.FileName == exe) {
+                    p.Kill();
+                }
+            }
         }
 
         private async Task CheckSharpUpdater() {
