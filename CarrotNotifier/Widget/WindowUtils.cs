@@ -5,6 +5,15 @@ namespace GenshinNotifier {
 
     public static class WindowUtils {
 
+        // https://stackoverflow.com/questions/6804251
+        // hide from recent tasks, no focus
+        public static void MakeWindowSpecial(IntPtr handle) {
+            int exStyle = GetWindowLong(handle, GWL_EXSTYLE);
+            exStyle |= WS_EX_TOOLWINDOW;
+            exStyle |= WS_EX_NOACTIVATE;
+            SetWindowLong(handle, GWL_EXSTYLE, exStyle);
+        }
+
         public static void SetCommonStyles(IntPtr hwnd) {
             SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_NOACTIVATE);
             SetWindowPos(hwnd, new IntPtr(HWND_BOTTOM), 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOSIZE);

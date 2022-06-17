@@ -36,9 +36,12 @@ namespace GenshinNotifier {
         private double _lastPosX;
         private double _lastPosY;
 
+        private WidgetViewModel _viewModel = DataController.Default.ViewModel;
+
         public MainWindow() {
             InitializeComponent();
             InitLocation();
+            this.SourceInitialized += MainWindow_SourceInitialized;
             this.Loaded += MainWindow_Loaded;
             this.SizeChanged += MainWindow_SizeChanged;
             this.LocationChanged += MainWindow_LocationChanged;
@@ -52,7 +55,7 @@ namespace GenshinNotifier {
         }
 
         private void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e) {
-            Logger.Debug($"MainWindow_SizeChanged newSize={e.NewSize}");
+            //Logger.Debug($"MainWindow_SizeChanged newSize={e.NewSize}");
         }
 
         private void MainWindow_LocationChanged(object sender, EventArgs e) {
@@ -91,6 +94,10 @@ namespace GenshinNotifier {
             }
         }
 
+        private void MainWindow_SourceInitialized(object sender, EventArgs e) {
+            Logger.Debug($"MainWindow_SourceInitialized");
+        }
+
         private void MainWindow_Loaded(object sender, RoutedEventArgs e) {
             //_dpiScale = this.GetDpiScale();
             //
@@ -109,8 +116,9 @@ namespace GenshinNotifier {
                 if (Environment.OSVersion.Version.Major >= 10) {
                     WindowUtils.ShowBehindDesktopIcons(_windowHandle);
                 }
+            } else {
+                WindowUtils.MakeWindowSpecial(_windowHandle);
             }
-            // 
 
             Logger.Debug($"MainWindow_Loaded dpiScale={_dpiScale}");
             InitilizeStyles();
@@ -216,7 +224,7 @@ namespace GenshinNotifier {
                 default:
                     break;
             }
-            //Logger.Debug($"WndProc msg={message} wParam={wParam} lParam={lParam}");
+            Logger.Debug($"WndProc msg={message} wParam={wParam} lParam={lParam}");
             return IntPtr.Zero;
         }
 
@@ -258,8 +266,8 @@ namespace GenshinNotifier {
 
 
         private void UpdateUIControls() {
-            var user = DataController.Default.ViewModel.User;
-            var note = DataController.Default.ViewModel.Note;
+            var user = _viewModel.User;
+            var note = _viewModel.Note;
             if (user == null || note == null) {
                 Debug.WriteLine($"UpdateUIControls skip null data");
                 return;
@@ -284,7 +292,7 @@ namespace GenshinNotifier {
             // apply resin style
             var resinStyle = resinMayFull ? styleHightlight : styleNormal;
 #if DEBUG
-            resinStyle = styleHightlight;
+            //resinStyle = styleHightlight;
 #endif
             lbResin.Style = resinStyle;
             lbResinValue.Style = resinStyle;

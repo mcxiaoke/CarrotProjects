@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
+using CarrotCommon;
 
 namespace GenshinNotifier {
 

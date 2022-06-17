@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GenshinNotifier.Controls;
+using H.NotifyIcon;
 
 namespace GenshinNotifier.Widget {
     /// <summary>
@@ -39,7 +40,11 @@ namespace GenshinNotifier.Widget {
         public ICommand ExitApplicationCommand => new DelegateCommand { CommandAction = QuitConfirm };
 
         private void QuitConfirm() {
-            Application.Current.Shutdown();
+            var resultOk = MessageDialog.Show(Application.Current.MainWindow,
+                "程序关闭后将无法在桌面展示小组件，也不能提供系统通知提醒，确定退出吗？", "退出确认");
+            if (resultOk) {
+                Application.Current.Shutdown();
+            }
         }
     }
 }

@@ -11,7 +11,7 @@
         <MenuItem Header="显示小组件" Command="{Binding ShowWindowCommand}" />
         <MenuItem Header="隐藏小组件" Command="{Binding HideWindowCommand}" />
         <Separator />
-        <!--<MenuItem Header="退出" Command="{Binding ExitApplicationCommand}" />-->
+        <MenuItem Header="退出" Command="{Binding ExitApplicationCommand}" />
     </ContextMenu>
 
     <!--  the application's NotifyIcon - started from App.xaml.cs. Declares its own view model.  -->
