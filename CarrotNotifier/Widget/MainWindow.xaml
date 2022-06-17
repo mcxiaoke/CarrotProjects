@@ -55,19 +55,21 @@
     </Window.Resources>
     <Window.ContextMenu>
         <ContextMenu>
-            <MenuItem Header="颜色主题" Name="cxmItemOption" Click="CxmItemOption_Click" />
+            <MenuItem Header="主题样式" Name="cxmItemOption" Click="CxmItemOption_Click" />
             <MenuItem Header="刷新数据" Name="cxmItemRefresh" Click="CxmItemRefresh_Click" />
             <Separator />
             <MenuItem Header="帐号管理" Name="cxmItemAccount" Click="CxmItemAccount_Click" />
-            <MenuItem Header="程序设置" Name="cxmItemSettings" Click="CxmItemSettings_Click" />
+            <MenuItem Header="应用设置" Name="cxmItemSettings" Click="CxmItemSettings_Click" />
             <Separator />
             <MenuItem Header="锁定位置" Name="cxmItemLock" IsCheckable="True"
                     IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=OptionLockWidgetPos}" />
             <MenuItem Header="窗口置顶" Name="cxmItemTop" IsCheckable="True"
                     IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=OptionWidgetTopMost}" />
             <Separator />
+            <MenuItem Header="隐藏小组件" Name="cxmItemHide" Click="CxmItemHide_Click" />
             <MenuItem Header="重启小组件" Name="cxmItemRestart" Click="CxmItemRestart_Click" />
-            <MenuItem Header="关闭小组件" Name="cxmItemClose" Click="CxmItemClose_Click" />
+            <Separator />
+            <MenuItem Header="退出程序" Name="cxmItemClose" Click="CxmItemClose_Click" />
         </ContextMenu>
     </Window.ContextMenu>
     <Border CornerRadius="10"

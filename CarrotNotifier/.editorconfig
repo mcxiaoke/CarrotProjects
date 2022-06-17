@@ -108,6 +108,9 @@ dotnet_diagnostic.RCS1213.severity = none
 # RCS1214: Unnecessary interpolated string.
 dotnet_diagnostic.RCS1214.severity = none
 
+# RCS1075: Avoid empty catch clause that catches System.Exception.
+dotnet_diagnostic.RCS1075.severity = none
+
 [*.vb]
 #### 命名样式 ####
 

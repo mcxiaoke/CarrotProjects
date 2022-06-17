@@ -6,17 +6,20 @@ using System.Windows;
 using System.Windows.Media;
 using Carrot.UI.Controls.Font;
 using Newtonsoft.Json;
-using GenshinNotifier.Properties;
 using Carrot.UI.Controls.Utils;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 using Carrot.UI.Controls.Picker;
 using PropertyChanged;
 using CarrotCommon;
+using System.Xml.Linq;
+using System.Windows.Input;
 
 namespace GenshinNotifier {
 
     public class WidgetStyle : INotifyPropertyChanged {
+        public static WidgetStyle Empty = new WidgetStyle();
         public static WidgetStyle User { get; private set; }
         public static WidgetStyle ResDefault { get; private set; }
 
@@ -123,19 +126,41 @@ namespace GenshinNotifier {
             return !double.IsNaN(fontSize) && fontSize >= 8 && fontSize <= 24;
         }
 
-        private static WidgetStyle LoadUserStyle() {
+        private static string GetUserStyleFilePath() {
+            var root = AppInfo.LocalAppDataPath;
+            var dir = Path.Combine(root, "styles");
+            Storage.CheckOrCreateDir(dir);
+            return Path.Combine(dir, $"widget_style.json");
+        }
+
+        private static void DeleteUserStyle() {
+            var fileName = GetUserStyleFilePath();
+            if (!File.Exists(fileName)) {
+                return;
+            }
             try {
-                var styleJson = Settings.Default.WidgetStyle;
+                Logger.Debug("DeleteUserStyle ok");
+                File.Delete(fileName);
+            } catch (Exception ex) {
+                Logger.Debug($"DeleteUserStyle failed {ex}");
+            }
+        }
+
+        private static WidgetStyle LoadUserStyle() {
+            var fileName = GetUserStyleFilePath();
+            if (!File.Exists(fileName)) {
+                return WidgetStyle.Empty;
+            }
+            try {
+                var styleJson = File.ReadAllText(fileName, System.Text.Encoding.UTF8);
                 if (string.IsNullOrWhiteSpace(styleJson)) {
-                    return new WidgetStyle();
+                    return WidgetStyle.Empty;
                 }
+                Logger.Debug("LoadUserStyle ok");
                 return JsonConvert.DeserializeObject<WidgetStyle>(styleJson);
             } catch (Exception ex) {
-                Logger.Debug("LoadUserStyle failed");
-                Logger.Debug(ex.StackTrace);
-                Settings.Default.WidgetStyle = null;
-                Settings.Default.Save();
-                return new WidgetStyle();
+                Logger.Debug($"LoadUserStyle failed {ex}");
+                return WidgetStyle.Empty;
             }
         }
 
@@ -146,18 +171,19 @@ namespace GenshinNotifier {
                 if (string.IsNullOrWhiteSpace(styleJson)) {
                     return false;
                 }
-                Settings.Default.WidgetStyle = styleJson;
-                Settings.Default.Save();
+                var fileName = GetUserStyleFilePath();
+                File.WriteAllText(fileName, styleJson, System.Text.Encoding.UTF8);
+                Logger.Debug("SaveUserStyle ok");
                 return true;
             } catch (Exception ex) {
-                Logger.Debug("SaveUserStyle failed");
-                Logger.Debug(ex.StackTrace);
+                Logger.Debug($"SaveUserStyle failed {ex}");
                 return false;
             }
         }
 
         public static void ResetUserStyle() {
             Logger.Debug("ResetUserStyle");
+            DeleteUserStyle();
             var res = Application.Current.Resources;
             var rs = WidgetStyle.FromResource(res);
             var us = WidgetStyle.User;
@@ -170,8 +196,7 @@ namespace GenshinNotifier {
             us.TextFontFamily = rs.TextFontFamily;
             us.TextFontWeight = rs.TextFontWeight;
             us.TextFontStyle = rs.TextFontStyle;
-            Settings.Default.WidgetStyle = null;
-            Settings.Default.Save();
+
         }
 
         // must call on app start
@@ -184,7 +209,6 @@ namespace GenshinNotifier {
             var res = Application.Current.Resources;
             //UI.PrintResources(res);
             var resourceStyle = WidgetStyle.FromResource(res);
-
 
             var userStyle = new WidgetStyle();
             userStyle.TextNormalColor = settingStyle.TextNormalColor == ERROR_COLOR ? resourceStyle.TextNormalColor : settingStyle.TextNormalColor;

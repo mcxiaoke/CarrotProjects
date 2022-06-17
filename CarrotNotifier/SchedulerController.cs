@@ -275,7 +275,8 @@ namespace GenshinNotifier {
 
         private async Task CheckSharpUpdater() {
             await Task.Run(() => {
-                var exe = Path.Combine(System.AppContext.BaseDirectory, "SharpUpdater.exe");
+                var exeName = AutoUpdater.UpdaterExeFileName;
+                var exe = Path.Combine(System.AppContext.BaseDirectory, exeName);
                 var exePending = exe + ".pending";
                 if (!File.Exists(exePending)) {
                     return;

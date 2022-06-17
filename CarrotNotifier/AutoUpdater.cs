@@ -13,17 +13,18 @@ using Semver;
 namespace GenshinNotifier {
 
     internal static class AutoUpdater {
-        public static string ProjectUrl = "https://gitee.com/osap/CarrotProjects/tree/master/GenshinNotifier";
+        public static string ProjectUrl = "https://gitee.com/osap/CarrotProjects/tree/master/CarrotNotifier";
         public static string ReleaseUrl = "https://gitee.com/osap/CarrotProjects/releases";
 
         public static readonly List<string> VersionUrls = new List<string>(){
-            "https://gitee.com/osap/CarrotProjects/raw/master/GenshinNotifier/version.json",
-            "https://bitbucket.org/obitcat/carrotprojects/raw/master/GenshinNotifier/version.json",
-            "https://raw.fastgit.org/mcxiaoke/CarrotProjects/master/GenshinNotifier/version.json",
-            "https://raw.githubusercontent.com/mcxiaoke/CarrotProjects/master/GenshinNotifier/version.json"
+            "https://gitee.com/osap/CarrotProjects/raw/master/CarrotNotifier/version.json",
+            "https://bitbucket.org/obitcat/carrotprojects/raw/master/CarrotNotifier/version.json",
+            "https://raw.fastgit.org/mcxiaoke/CarrotProjects/master/CarrotNotifier/version.json",
+            "https://raw.githubusercontent.com/mcxiaoke/CarrotProjects/master/CarrotNotifier/version.json"
         };
 
         public static string UpdaterConfigFileName = "SharpUpdater.json";
+        public static string UpdaterExeFileName = "SharpUpdater.exe";
 
         public static bool HasNewVersion;
         public static VersionInfo CachedVersionInfo;

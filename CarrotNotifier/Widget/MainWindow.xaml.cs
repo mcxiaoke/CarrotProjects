@@ -338,13 +338,6 @@ namespace GenshinNotifier {
         }
         #endregion
 
-        private void CxmItemClose_Click(object sender, RoutedEventArgs e) {
-            Logger.Debug("CxmItemClose_Click");
-            if (MessageBox.Show("确定不需要桌面小组件，彻底退出吗？", "退出确认",
-                MessageBoxButton.OKCancel) == MessageBoxResult.OK) {
-                Close();
-            }
-        }
 
         private void CxmItemRefresh_Click(object sender, RoutedEventArgs e) {
             Logger.Debug("CxmItemRefresh_Click");
@@ -395,6 +388,14 @@ namespace GenshinNotifier {
             Application.Current.Shutdown();
         }
 
+        private void CxmItemClose_Click(object sender, RoutedEventArgs e) {
+            Logger.Debug("CxmItemClose_Click");
+            if (MessageBox.Show("确定不需要通知提醒和桌面小组件，彻底退出吗？", "退出确认",
+                MessageBoxButton.OKCancel) == MessageBoxResult.OK) {
+                Close();
+                Application.Current.Shutdown();
+            }
+        }
 
         private void ShowCookieDialog() {
             var cd = new CookieDialog {
@@ -457,5 +458,8 @@ namespace GenshinNotifier {
             ShowSettingsDialog();
         }
 
+        private void CxmItemHide_Click(object sender, RoutedEventArgs e) {
+            // todo not impl
+        }
     }
 }
