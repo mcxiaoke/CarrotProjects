@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenshinNotifier", "GenshinNotifier\GenshinNotifier.csproj", "{82761839-E200-402E-8C1D-2FDE9571239C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GenshinLib", "GenshinLib\GenshinLib.csproj", "{4653D482-1B33-4E7B-B15A-FDF6A5ACA2DE}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarrotCommon", "CarrotCommon\CarrotCommon.csproj", "{45CC2DC5-60B2-4989-815E-5E9869E36743}"
@@ -15,18 +13,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarrotVSNumber", "CarrotVSN
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarrotHashCli", "CarrotHash\CarrotHashCli.csproj", "{E68A3A58-4739-4173-9682-15850E54518C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NotifierWidget", "NotifierWidget\NotifierWidget.csproj", "{262B016C-4DE1-4E3E-8C3C-18DA5CF08C52}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Carrot.ProCom", "Carrot.ProCom\Carrot.ProCom.csproj", "{B0C3540B-9503-434C-A228-1756BAD563E4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Carrot.Device", "Carrot.Device\Carrot.Device.csproj", "{80712E4F-7382-4607-92E8-ACE9354D034C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTests", "ConsoleTests\ConsoleTests.csproj", "{B3E116DB-D858-44E8-8DEC-FC00F12C4E7E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleTests", "ConsoleTests\ConsoleTests.csproj", "{B3E116DB-D858-44E8-8DEC-FC00F12C4E7E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "解决方案项", "解决方案项", "{0010B164-338D-488D-88CB-12CEDF293B78}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarrotNotifier", "CarrotNotifier\CarrotNotifier.csproj", "{8E590438-E0DC-438F-BFDF-E0DD65EF913F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -158,6 +156,18 @@ Global
 		{B3E116DB-D858-44E8-8DEC-FC00F12C4E7E}.Release|x64.Build.0 = Release|Any CPU
 		{B3E116DB-D858-44E8-8DEC-FC00F12C4E7E}.Release|x86.ActiveCfg = Release|Any CPU
 		{B3E116DB-D858-44E8-8DEC-FC00F12C4E7E}.Release|x86.Build.0 = Release|Any CPU
+		{8E590438-E0DC-438F-BFDF-E0DD65EF913F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8E590438-E0DC-438F-BFDF-E0DD65EF913F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8E590438-E0DC-438F-BFDF-E0DD65EF913F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8E590438-E0DC-438F-BFDF-E0DD65EF913F}.Debug|x64.Build.0 = Debug|Any CPU
+		{8E590438-E0DC-438F-BFDF-E0DD65EF913F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8E590438-E0DC-438F-BFDF-E0DD65EF913F}.Debug|x86.Build.0 = Debug|Any CPU
+		{8E590438-E0DC-438F-BFDF-E0DD65EF913F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8E590438-E0DC-438F-BFDF-E0DD65EF913F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8E590438-E0DC-438F-BFDF-E0DD65EF913F}.Release|x64.ActiveCfg = Release|Any CPU
+		{8E590438-E0DC-438F-BFDF-E0DD65EF913F}.Release|x64.Build.0 = Release|Any CPU
+		{8E590438-E0DC-438F-BFDF-E0DD65EF913F}.Release|x86.ActiveCfg = Release|Any CPU
+		{8E590438-E0DC-438F-BFDF-E0DD65EF913F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -18,11 +18,11 @@ namespace CarrotCommon {
             {
             Tuple.Create(Math.Abs((int) timeSpan.TotalDays), "天"),
             Tuple.Create(Math.Abs(timeSpan.Hours), "小时"),
-            Tuple.Create(Math.Abs(timeSpan.Minutes), "分钟"),
+            Tuple.Create(Math.Abs(timeSpan.Minutes), "分"),
             Tuple.Create(Math.Abs(timeSpan.Seconds), "秒"),
         };
             components.RemoveAll(i => i.Item1 == 0);
-            var timeStr = string.Join("", components.Select(t => $"{t.Item1}{t.Item2}"));
+            var timeStr = string.Concat(components.Select(t => $"{t.Item1}{t.Item2}"));
             string extra = timeSpan.TotalSeconds >= 0 ? "后" : "前";
             return $"{timeStr}{extra}";
         }
