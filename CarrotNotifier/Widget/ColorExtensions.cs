@@ -15,7 +15,6 @@ namespace GenshinNotifier {
             return System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B);
         }
 
-
         public static System.Windows.Media.Color ToMediaColor(this System.Drawing.Color color) {
             return Color.FromArgb(color.A, color.R, color.G, color.B);
         }

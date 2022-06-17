@@ -12,6 +12,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\carrot_512.png" />
+    <None Remove="Assets\loading_100.gif" />
+  </ItemGroup>
+
+  <ItemGroup>
     <COMReference Include="IWshRuntimeLibrary">
       <WrapperTool>tlbimp</WrapperTool>
       <VersionMinor>0</VersionMinor>
@@ -24,7 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\carrot_512.ico" />
+    <Resource Include="Assets\carrot_512.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,6 +46,7 @@
       <IncludeAssets>runtime; compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.0.50" />
     <PackageReference Include="PropertyChanged.Fody" Version="3.4.1">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
@@ -63,6 +69,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\carrot_512.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </Resource>
+    <Resource Include="Assets\loading_100.gif" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
@@ -71,10 +85,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Assets\carrot_512.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

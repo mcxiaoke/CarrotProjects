@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using CarrotCommon;
 using Carrot.ProCom.Common;
 using Microsoft.Toolkit.Uwp.Notifications;
+using H.NotifyIcon;
 
 namespace GenshinNotifier {
 
@@ -18,6 +19,7 @@ namespace GenshinNotifier {
         private const string GUID_STR = "{82761839-E200-402E-8C1D-2FDE9571239C}";
 
         private GlobalExceptionHandler _handler;
+        private TaskbarIcon _trayIcon;
 
         public App() {
             _handler = new GlobalExceptionHandler();
@@ -65,6 +67,8 @@ namespace GenshinNotifier {
             WidgetStyle.Initialize();
             AppService.Start();
             ToastNotificationManagerCompat.OnActivated += OnNotificationActivated;
+            _trayIcon = (TaskbarIcon)FindResource("SysTrayIcon");
+            _trayIcon.ForceCreate();
         }
 
         private void OnAppStop() {
@@ -73,6 +77,7 @@ namespace GenshinNotifier {
             ToastNotificationManagerCompat.Uninstall();
             SchedulerController.Default.Stop();
             Logger.Close();
+            _trayIcon?.Dispose();
         }
 
 

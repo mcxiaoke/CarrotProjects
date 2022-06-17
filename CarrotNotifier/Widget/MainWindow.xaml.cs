@@ -19,6 +19,7 @@ using Newtonsoft.Json.Linq;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.System;
 using System.Configuration;
+using GenshinNotifier.Controls;
 
 namespace GenshinNotifier {
 
@@ -361,7 +362,7 @@ namespace GenshinNotifier {
         private void CxmItemAbout_Click(object sender, RoutedEventArgs e) {
             Logger.Debug("CxmItemAbout_Click");
             if (!this.IsLoaded) { return; }
-            Process.Start("https://gitee.com/osap/CarrotProjects");
+            Process.Start(AutoUpdater.ProjectUrl);
         }
 
         private (double left, double top) GetDialogPosition() {
@@ -390,9 +391,9 @@ namespace GenshinNotifier {
 
         private void CxmItemClose_Click(object sender, RoutedEventArgs e) {
             Logger.Debug("CxmItemClose_Click");
-            if (MessageBox.Show("确定不需要通知提醒和桌面小组件，彻底退出吗？", "退出确认",
-                MessageBoxButton.OKCancel) == MessageBoxResult.OK) {
-                Close();
+            var resultOk = MessageDialog.Show(this,
+                "程序关闭后将无法在桌面展示小组件，也不能提供系统通知提醒，确定退出吗？", "退出确认");
+            if (resultOk) {
                 Application.Current.Shutdown();
             }
         }
@@ -459,7 +460,7 @@ namespace GenshinNotifier {
         }
 
         private void CxmItemHide_Click(object sender, RoutedEventArgs e) {
-            // todo not impl
+            this.Hide();
         }
     }
 }

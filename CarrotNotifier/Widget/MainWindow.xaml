@@ -69,7 +69,7 @@
             <MenuItem Header="隐藏小组件" Name="cxmItemHide" Click="CxmItemHide_Click" />
             <MenuItem Header="重启小组件" Name="cxmItemRestart" Click="CxmItemRestart_Click" />
             <Separator />
-            <MenuItem Header="退出程序" Name="cxmItemClose" Click="CxmItemClose_Click" />
+            <MenuItem Header="退出" Name="cxmItemClose" Click="CxmItemClose_Click" />
         </ContextMenu>
     </Window.ContextMenu>
     <Border CornerRadius="10"
