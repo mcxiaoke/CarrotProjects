@@ -21,6 +21,8 @@ using Windows.System;
 using System.Configuration;
 using Carrot.UI.Controls.Dialog;
 using System.Diagnostics.CodeAnalysis;
+using System.Web.Services.Protocols;
+using System.Security.Cryptography;
 
 namespace GenshinNotifier {
 
@@ -241,15 +243,28 @@ namespace GenshinNotifier {
             if (_windowHandle is IntPtr hwnd) {
                 switch (e.ChangedButton) {
                     case MouseButton.Left:
+                        //Point pt = e.GetPosition(lbHeader);
+                        //if (pt.Y < lbHeader.ActualHeight) {
+                        //    DragMove();
+                        //}
                         NativeMethods.ReleaseCapture();
-                        NativeMethods.SendMessage(hwnd, NativeMethods.WM_NCLBUTTONDOWN,
-                            NativeMethods.HT_CAPTION, 0);
+                        NativeMethods.SendMessage(hwnd, NativeMethods.WM_NCLBUTTONDOWN, NativeMethods.HT_CAPTION, 0);
                         break;
 
                     case MouseButton.Right:
                         break;
                 }
             }
+        }
+
+        // we can drag and move window when window style = none
+        private void LayoutHeader_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            //base.OnMouseLeftButtonDown(e);
+            if (Settings.Default.OptionLockWidgetPos) { return; }
+            // https://stackoverflow.com/questions/867140/drag-a-wpf-form-around-the-desktop
+            // https://stackoverflow.com/questions/1761854/cant-drag-and-move-a-wpf-form
+            // https://stackoverflow.com/questions/7417739/make-wpf-window-draggable-no-matter-what-element-is-clicked
+            this.DragMove();
         }
 
         #region update ui controls

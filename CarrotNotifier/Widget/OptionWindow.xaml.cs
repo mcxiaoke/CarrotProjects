@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.ComponentModel;
+using System.Windows.Input;
 using Newtonsoft.Json;
 using Carrot.UI.Controls.Utils;
 using Carrot.UI.Controls.Picker;
@@ -143,6 +144,10 @@ namespace GenshinNotifier {
             WidgetStyle.SaveUserStyle();
         }
 
+        private void BtnCancel_Click(object sender, RoutedEventArgs e) {
+            Close();
+        }
+
         private void BtnReset_Click(object sender, RoutedEventArgs e) {
             // reset to default
             WidgetStyle.ResetUserStyle();
@@ -153,6 +158,27 @@ namespace GenshinNotifier {
                 cbTextHightlight.SelectedIndex = 0;
                 cbFontFamily.SelectedFont = style.TextFontExtraInfo;
                 cbFontSize.SelectedItem = style.TextFontSize;
+            }
+        }
+
+        private void CbThemeStyles_Loaded(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void CbThemeStyles_DropDownClosed(object sender, EventArgs e) {
+
+        }
+
+        private void ChkThemeTranparent_Checked(object sender, RoutedEventArgs e) {
+
+        }
+
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) {
+            // https://stackoverflow.com/questions/1761854/cant-drag-and-move-a-wpf-form
+            base.OnMouseLeftButtonDown(e);
+            Point pt = e.GetPosition(TopHeader);
+            if (pt.Y < TopHeader.ActualHeight) {
+                DragMove();
             }
         }
     }

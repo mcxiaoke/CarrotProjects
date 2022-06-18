@@ -9,8 +9,7 @@
         xmlns:properties="clr-namespace:GenshinNotifier.Properties" mc:Ignorable="d"
         Focusable="False" Title="MainWindow" SizeToContent="WidthAndHeight"
         AllowsTransparency="True" WindowStyle="None" Background="{x:Null}" FontFamily="NSimSun"
-        FontSize="15" MouseDown="Window_MouseDown" ShowInTaskbar="False" SnapsToDevicePixels="True"
-        ResizeMode="NoResize">
+        FontSize="15" ShowInTaskbar="False" SnapsToDevicePixels="True" ResizeMode="NoResize">
     <Window.Resources>
         <ResourceDictionary>
             <cup:ColorToSolidBrushConverter x:Key="ColorToBrush" />
@@ -58,7 +57,7 @@
             Background="{Binding BackgroundColor,Converter={StaticResource ColorToBrush}}">
         <StackPanel x:Name="spLayoutBox" Orientation="Vertical" Margin="6"
                 Grid.IsSharedSizeScope="True">
-            <Grid x:Name="layoutHeader">
+            <Grid x:Name="layoutHeader" MouseLeftButtonDown="LayoutHeader_MouseLeftButtonDown">
                 <Label x:Name="lbHeader" Style="{StaticResource HeaderStyle}"
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
                         VerticalAlignment="Center" Content="原神实时便签">
