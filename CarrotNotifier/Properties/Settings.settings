@@ -77,5 +77,11 @@
     <Setting Name="WidgetLastPositionY" Type="System.Double" Scope="User">
       <Value Profile="(Default)">NaN</Value>
     </Setting>
+    <Setting Name="OptionSample" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="IsRestarting" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

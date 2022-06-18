@@ -19,6 +19,21 @@ where T : System.IComparable<T> {
             return result;
         }
 
+        public static void RestartApplication() {
+            // https://stackoverflow.com/questions/1672338
+            ProcessStartInfo Info = new ProcessStartInfo();
+            // timeout hack for restarting app with mutex single instance check
+            Info.Arguments = "/C choice /C Y /N /D Y /T 2 & START \"\" \"" + AppInfo.ExecutablePath + "\"";
+
+            //Info.Arguments = "/C TIMEOUT 2 > nul & START \"\" \"" + AppInfo.ExecutablePath + "\"";
+            Info.WindowStyle = ProcessWindowStyle.Hidden;
+            Info.CreateNoWindow = true;
+            Info.FileName = "cmd.exe";
+            Process.Start(Info);
+            //Process.GetCurrentProcess().Kill();
+            Application.Current.Shutdown();
+        }
+
 
         public static double GetDpiScale(this Window window) {
             // https://dzimchuk.net/best-way-to-get-dpi-value-in-wpf/

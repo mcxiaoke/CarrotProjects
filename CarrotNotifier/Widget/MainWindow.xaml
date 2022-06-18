@@ -53,25 +53,6 @@
             </Style>
         </ResourceDictionary>
     </Window.Resources>
-    <Window.ContextMenu>
-        <ContextMenu>
-            <MenuItem Header="主题样式" Name="cxmItemOption" Click="CxmItemOption_Click" />
-            <MenuItem Header="刷新数据" Name="cxmItemRefresh" Click="CxmItemRefresh_Click" />
-            <Separator />
-            <MenuItem Header="帐号管理" Name="cxmItemAccount" Click="CxmItemAccount_Click" />
-            <MenuItem Header="应用设置" Name="cxmItemSettings" Click="CxmItemSettings_Click" />
-            <Separator />
-            <MenuItem Header="锁定位置" Name="cxmItemLock" IsCheckable="True"
-                    IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=OptionLockWidgetPos}" />
-            <MenuItem Header="窗口置顶" Name="cxmItemTop" IsCheckable="True"
-                    IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=OptionWidgetTopMost}" />
-            <Separator />
-            <MenuItem Header="隐藏小组件" Name="cxmItemHide" Click="CxmItemHide_Click" />
-            <MenuItem Header="重启小组件" Name="cxmItemRestart" Click="CxmItemRestart_Click" />
-            <Separator />
-            <MenuItem Header="退出" Name="cxmItemClose" Click="CxmItemClose_Click" />
-        </ContextMenu>
-    </Window.ContextMenu>
     <Border CornerRadius="10"
             Background="{Binding BackgroundColor,Converter={StaticResource ColorToBrush}}">
         <StackPanel x:Name="spLayoutBox" Orientation="Vertical" Margin="6"
@@ -79,7 +60,32 @@
             <Grid x:Name="layoutHeader">
                 <Label x:Name="lbHeader" Style="{StaticResource HeaderStyle}"
                         HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
-                        VerticalAlignment="Center">原神实时便签
+                        VerticalAlignment="Center" Content="原神实时便签">
+                    <Label.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="主题样式" x:Name="cxmItemOption"
+                                    Click="CxmItemOption_Click" />
+                            <Separator />
+                            <MenuItem Header="锁定位置" x:Name="cxmItemLock" IsCheckable="True"
+                                    IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=OptionLockWidgetPos}" />
+                            <MenuItem Header="窗口置顶" x:Name="cxmItemTop" IsCheckable="True"
+                                    IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=OptionWidgetTopMost}" />
+                            <Separator />
+                            <MenuItem Header="帐号管理" x:Name="cxmItemAccount"
+                                    Click="CxmItemAccount_Click" />
+                            <MenuItem Header="通用设置" x:Name="cxmItemSettings"
+                                    Click="CxmItemSettings_Click" />
+                            <!--<Separator />-->
+                            <!--<MenuItem Header="刷新数据" Name="cxmItemRefresh" Click="CxmItemRefresh_Click" />-->
+                            <!--<MenuItem Header="隐藏小组件" Name="cxmItemHide" Click="CxmItemHide_Click" />
+            <MenuItem Header="重启小组件" Name="cxmItemRestart" Click="CxmItemRestart_Click" />-->
+                            <!--<Separator />-->
+                            <!--<MenuItem Header="检查更新" Name="cxmItemCheckUpdate" Click="CxmItemCheckUpdate_Click" />
+            <MenuItem Header="项目主页" Name="cxmItemAbout" Click="CxmItemAbout_Click" />-->
+                            <!--<Separator />
+            <MenuItem Header="退出" Name="cxmItemClose" Click="CxmItemClose_Click" />-->
+                        </ContextMenu>
+                    </Label.ContextMenu>
                 </Label>
             </Grid>
             <Grid x:Name="layoutAccout" Margin="0,0,0,6">

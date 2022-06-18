@@ -47,9 +47,6 @@ namespace GenshinNotifier {
             this.LocationChanged += MainWindow_LocationChanged;
             this.Closing += MainWindow_Closing;
             this.Closed += MainWindow_Closed;
-            // apply settings to ui
-            this.cxmItemLock.IsChecked = Settings.Default.OptionLockWidgetPos;
-            this.cxmItemTop.IsChecked = Settings.Default.OptionWidgetTopMost;
             this.Topmost = Settings.Default.OptionWidgetTopMost;
             Logger.Debug($"MainWindow lock={Settings.Default.OptionLockWidgetPos} top={Settings.Default.OptionWidgetTopMost}");
         }
@@ -469,6 +466,10 @@ namespace GenshinNotifier {
 
         private void CxmItemHide_Click(object sender, RoutedEventArgs e) {
             this.Hide();
+        }
+
+        private void CxmItemCheckUpdate_Click(object sender, RoutedEventArgs e) {
+            AutoUpdater.ShowUpdater();
         }
     }
 }

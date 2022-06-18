@@ -19,7 +19,7 @@ namespace GenshinNotifier {
         private const string GUID_STR = "{82761839-E200-402E-8C1D-2FDE9571239C}";
 
         private GlobalExceptionHandler _handler;
-        private TaskbarIcon _trayIcon;
+        public TaskbarIcon TrayIcon;
 
         public App() {
             _handler = new GlobalExceptionHandler();
@@ -32,7 +32,6 @@ namespace GenshinNotifier {
             // https://github.com/it3xl/WPF-app-Single-Instance-in-one-line-of-code
             // https://weblog.west-wind.com/posts/2016/may/13/creating-single-instance-wpf-applications-that-open-multiple-files
             Mutex mutex = new Mutex(true, @"Global\" + GUID_STR, out bool onlyInstance);
-
             if (!onlyInstance) {
                 Logger.Debug($"Warning: {AppInfo.ProductName} is already running, exit now!");
                 MessageBox.Show("检测到另一个实例正在运行，请勿重复开启！", AppInfo.ProductName, MessageBoxButton.OK);
@@ -57,6 +56,7 @@ namespace GenshinNotifier {
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
 #endif
+            // init
             CheckSettingsUpgrade();
             if (Settings.Default.FirstLaunch) {
                 Settings.Default.FirstLaunch = false;
@@ -67,8 +67,9 @@ namespace GenshinNotifier {
             WidgetStyle.Initialize();
             AppService.Start();
             ToastNotificationManagerCompat.OnActivated += OnNotificationActivated;
-            _trayIcon = (TaskbarIcon)FindResource("SysTrayIcon");
-            _trayIcon.ForceCreate();
+            // tray icon
+            TrayIcon = (TaskbarIcon)FindResource("SysTrayIcon");
+            TrayIcon.ForceCreate();
         }
 
         private void OnAppStop() {
@@ -77,7 +78,7 @@ namespace GenshinNotifier {
             ToastNotificationManagerCompat.Uninstall();
             SchedulerController.Default.Stop();
             Logger.Close();
-            _trayIcon?.Dispose();
+            TrayIcon?.Dispose();
         }
 
 
