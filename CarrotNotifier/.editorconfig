@@ -111,6 +111,9 @@ dotnet_diagnostic.RCS1214.severity = none
 # RCS1075: Avoid empty catch clause that catches System.Exception.
 dotnet_diagnostic.RCS1075.severity = none
 
+# CS8767: 参数类型中引用类型的为 Null 性与隐式实现的成员不匹配(可能是由于为 Null 性特性)。
+dotnet_diagnostic.CS8767.severity = none
+
 [*.vb]
 #### 命名样式 ####
 
