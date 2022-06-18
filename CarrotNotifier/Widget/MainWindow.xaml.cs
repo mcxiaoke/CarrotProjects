@@ -19,7 +19,7 @@ using Newtonsoft.Json.Linq;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.System;
 using System.Configuration;
-using GenshinNotifier.Controls;
+using Carrot.UI.Controls.Dialog;
 
 namespace GenshinNotifier {
 

@@ -5,8 +5,8 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="./Widget/styles.xaml" />
-                <ResourceDictionary Source="./Widget/NotifyIconResources.xaml" />
+                <ResourceDictionary Source="./Style/styles.xaml" />
+                <ResourceDictionary Source="./Style/NotifyIconResources.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

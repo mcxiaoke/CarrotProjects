@@ -11,7 +11,7 @@
         SnapsToDevicePixels="True" Loaded="Window_Loaded" ResizeMode="CanMinimize">
     <Window.Resources>
         <ResourceDictionary>
-            <local:ColorToSolidBrushConverter x:Key="ColorToBrush" />
+            <cui:ColorToSolidBrushConverter x:Key="ColorToBrush" />
         </ResourceDictionary>
     </Window.Resources>
     <Grid Margin="12,6,12,6" Grid.IsSharedSizeScope="True">

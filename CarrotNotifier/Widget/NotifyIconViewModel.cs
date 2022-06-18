@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GenshinNotifier.Controls;
 using H.NotifyIcon;
 using System.Diagnostics;
 using CarrotCommon;
 using GenshinNotifier.Properties;
+using Carrot.UI.Controls.Dialog;
 
 namespace GenshinNotifier.Widget {
     /// <summary>

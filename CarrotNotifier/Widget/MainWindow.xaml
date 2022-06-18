@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:widget="clr-namespace:GenshinNotifier"
+        xmlns:cup="clr-namespace:Carrot.UI.Controls.Picker;assembly=Carrot.UI.Controls"
         xmlns:properties="clr-namespace:GenshinNotifier.Properties" mc:Ignorable="d"
         Focusable="False" Title="MainWindow" SizeToContent="WidthAndHeight"
         AllowsTransparency="True" WindowStyle="None" Background="{x:Null}" FontFamily="NSimSun"
@@ -12,7 +13,7 @@
         ResizeMode="NoResize">
     <Window.Resources>
         <ResourceDictionary>
-            <widget:ColorToSolidBrushConverter x:Key="ColorToBrush" />
+            <cup:ColorToSolidBrushConverter x:Key="ColorToBrush" />
             <Style x:Key="GIStyleBase" TargetType="Label">
                 <Setter Property="Padding" Value="0,4,0,4" />
                 <Setter Property="VerticalAlignment" Value="Center" />

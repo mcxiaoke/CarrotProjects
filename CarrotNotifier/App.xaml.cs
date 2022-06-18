@@ -27,34 +27,31 @@ namespace GenshinNotifier {
             this.Exit += App_Exit;
         }
 
+        private Mutex mutex;
         private void App_Startup(object sender, StartupEventArgs e) {
             // https://stackoverflow.com/questions/14506406/wpf-single-instance-best-practices
             // https://github.com/it3xl/WPF-app-Single-Instance-in-one-line-of-code
             // https://weblog.west-wind.com/posts/2016/may/13/creating-single-instance-wpf-applications-that-open-multiple-files
-            Mutex mutex = new Mutex(true, @"Global\" + GUID_STR, out bool onlyInstance);
+            mutex = new Mutex(true, @"Global\" + GUID_STR, out bool onlyInstance);
             if (!onlyInstance) {
-                Logger.Debug($"Warning: {AppInfo.ProductName} is already running, exit now!");
+                Debug.WriteLine($"=== Warning: {AppInfo.ProductName} is already running, exit now! ===");
                 MessageBox.Show("检测到另一个实例正在运行，请勿重复开启！", AppInfo.ProductName, MessageBoxButton.OK);
                 // bring prev instance to front
                 // AppService.SendCmdShowWindow();
-                Application.Current.Shutdown();
                 Environment.Exit(0);
                 return;
             }
-            GC.KeepAlive(mutex);
             Logger.Debug("=======================================");
             Logger.Debug("App_Startup");
             OnAppStart();
-
         }
-
 
         private void App_Exit(object sender, ExitEventArgs e) { OnAppStop(); }
 
         private void OnAppStart() {
 #if DEBUG
             Thread.CurrentThread.CurrentCulture = System.Globalization.CultureInfo.InvariantCulture;
-            Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
+            //Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.InvariantCulture;
 #endif
             // init
             CheckSettingsUpgrade();
@@ -79,6 +76,7 @@ namespace GenshinNotifier {
             SchedulerController.Default.Stop();
             Logger.Close();
             TrayIcon?.Dispose();
+            GC.KeepAlive(mutex);
         }
 
 

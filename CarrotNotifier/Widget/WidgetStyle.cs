@@ -15,6 +15,7 @@ using PropertyChanged;
 using CarrotCommon;
 using System.Xml.Linq;
 using System.Windows.Input;
+using Carrot.UI.Controls;
 
 namespace GenshinNotifier {
 
