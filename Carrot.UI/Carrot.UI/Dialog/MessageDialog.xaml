@@ -1,0 +1,21 @@
+﻿<Window x:Class="Carrot.UI.Controls.Dialog.MessageDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Carrot.UI.Controls" mc:Ignorable="d" Title="MessageDialog"
+        MinHeight="180" Width="320" ResizeMode="NoResize" SizeToContent="Height"
+        WindowStartupLocation="Manual" WindowStyle="ThreeDBorderWindow">
+    <DockPanel LastChildFill="True" Margin="12">
+        <StackPanel Margin="0,12,0,0" DockPanel.Dock="Bottom" Orientation="Horizontal"
+                HorizontalAlignment="Right">
+            <Button Padding="0,2,0,2" Width="80" DockPanel.Dock="Right" Margin="0,0,12,0"
+                    Content="OK" IsDefault="True" x:Name="btnOk" Click="BtnOk_Click" />
+            <Button Padding="0,2,0,2" Width="80" DockPanel.Dock="Right" Content="Cancel"
+                    IsCancel="True" x:Name="btnCancel" Click="BtnCancel_Click" />
+        </StackPanel>
+        <TextBlock LineStackingStrategy="BlockLineHeight" LineHeight="16" TextWrapping="Wrap"
+                Focusable="False" Margin="6" Text="Message Content" x:Name="textMessage" />
+
+    </DockPanel>
+</Window>

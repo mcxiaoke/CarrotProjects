@@ -1,0 +1,38 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net472;net5.0-windows;net6.0-windows</TargetFrameworks>
+    <UseWPF>true</UseWPF>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Company>CatCastle</Company>
+    <Authors>CatCastle</Authors>
+    <Copyright>Copyright © CatCastle 2022</Copyright>
+    <Description>Carrot UI Controls and Utilities</Description>
+    <PackageProjectUrl>https://github.com/mcxiaoke/Carrot.UI</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mcxiaoke/Carrot.UI.git</RepositoryUrl>
+    <PackageTags>wpf;controls;ui;colorpicker</PackageTags>
+    <AssemblyVersion>0.4.0</AssemblyVersion>
+    <FileVersion>0.4.0</FileVersion>
+    <Version>0.4.0</Version>
+    <PackageReleaseNotes>Carrot UI Controls and Utilities</PackageReleaseNotes>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\colorfont_icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+    <None Include=".\LICENSE.txt" Link="LICENSE.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\colorfont_icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
+</Project>

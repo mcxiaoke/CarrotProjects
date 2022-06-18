@@ -1,0 +1,38 @@
+﻿<Window x:Class="Carrot.UI.Samples.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Carrot.UI.Samples"
+        xmlns:cupicker="clr-namespace:Carrot.UI.Controls.Picker;assembly=Carrot.UI.Controls"
+        xmlns:cufont="clr-namespace:Carrot.UI.Controls.Font;assembly=Carrot.UI.Controls"
+        mc:Ignorable="d" Title="MainWindow" Height="450" Width="600"
+        WindowStartupLocation="CenterScreen"
+        DataContext="{Binding Mode=OneWay, RelativeSource={RelativeSource Self}}">
+    <Window.Resources>
+    </Window.Resources>
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <cupicker:ColorComboBox Margin="0,0,0,6" Grid.Row="0" x:Name="colorBox1" SelectedIndex="0"
+                ExtraColors="{Binding TestColors}"
+                SelectedColorChanged="ColorBox_SelectedColorChanged" />
+        <cufont:FontComboBox x:Name="fontBox" Grid.Row="1" Margin="0,0,0,6"
+                FontChanged="FontComboBox_FontChanged" SelectedIndex="3"
+                SelectedFont="{Binding RandomFont}" />
+
+        <Button Grid.Row="3" Padding="12" x:Name="fontButton" Click="FontButton_Click">Font Picker</Button>
+        <Button Grid.Row="4" Padding="12" x:Name="colorButton" Click="ColorButton_Click">Color Picker</Button>
+
+        <TextBox Grid.Row="2" Margin="12" x:Name="textBox" Padding="12" FontSize="16"
+                Text="中文字体 ABC abc XYZ xyz" />
+
+    </Grid>
+</Window>

@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net472;net5.0-windows;net6.0-windows</TargetFrameworks>
+    <UseWPF>true</UseWPF>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Company>CatCastle</Company>
+    <Authors>CatCastle</Authors>
+    <Copyright>Copyright © CatCastle 2022</Copyright>
+    <Description>Carrot UI Color Picker</Description>
+    <PackageProjectUrl>https://github.com/mcxiaoke/Carrot.UI</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mcxiaoke/Carrot.UI.git</RepositoryUrl>
+    <PackageTags>wpf;controls;ui;colorpicker</PackageTags>
+    <AssemblyVersion>0.2.0</AssemblyVersion>
+    <FileVersion>0.2.0</FileVersion>
+    <Version>0.2.0</Version>
+    <PackageReleaseNotes>Carrot UI Color Picker</PackageReleaseNotes>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="color_picker_black.png" />
+    <None Remove="Resources\color_picker_black.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="color_picker_black.png" />
+    <Resource Include="Resources\color_picker_black.png" />
+  </ItemGroup>
+
+</Project>
