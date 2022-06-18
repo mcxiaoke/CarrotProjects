@@ -9,7 +9,7 @@ namespace GenshinNotifier.Widget {
     /// <summary>
     /// Simplistic delegate command for the demo.
     /// </summary>
-    public class DelegateCommand : ICommand {
+    public class SimpleCommand : ICommand {
         public Action CommandAction { get; set; }
         public Func<bool> CanExecuteFunc { get; set; }
 
@@ -24,6 +24,31 @@ namespace GenshinNotifier.Widget {
         public event EventHandler CanExecuteChanged {
             add { CommandManager.RequerySuggested += value; }
             remove { CommandManager.RequerySuggested -= value; }
+        }
+    }
+
+
+
+    public class DelegateCommand<T> : ICommand {
+        private readonly Predicate<T> _canExecuteMethod;
+        private readonly Action<T> _action;
+        public DelegateCommand(Action<T> execute)
+                    : this(execute, null) {
+            _action = execute;
+        }
+        public DelegateCommand(Action<T> execute, Predicate<T> canExecute) {
+            _action = execute;
+            _canExecuteMethod = canExecute;
+        }
+        public bool CanExecute(object parameter) {
+            return _canExecuteMethod == null || _canExecuteMethod((T)parameter);
+        }
+        public void Execute(object parameter) {
+            _action((T)parameter);
+        }
+        public event EventHandler CanExecuteChanged {
+            add => CommandManager.RequerySuggested += value;
+            remove => CommandManager.RequerySuggested -= value;
         }
     }
 }

@@ -18,10 +18,11 @@ namespace GenshinNotifier.Widget {
     /// in App.xaml.cs could have created this view model, and assigned it to the NotifyIcon.
     /// </summary>
     public class NotifyIconViewModel {
+
         /// <summary>
         /// Shows a window, if none is already open.
         /// </summary>
-        public ICommand ShowWindowCommand => new DelegateCommand {
+        public ICommand ShowWindowCommand => new SimpleCommand {
             CanExecuteFunc = () => Application.Current.MainWindow?.Visibility != Visibility.Visible,
             CommandAction = () => Application.Current.MainWindow.Show(),
         };
@@ -29,7 +30,7 @@ namespace GenshinNotifier.Widget {
         /// <summary>
         /// Hides the main window. This command is only enabled if a window is open.
         /// </summary>
-        public ICommand HideWindowCommand => new DelegateCommand {
+        public ICommand HideWindowCommand => new SimpleCommand {
             CommandAction = () => Application.Current.MainWindow.Hide(),
             CanExecuteFunc = () => Application.Current.MainWindow?.Visibility == Visibility.Visible,
         };
@@ -37,7 +38,7 @@ namespace GenshinNotifier.Widget {
         /// <summary>
         /// Toggle main window visibility
         /// </summary>
-        public ICommand ToggleWindowCommand => new DelegateCommand {
+        public ICommand ToggleWindowCommand => new SimpleCommand {
             CommandAction = () => {
                 bool visible = Application.Current.MainWindow?.Visibility == Visibility.Visible;
                 if (visible) {
@@ -51,7 +52,7 @@ namespace GenshinNotifier.Widget {
         /// <summary>
         ///  Restart Application
         /// </summary>
-        public ICommand RestartApplicationCommand => new DelegateCommand {
+        public ICommand RestartApplicationCommand => new SimpleCommand {
             CommandAction = () => MiscUtils.RestartApplication()
         };
 
@@ -59,7 +60,7 @@ namespace GenshinNotifier.Widget {
         /// <summary>
         /// Shuts down the application.
         /// </summary>
-        public ICommand ExitApplicationCommand => new DelegateCommand {
+        public ICommand ExitApplicationCommand => new SimpleCommand {
             CommandAction = () => {
                 var resultOk = MessageDialog.Show(Application.Current.MainWindow,
             "程序关闭后将无法在桌面展示小组件，也不能提供系统通知提醒，确定退出吗？", "退出确认");
@@ -73,14 +74,14 @@ namespace GenshinNotifier.Widget {
         /// <summary>
         ///  Check Program update
         /// </summary>
-        public ICommand CheckUpdateCommand => new DelegateCommand {
+        public ICommand CheckUpdateCommand => new SimpleCommand {
             CommandAction = () => AutoUpdater.ShowUpdater()
         };
 
         /// <summary>
         ///  Open project page in browser
         /// </summary>
-        public ICommand GoToProjectCommmand => new DelegateCommand {
+        public ICommand GoToProjectCommmand => new SimpleCommand {
             CommandAction = () => Process.Start(AutoUpdater.ProjectUrl)
         };
     }
