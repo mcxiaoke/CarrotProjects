@@ -107,7 +107,7 @@ namespace GenshinNotifier {
         public static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
 
         [DllImport("user32")]
-        public static extern IntPtr FindWindowEx(IntPtr hWndParent, IntPtr hWndChildAfter, string lpszClass, string lpszWindow);
+        public static extern IntPtr FindWindowEx(IntPtr hWndParent, IntPtr hWndChildAfter, string lpszClass, string? lpszWindow);
 
         [DllImport("user32")]
         public static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);

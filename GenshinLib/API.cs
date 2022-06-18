@@ -50,8 +50,8 @@ namespace GenshinLib {
             return ds;
         }
 
-        public static string NewDS(IDictionary<string, string> queryDict,
-            object bodyObj = null) {
+        public static string NewDS(IDictionary<string, string>? queryDict,
+            object? bodyObj = null) {
             const string salt = GenshinConst.MHY_SALT_NEW;
             var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
             var randomStr = Utility.GetRandomString(6);
@@ -104,19 +104,22 @@ namespace GenshinLib {
     }
 
     public class GenshinAPI {
-        private HttpClientHandler handler = null;
-        private HttpClient client = null;
+        private readonly HttpClientHandler handler;
+        private readonly HttpClient client;
 
-        public GenshinAPI() : this(null) {
+        public GenshinAPI() : this(String.Empty) {
         }
 
         public GenshinAPI(string cookie) {
             this.Cookie = cookie;
-            SetupHttpClient();
+            handler = new HttpClientHandler {
+                UseCookies = false, AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
+            };
+            client = new HttpClient(handler);
         }
 
-        public string Cookie { get; set; }
-        public UserGameRole User { get; set; }
+        public string? Cookie { get; set; }
+        public UserGameRole? User { get; set; }
         public bool Ready => Cookie != null && User != null;
         public string UID => User?.GameUid ?? "0";
         public IDictionary<string, string> CookieDict => Utility.ParseCookieString(Cookie);
@@ -133,50 +136,42 @@ namespace GenshinLib {
             }
         }
 
-        private void SetupHttpClient() {
-            handler = new HttpClientHandler {
-                UseCookies = false, AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-            };
-            client = new HttpClient(handler);
-        }
-
         private int RequestID = 0;
 
         private async Task<string> SendRequestAsync(HttpMethod method,
            string url,
-           IDictionary<string, string> queryDict,
-           object bodyObj,
+           IDictionary<string, string>? queryDict,
+           object? bodyObj,
            bool newDS = true) {
             var rid = ++RequestID;
             var builder = new UriBuilder(url) { Query = Utility.CreateQueryString(queryDict) };
             url = builder.ToString();
-            using (var request = new HttpRequestMessage(method, url)) {
-                GenshinHelper.SetExtraHeadres(request, newDS);
-                request.Headers.Add("Cookie", Cookie);
-                request.Headers.Add("DS", newDS ? GenshinHelper.NewDS(queryDict, bodyObj) : GenshinHelper.OldDS());
-                if (method == HttpMethod.Post && bodyObj != null) {
-                    request.Content = new StringContent(Utility.Stringify(bodyObj), Encoding.UTF8, "application/json");
-                    Logger.Debug($"[API][{rid}] {method} {url} data={Utility.Stringify(bodyObj)}");
-                }
-                Logger.Info($"[API][{rid}][Req] {method} {url} ({UID})");
-                var response = await client.SendAsync(request);
-                var json = await response.Content.ReadAsStringAsync();
-                Logger.Debug($"[API][{rid}][Res] {response.StatusCode} @{json.SafeSubstring(0, 128)}@");
-                if ((int)response.StatusCode >= 500) {
-                    throw new ServerException($"Server Error {response.StatusCode}");
-                } else if (response.IsSuccessStatusCode) {
-                    if (json.Contains("登录") || json.Contains("login")) {
-                        throw new TokenException(json);
-                    } else {
-                        dynamic jsonObj = JsonConvert.DeserializeObject(json);
-                        if (jsonObj.retcode == -100 || jsonObj.retcode == 10001) {
-                            throw new TokenException(json);
-                        }
-                        return json;
-                    }
+            using var request = new HttpRequestMessage(method, url);
+            GenshinHelper.SetExtraHeadres(request, newDS);
+            request.Headers.Add("Cookie", Cookie);
+            request.Headers.Add("DS", newDS ? GenshinHelper.NewDS(queryDict, bodyObj) : GenshinHelper.OldDS());
+            if (method == HttpMethod.Post && bodyObj != null) {
+                request.Content = new StringContent(Utility.Stringify(bodyObj), Encoding.UTF8, "application/json");
+                Logger.Debug($"[API][{rid}] {method} {url} data={Utility.Stringify(bodyObj)}");
+            }
+            Logger.Info($"[API][{rid}][Req] {method} {url} ({UID})");
+            var response = await client.SendAsync(request);
+            var json = await response.Content.ReadAsStringAsync();
+            Logger.Debug($"[API][{rid}][Res] {response.StatusCode} @{json.SafeSubstring(0, 128)}@");
+            if ((int)response.StatusCode >= 500) {
+                throw new ServerException($"Server Error {response.StatusCode}");
+            } else if (response.IsSuccessStatusCode) {
+                if (json.Contains("登录") || json.Contains("login")) {
+                    throw new TokenException(json);
                 } else {
-                    throw new ClientException(json);
+                    dynamic? jsonObj = JsonConvert.DeserializeObject(json);
+                    if (jsonObj?.retcode == -100 || jsonObj?.retcode == 10001) {
+                        throw new TokenException(json);
+                    }
+                    return json;
                 }
+            } else {
+                throw new ClientException(json);
             }
         }
 
@@ -186,93 +181,105 @@ namespace GenshinLib {
         }
 
         private async Task<string> PostAsync(string url,
-           IDictionary<string, string> queryDict,
-           object bodyObj,
+           IDictionary<string, string>? queryDict,
+           object? bodyObj,
            bool newDS = true) {
             return await SendRequestAsync(HttpMethod.Post, url, queryDict, bodyObj, newDS);
         }
 
-        public async Task<(string, Exception)> PostSignReward() {
-            string data = null;
-            Exception error = null;
-            try {
-                CheckReady(true);
-                Logger.Debug($"API.PostSignReward with {User}");
-                var url = $"{GenshinConst.TAKUMI_API}/event/bbs_sign_reward/sign";
-                var body = new Dictionary<string, string>() {
+        public async Task<(string?, Exception?)> PostSignReward() {
+            string? data = null;
+            Exception? error = null;
+            if (User is UserGameRole u) {
+                try {
+                    CheckReady(true);
+                    Logger.Debug($"API.PostSignReward with {u.GameUid}");
+                    var url = $"{GenshinConst.TAKUMI_API}/event/bbs_sign_reward/sign";
+                    var body = new Dictionary<string, string>() {
                 { "act_id","e202009291139501"},
-                {"region",User.Region},
-                {"uid",User.GameUid}
+                {"region",u.Region},
+                {"uid",u.GameUid}
                 };
-                data = await PostAsync(url, null, body, false);
-            } catch (Exception ex) {
-                error = ex;
+                    data = await PostAsync(url, null, body, false);
+                } catch (Exception ex) {
+                    error = ex;
+                }
             }
             return (data, error);
         }
 
-        public async Task<(string, Exception)> GetSignReward() {
-            string data = null;
-            Exception error = null;
-            try {
-                CheckReady(true);
-                Logger.Debug($"API.GetSignReward with {User}");
-                var url = $"{GenshinConst.TAKUMI_API}/event/bbs_sign_reward/info";
-                var query = new Dictionary<string, string>() {
-                {"region",User.Region},
-                {"uid",User.GameUid},
+        public async Task<(string?, Exception?)> GetSignReward() {
+            string? data = null;
+            Exception? error = null;
+            if (User is UserGameRole u) {
+                try {
+                    CheckReady(true);
+                    Logger.Debug($"API.GetSignReward with {u.GameUid}");
+                    var url = $"{GenshinConst.TAKUMI_API}/event/bbs_sign_reward/info";
+                    var query = new Dictionary<string, string>() {
+                {"region",u.Region},
+                {"uid",u.GameUid},
                 { "act_id","e202009291139501"}
             };
-                data = await GetAsync(url, query);
-            } catch (Exception ex) {
-                error = ex;
+                    data = await GetAsync(url, query);
+                } catch (Exception ex) {
+                    error = ex;
+                }
             }
+
             return (data, error);
         }
 
-        public async Task<(string, Exception)> GetMonthInfo() {
-            string data = null;
-            Exception error = null;
-            try {
-                CheckReady(true);
-                Logger.Debug($"API.GetMonthInfo with {User}");
-                var url = $"{GenshinConst.HK4E_APK}/event/ys_ledger/monthInfo";
-                var query = new Dictionary<string, string>() {
-                {"bind_region",User.Region},
-                {"bind_uid",User.GameUid},
+        public async Task<(string?, Exception?)> GetMonthInfo() {
+            string? data = null;
+            Exception? error = null;
+            if (User is UserGameRole u) {
+                try {
+                    CheckReady(true);
+                    Logger.Debug($"API.GetMonthInfo with {u.GameUid}");
+                    var url = $"{GenshinConst.HK4E_APK}/event/ys_ledger/monthInfo";
+                    var query = new Dictionary<string, string>() {
+                {"bind_region",u.Region},
+                {"bind_uid",u.GameUid},
                 { "month","0"}
             };
-                data = await GetAsync(url, query);
-            } catch (Exception ex) {
-                error = ex;
+                    data = await GetAsync(url, query);
+                } catch (Exception ex) {
+                    error = ex;
+                }
             }
             return (data, error);
         }
 
-        public async Task<(DailyNote, Exception)> GetDailyNote() {
-            DailyNote data = null;
-            Exception error = null;
-            try {
-                CheckReady(true);
-                Logger.Debug($"API.GetDailyNote for {User.GameUid}");
-                var url = $"{GenshinConst.TAKUMI_RECORD_API}/game_record/app/genshin/api/dailyNote";
-                var query = new Dictionary<string, string>() {
-                {"server",User.Region},
-                {"role_id",User.GameUid},
+        public async Task<(DailyNote?, Exception?)> GetDailyNote() {
+            DailyNote? data = null;
+            Exception? error = null;
+            if (User is UserGameRole u) {
+                try {
+                    CheckReady(true);
+                    Logger.Debug($"API.GetDailyNote for {u.GameUid}");
+                    var url = $"{GenshinConst.TAKUMI_RECORD_API}/game_record/app/genshin/api/dailyNote";
+                    var query = new Dictionary<string, string>() {
+                {"server",u.Region},
+                {"role_id",u.GameUid},
             };
-                var json = await GetAsync(url, query);
-                dynamic jsonObj = JsonConvert.DeserializeObject(json);
-                JObject o = jsonObj.data;
-                data = o.ToObject<DailyNote>();
-                data.CreatedAt = DateTime.Now;
-            } catch (Exception ex) {
-                error = ex;
+                    var json = await GetAsync(url, query);
+                    dynamic? jsonObj = JsonConvert.DeserializeObject(json);
+                    if (jsonObj?.data is JObject o) {
+                        data = o.ToObject<DailyNote>();
+                        if (data is not null) {
+                            data.CreatedAt = DateTime.Now;
+                        }
+                    }
+                } catch (Exception ex) {
+                    error = ex;
+                }
             }
             return (data, error);
         }
 
         // base user info, prepare for other request
-        public async Task<UserGameRole> GetGameRoleInfo() {
+        public async Task<UserGameRole?> GetGameRoleInfo() {
             CheckReady(false);
             Logger.Debug($"API.GetGameRoleInfo with cookie");
             var url = $"{GenshinConst.TAKUMI_API}/binding/api/getUserGameRolesByCookie";
@@ -281,14 +288,16 @@ namespace GenshinLib {
             };
             var json = await GetAsync(url, query);
             //Console.WriteLine(json);
-            dynamic jsonObj = JsonConvert.DeserializeObject(json);
-            //Console.WriteLine(jsonObj);
-            JObject o = jsonObj.data.list[0];
-            //Console.WriteLine(o);
-            // https://www.newtonsoft.com/json/help/html/SerializingJSONFragments.htm
-            var data = o.ToObject<UserGameRole>();
-            data.CreatedAt = DateTime.Now;
-            return data;
+            dynamic? jsonObj = JsonConvert.DeserializeObject(json);
+
+            if (jsonObj?.data.list[0] is JObject o) {
+                var data = o.ToObject<UserGameRole>();
+                if (data is not null) {
+                    data.CreatedAt = DateTime.Now;
+                }
+                return data;
+            }
+            return null;
         }
     }
 }

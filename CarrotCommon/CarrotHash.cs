@@ -10,9 +10,9 @@ namespace CarrotCommon {
         public static string ToHexString(byte[] array, bool toUpper = false, bool grouping = false) {
             var sb = new StringBuilder();
             for (int i = 0; i < array.Length; i++) {
-                sb.Append($"{array[i]:x2}");
+                sb.AppendFormat("{0:x2}", array[i]);
                 if ((i % 4) == 3 && grouping) {
-                    sb.Append(" ");
+                    sb.Append(' ');
                 }
             }
             return toUpper ? sb.ToString().ToUpper() : sb.ToString();
@@ -34,31 +34,27 @@ namespace CarrotCommon {
                     Logger.Warning($"GetHash Access Exception: {e.Message}");
                 }
             }
-            return null;
+            return String.Empty;
         }
 
         public static string FileMD5(string filepath, bool toUpper = false) {
-            using (HashAlgorithm hasher = MD5.Create()) {
-                return FileHash(filepath, hasher, toUpper);
-            }
+            using HashAlgorithm hasher = MD5.Create();
+            return FileHash(filepath, hasher, toUpper);
         }
 
         public static string FileSHA1(string filepath, bool toUpper = false) {
-            using (HashAlgorithm hasher = SHA1.Create()) {
-                return FileHash(filepath, hasher, toUpper);
-            }
+            using HashAlgorithm hasher = SHA1.Create();
+            return FileHash(filepath, hasher, toUpper);
         }
 
         public static string FileSHA256(string filepath, bool toUpper = false) {
-            using (HashAlgorithm hasher = SHA256.Create()) {
-                return FileHash(filepath, hasher, toUpper);
-            }
+            using HashAlgorithm hasher = SHA256.Create();
+            return FileHash(filepath, hasher, toUpper);
         }
 
         public static string FileSHA512(string filepath, bool toUpper = false) {
-            using (HashAlgorithm hasher = SHA512.Create()) {
-                return FileHash(filepath, hasher, toUpper);
-            }
+            using HashAlgorithm hasher = SHA512.Create();
+            return FileHash(filepath, hasher, toUpper);
         }
 
         public static string GetHash(byte[] buffer, HashAlgorithm hasher, bool toUpper = false) {
@@ -70,7 +66,7 @@ namespace CarrotCommon {
             } catch (UnauthorizedAccessException e) {
                 Logger.Warning($"GetHash Access Exception: {e.Message}");
             }
-            return null;
+            return String.Empty;
         }
 
         public static string GetHash(string text, HashAlgorithm hasher, bool toUpper = false) {
@@ -78,27 +74,23 @@ namespace CarrotCommon {
         }
 
         public static string GetMD5(string text, bool toUpper = false) {
-            using (HashAlgorithm hasher = MD5.Create()) {
-                return GetHash(text, hasher, toUpper);
-            }
+            using HashAlgorithm hasher = MD5.Create();
+            return GetHash(text, hasher, toUpper);
         }
 
         public static string GetSHA1(string text, bool toUpper = false) {
-            using (HashAlgorithm hasher = SHA1.Create()) {
-                return GetHash(text, hasher, toUpper);
-            }
+            using HashAlgorithm hasher = SHA1.Create();
+            return GetHash(text, hasher, toUpper);
         }
 
         public static string GetSHA256(string text, bool toUpper = false) {
-            using (HashAlgorithm hasher = SHA256.Create()) {
-                return GetHash(text, hasher, toUpper);
-            }
+            using HashAlgorithm hasher = SHA256.Create();
+            return GetHash(text, hasher, toUpper);
         }
 
         public static string GetSHA512(string text, bool toUpper = false) {
-            using (HashAlgorithm hasher = SHA512.Create()) {
-                return GetHash(text, hasher, toUpper);
-            }
+            using HashAlgorithm hasher = SHA512.Create();
+            return GetHash(text, hasher, toUpper);
         }
     }
 }

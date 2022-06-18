@@ -42,9 +42,9 @@ namespace GenshinNotifier.Widget {
             CommandAction = () => {
                 bool visible = Application.Current.MainWindow?.Visibility == Visibility.Visible;
                 if (visible) {
-                    Application.Current.MainWindow.Hide();
+                    Application.Current.MainWindow?.Hide();
                 } else {
-                    Application.Current.MainWindow.Show();
+                    Application.Current.MainWindow?.Show();
                 }
             },
         };

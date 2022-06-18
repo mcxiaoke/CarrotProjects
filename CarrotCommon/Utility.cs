@@ -8,7 +8,7 @@ using Newtonsoft.Json;
 namespace CarrotCommon {
 
     public static class Utility {
-        public static Random GlobalRandom = new Random();
+        private static readonly Random GlobalRandom = new Random();
 
         public static string GetRandomString2() {
             return GlobalRandom.Next(100000, 200000).ToString();
@@ -20,7 +20,7 @@ namespace CarrotCommon {
                 .Select(s => s[GlobalRandom.Next(s.Length)]).ToArray());
         }
 
-        public static string Stringify(object value, bool indented = false) {
+        public static string Stringify(object? value, bool indented = false) {
             if (value == null) { return ""; }
             var jst = new JsonSerializerSettings() {
                 DateFormatString = "yyyy'-'MM'-'dd' 'HH':'mm':'ss.FFFFFFFK",
@@ -29,16 +29,17 @@ namespace CarrotCommon {
             return JsonConvert.SerializeObject(value, jst);
         }
 
-        public static bool ValiteCookieFields(string value) {
+        public static bool ValiteCookieFields(string? value) {
             var cookieDict = ParseCookieString(value);
             var validKeys = new string[] { "cookie_token", "login_ticket", "account_id" };
             return validKeys.Any(it => cookieDict.ContainsKey(it));
         }
 
-        public static Dictionary<string, string> ParseCookieString(string str) {
+        public static Dictionary<string, string> ParseCookieString(string? str) {
+            var cookieStr = str ?? string.Empty;
             var cookieDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-
-            var values = str.TrimEnd(';').Split(';');
+            if (string.IsNullOrWhiteSpace(str)) { return cookieDictionary; }
+            var values = cookieStr.TrimEnd(';').Split(';');
             foreach (var parts in values.Select(c => c.Split(new[] { '=' }, 2))) {
                 var cookieName = parts[0].Trim();
                 string cookieValue;
@@ -59,8 +60,8 @@ namespace CarrotCommon {
         // Form data (for GET or POST) is usually encoded as application/x-www-form-urlencoded: this specifies + for spaces.
         // URLs are encoded as RFC 1738 which specifies %20.
 
-        public static string CreateQueryString(IDictionary<string, string> dict) {
-            if (dict == null || dict.Count == 0) { return String.Empty; }
+        public static string CreateQueryString(IDictionary<string, string>? dict) {
+            if (dict == null || dict.Count == 0) { return string.Empty; }
             return string.Join("&", dict.OrderBy(x => x.Key).Select(kvp =>
                string.Format("{0}={1}", Uri.EscapeDataString(kvp.Key), Uri.EscapeDataString(kvp.Value))));
         }
@@ -69,7 +70,7 @@ namespace CarrotCommon {
             if (dict == null || dict.Count == 0) { return String.Empty; }
             var sb = new StringBuilder();
             foreach (var kvp in dict.OrderBy(x => x.Key)) {
-                sb.Append(Uri.EscapeDataString(kvp.Key)).Append("=").Append(Uri.EscapeDataString(kvp.Value)).Append("&");
+                sb.Append(Uri.EscapeDataString(kvp.Key)).Append('=').Append(Uri.EscapeDataString(kvp.Value)).Append('&');
             }
             sb.Length--;
             return sb.ToString();
@@ -120,17 +121,16 @@ namespace CarrotCommon {
         }
 
         public static string GetComputedMd5(string source) {
-            using (MD5 md5 = MD5.Create()) {
-                byte[] result = md5.ComputeHash(Encoding.UTF8.GetBytes(source));
+            using MD5 md5 = MD5.Create();
+            byte[] result = md5.ComputeHash(Encoding.UTF8.GetBytes(source));
 
-                StringBuilder builder = new StringBuilder();
+            StringBuilder builder = new StringBuilder();
 
-                foreach (byte b in result) {
-                    builder.Append(b.ToString("x2"));
-                }
-
-                return builder.ToString();
+            foreach (byte b in result) {
+                builder.Append(b.ToString("x2"));
             }
+
+            return builder.ToString();
         }
     }
 }

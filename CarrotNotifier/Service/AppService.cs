@@ -9,7 +9,7 @@ using CarrotCommon;
 namespace GenshinNotifier {
 
     internal static class AppService {
-        public static MainForm appMainForm;
+        public static MainForm? appMainForm;
 
         public static void Start() {
             PipeService.Default.Handlers += OnPipeMessage;
@@ -70,10 +70,10 @@ namespace GenshinNotifier {
             try {
                 Logger.Debug($"OnPipeMessage sender={sender} e={e}");
                 var args = e as PipeServiceEventArgs;
-                if (args.Failed) {
+                if (args?.Failed == true) {
                     Logger.Debug($"OnPipeMessage failed={args.Error}");
                 } else {
-                    Logger.Debug($"OnPipeMessage message={args.Message}");
+                    Logger.Debug($"OnPipeMessage message={args?.Message}");
                 }
             } catch (Exception ex) {
                 Logger.Debug($"OnPipeMessage error={ex.Message}");

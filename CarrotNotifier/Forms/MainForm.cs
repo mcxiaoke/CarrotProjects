@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Configuration;
 using System.Drawing;
+using System.ServiceModel.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,13 +61,11 @@ namespace GenshinNotifier {
             }
             //PrintAllSettings();
             this.Text = $"{Application.ProductName} {Application.ProductVersion}";
-            var (user, error) = await DataController.Default.Initialize();
-            Logger.Debug($"OnFormLoad uid={user?.GameUid} error={error?.Message}");
+            var (u, error) = await DataController.Default.Initialize();
+            Logger.Debug($"OnFormLoad uid={u?.GameUid} error={error?.Message}");
             Logger.Debug(DataController.Default.Ready ? "Ready" : "NotReady");
             if (DataController.Default.Ready) {
-                var uc = DataController.Default.UserCached;
-                var nc = DataController.Default.NoteCached;
-                UpdateUIControls(uc, nc);
+                UpdateUIControlsUseCache();
                 if (Settings.Default.OptionRefreshOnStart
                     || string.IsNullOrEmpty(UpdatedValueL.Text)) {
                     await RefreshDailyNote(sender, e);
@@ -102,7 +101,7 @@ namespace GenshinNotifier {
             Invoke(new Action(() => RestoreFromTrayIcon()));
         }
 
-        private System.Timers.Timer CookieBlinkTimer;
+        private System.Timers.Timer? CookieBlinkTimer;
 
         private void StartCookieBlinkTimer() {
             //Logger.Debug("StartCookieBlinkTimer");
@@ -114,7 +113,7 @@ namespace GenshinNotifier {
         }
 
         private void StopCookieBlinkTimer() {
-            if (CookieBlinkTimer != null) {
+            if (CookieBlinkTimer is not null) {
                 //Logger.Debug("StopCookieBlinkTimer");
                 CookieBlinkTimer.Stop();
                 CookieBlinkTimer = null;
@@ -240,24 +239,24 @@ namespace GenshinNotifier {
         }
 
         private async void OnCookieChanged(object sender, EventArgs e) {
-            var evt = e as SimpleEventArgs;
-            var newCookie = evt.Value;
-            if (string.IsNullOrWhiteSpace(newCookie)) {
-                // clear cookie event
-                DataController.Default.ClearUserData();
-                Application.Restart();
-                return;
-            }
-            var oldCookie = DataController.Default.Cookie;
-            if (newCookie != oldCookie) {
-                Logger.Debug($"OnCookieChanged newCookie={newCookie}");
-                DataController.Default.SaveUserData(newCookie);
-                await DataController.Default.Initialize();
-                await RefreshDailyNote(null, null);
-                await SchedulerController.Default.CheckSignReward("OnCookieChanged");
-                Logger.Debug($"OnCookieChanged data saved");
-            } else {
-                Logger.Debug($"OnCookieChanged not change");
+            if (e is SimpleEventArgs evt && evt.Value is string newCookie) {
+                if (string.IsNullOrWhiteSpace(newCookie)) {
+                    // clear cookie event
+                    DataController.Default.ClearUserData();
+                    Application.Restart();
+                    return;
+                }
+                var oldCookie = DataController.Default.Cookie;
+                if (newCookie != oldCookie) {
+                    Logger.Debug($"OnCookieChanged newCookie={newCookie}");
+                    DataController.Default.SaveUserData(newCookie);
+                    await DataController.Default.Initialize();
+                    await RefreshDailyNote(null, null);
+                    await SchedulerController.Default.CheckSignReward("OnCookieChanged");
+                    Logger.Debug($"OnCookieChanged data saved");
+                } else {
+                    Logger.Debug($"OnCookieChanged not change");
+                }
             }
         }
 
@@ -287,7 +286,7 @@ namespace GenshinNotifier {
             this.LoadingPic.Visible = refreshing;
         }
 
-        private async Task RefreshDailyNote(object sender, EventArgs e) {
+        private async Task RefreshDailyNote(object? sender, EventArgs? e) {
             Logger.Debug("RefreshDailyNote");
             if (IsRefreshingData) { return; }
             UpdateRefreshState(true);
@@ -295,26 +294,25 @@ namespace GenshinNotifier {
             var (note, _) = await DataController.Default.GetDailyNote();
             Logger.Debug($"RefreshDailyNote user={user?.GameUid} resin={note?.CurrentResin}");
             LastUpdateTime = DateTime.Now;
-            UpdateUIControls(user, note);
+            UpdateUIControlsUseCache();
             UpdateRefreshState(false);
         }
 
         private void UpdateUIControlsUseCache() {
-            var user = DataController.Default.UserCached;
-            var note = DataController.Default.NoteCached;
-            UpdateUIControls(user, note);
+            var userCache = DataController.Default.UserCached;
+            var noteCache = DataController.Default.NoteCached;
+            if (userCache is UserGameRole user
+                && noteCache is DailyNote note) {
+                UpdateUIControls(user, note);
+            }
         }
 
         private void UpdateUIControls(UserGameRole user, DailyNote note) {
-            if (user == null || note == null) {
-                Logger.Debug($"UpdateUIControls skip null data");
-                return;
-            }
             if (!this.Visible) {
                 Logger.Debug($"UpdateUIControls skip hidden form");
                 return;
             }
-            Logger.Debug($"UpdateUIControls uid={user?.GameUid} resin={note?.CurrentResin}");
+            Logger.Debug($"UpdateUIControls uid={user.GameUid} resin={note.CurrentResin}");
 
             StopCookieBlinkTimer();
 
@@ -356,7 +354,7 @@ namespace GenshinNotifier {
             DiscountTaskValueL.ForeColor = discountAllUsed ? colorNormal : colorAttention;
 
             var transformerReady = note.TransformerReady;
-            TransformerValueL.Text = $"{note.Transformer.RecoveryTime.TimeFormatted}";
+            TransformerValueL.Text = $"{note.Transformer?.RecoveryTime?.TimeFormatted ?? string.Empty}";
             TransformerValueL.ForeColor = (transformerReady ? colorAttention : colorNormal);
 
             var updateDelta = DateTime.Now - note.CreatedAt;
@@ -417,9 +415,6 @@ namespace GenshinNotifier {
         }
 
         private void OnAccountLabelClicked(object sender, EventArgs e) {
-#if DEBUG
-            SchedulerController.Default.ShowNotification(DataController.Default.UserCached, DataController.Default.NoteCached);
-#endif
         }
     }
 }

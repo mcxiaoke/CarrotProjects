@@ -11,8 +11,8 @@ using PropertyChanged;
 namespace GenshinNotifier {
     public class WidgetViewModel : INotifyPropertyChanged {
 
-        public UserGameRole User { get; set; }
-        public DailyNote Note { get; set; }
+        public UserGameRole? User { get; set; }
+        public DailyNote? Note { get; set; }
 
         [DoNotNotify]
         public bool TestValue { get; set; }
@@ -21,6 +21,6 @@ namespace GenshinNotifier {
         public WidgetViewModel() {
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
     }
 }

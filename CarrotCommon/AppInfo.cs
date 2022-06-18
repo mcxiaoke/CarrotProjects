@@ -104,35 +104,24 @@ namespace CarrotCommon {
         public FileVersionInfo FileInfo { get; }
 
         public ApplicationData() {
-            var module = Process.GetCurrentProcess().MainModule;
-            ModuleName = module.ModuleName;
+            var module = Process.GetCurrentProcess().MainModule!;
+            ModuleName = module.ModuleName ?? string.Empty;
             FileInfo = module.FileVersionInfo;
             StartupPath = AppContext.BaseDirectory;
 
-            Assembly entryAssembly = Assembly.GetEntryAssembly();
+            Assembly entryAssembly = Assembly.GetEntryAssembly()!;
             var mainType = entryAssembly.EntryPoint?.ReflectedType;
             ExecutablePath = entryAssembly.Location;
-            AssemblyName = entryAssembly.GetName().Name;
+            AssemblyName = entryAssembly.GetName()?.Name ?? ModuleName;
             ParseAssembly(entryAssembly);
             Description = FileInfo.FileDescription ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(CompanyName)) {
-                CompanyName = FileInfo.CompanyName ?? mainType.Namespace;
-            }
-            if (string.IsNullOrWhiteSpace(ProductName)) {
-                ProductName = FileInfo.ProductName ?? mainType.Namespace;
-            }
-            if (string.IsNullOrWhiteSpace(ProductVersion)) {
-                ProductVersion = FileInfo.ProductVersion ?? FileInfo.FileVersion ?? "1.0.0";
-            }
-            if (string.IsNullOrWhiteSpace(FileVersion)) {
-                FileVersion = FileInfo.FileVersion ?? "1.0.0";
-            }
-            if (string.IsNullOrWhiteSpace(Copyright)) {
-                Copyright = FileInfo.LegalCopyright ?? string.Empty;
-            }
-            if (string.IsNullOrWhiteSpace(Title)) {
-                Title = ProductName;
-            }
+            CompanyName ??= FileInfo.CompanyName ?? mainType?.Namespace ?? AssemblyName;
+            ProductName ??= FileInfo.ProductName ?? mainType?.Namespace ?? AssemblyName;
+            ProductVersion ??= FileInfo.ProductVersion ?? FileInfo.FileVersion ?? "1.0.0";
+            FileVersion ??= FileInfo.FileVersion ?? "1.0.0";
+            Copyright ??= FileInfo.LegalCopyright ?? string.Empty;
+            Title ??= ProductName;
+            CurrentCulture ??= System.Globalization.CultureInfo.CreateSpecificCulture("en-US").Name;
         }
 
         public override string ToString() {

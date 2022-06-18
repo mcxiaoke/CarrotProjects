@@ -7,9 +7,9 @@ using Newtonsoft.Json;
 namespace GenshinLib {
 
     public sealed class CacheManager {
-        private string _name;
+        private string? _name;
 
-        public string Name {
+        public string? Name {
             get => _name;
             set => _name = string.IsNullOrEmpty(value) ? "0" : value;
         }
@@ -23,7 +23,7 @@ namespace GenshinLib {
 
         public string GetCachePath(string key) {
             var root = AppInfo.LocalAppDataPath;
-            var dir = Path.Combine(root, "cache", Name);
+            var dir = Path.Combine(root, "cache", Name ?? string.Empty);
             // should be async
             Storage.CheckOrCreateDir(dir);
             var path = Path.Combine(dir, $"{key}.json");
@@ -31,7 +31,7 @@ namespace GenshinLib {
             return path;
         }
 
-        public async Task<T> LoadCache<T>(string key) {
+        public async Task<T?> LoadCache<T>(string key) {
             Logger.Debug($"LoadCache for {key}");
             return await Task.Run(() => {
                 try {
@@ -49,7 +49,7 @@ namespace GenshinLib {
             });
         }
 
-        public async Task<T> LoadCache2<T>() {
+        public async Task<T?> LoadCache2<T>() {
             return await LoadCache<T>(typeof(T).Name);
         }
 

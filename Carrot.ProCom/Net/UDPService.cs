@@ -11,10 +11,10 @@ namespace Carrot.ProCom.Net {
     public static class UDPService {
         private static string AppGuidStr => ProComConst.PIPE_MAIN;
 
-        public static EventHandler Handlers;
+        public static EventHandler? Handlers;
         private const int Port = 56789;
         private static bool Closed = false;
-        private static UdpClient Client;
+        private static UdpClient? Client;
 
         public static async Task StartServer() {
             Client = new UdpClient(Port);
@@ -28,7 +28,7 @@ namespace Carrot.ProCom.Net {
         public static void StopServer() {
             Debug.WriteLine($"UDPService.StopServer {AppGuidStr}");
             Closed = true;
-            Client.Close();
+            Client?.Close();
             Client = null;
         }
 
@@ -38,23 +38,25 @@ namespace Carrot.ProCom.Net {
 
         public static void OnUDPReceived(IAsyncResult result) {
             // this is what had been passed into BeginReceive as the second parameter:
-            UdpClient server = result.AsyncState as UdpClient;
+            var server = result.AsyncState as UdpClient;
             if (!ListenUDPNext) {
-                server.Close();
+                server?.Close();
                 return;
             }
             // points towards whoever had sent the message:
-            IPEndPoint source = new IPEndPoint(0, 0);
+            var source = new IPEndPoint(0, 0);
             // get the actual message and fill out the source:
-            byte[] bytes = server.EndReceive(result, ref source);
-            string message = Encoding.UTF8.GetString(bytes);
-            //Console.WriteLine("UDP Received: " + Encoding.UTF8.GetString(bytes));
-            if (message == AppGuidStr) {
-                // new instance, show front
-                Handlers?.Invoke(message, EventArgs.Empty);
+            byte[]? bytes = server?.EndReceive(result, ref source);
+            if (bytes != null) {
+                string message = Encoding.UTF8.GetString(bytes);
+                //Console.WriteLine("UDP Received: " + Encoding.UTF8.GetString(bytes));
+                if (message == AppGuidStr) {
+                    // new instance, show front
+                    Handlers?.Invoke(message, EventArgs.Empty);
+                }
             }
             // schedule the next receive operation once reading is done:
-            server.BeginReceive(new AsyncCallback(OnUDPReceived), server);
+            server?.BeginReceive(new AsyncCallback(OnUDPReceived), server);
         }
 
         public static void StopUDP() {
@@ -70,7 +72,7 @@ namespace Carrot.ProCom.Net {
             server.BeginReceive(new AsyncCallback(OnUDPReceived), server);
         }
 
-        public static void SendUDP(string message = null, int targetPort = DefaultPort, string targetIP = DefaultIP) {
+        public static void SendUDP(string? message = null, int targetPort = DefaultPort, string targetIP = DefaultIP) {
             Debug.WriteLine($"UDPService.SendUDP {AppGuidStr}");
             UdpClient client = new UdpClient();
             IPEndPoint target = new IPEndPoint(IPAddress.Parse(targetIP), targetPort);

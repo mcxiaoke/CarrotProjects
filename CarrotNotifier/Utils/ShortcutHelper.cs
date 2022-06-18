@@ -10,11 +10,9 @@ using IWshRuntimeLibrary;
 namespace GenshinNotifier {
 
     internal static class ShortcutHelper {
-        public static string ProgramFileName => Process.GetCurrentProcess().MainModule.FileName;
-        public static string ProgramModuleName => Process.GetCurrentProcess().MainModule.ModuleName;
 
         private static string StartupPath => Environment.GetFolderPath(Environment.SpecialFolder.Startup);
-        private static string ProgramPath => Process.GetCurrentProcess().MainModule.FileName;
+        private static string ProgramPath => AppInfo.ExecutablePath;
         private static string ProgramName => Application.ProductName;
         private static string DesktopPath => Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 
@@ -52,10 +50,10 @@ namespace GenshinNotifier {
             string directory,
             string shortcutName,
             string targetPath,
-            string arguments = null,
+            string arguments = "",
             int windowStyle = 1,
-            string description = null,
-            string iconLocation = null) {
+            string description = "",
+            string iconLocation = "") {
             Logger.Debug($"CreateShortcut in {directory} for {targetPath}");
             try {
                 if (!Directory.Exists(directory))

@@ -14,11 +14,13 @@ namespace GenshinNotifier {
 
         public static async Task CheckLocalAssets() {
             await Task.Run(() => {
-                var assetsDir = Directory.GetParent(IconFilePath).FullName;
-                Storage.CheckOrCreateDir(assetsDir);
-                if (!File.Exists(IconFilePath)) {
-                    Resources.ImageCarrot512.Save(IconFilePath);
-                    Logger.Info($"CheckLocalAssets copied to {IconFilePath}");
+                var assetsDir = Directory.GetParent(IconFilePath)?.FullName;
+                if (assetsDir != null) {
+                    Storage.CheckOrCreateDir(assetsDir);
+                    if (!File.Exists(IconFilePath)) {
+                        Resources.ImageCarrot512.Save(IconFilePath);
+                        Logger.Info($"CheckLocalAssets copied to {IconFilePath}");
+                    }
                 }
             });
         }

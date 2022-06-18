@@ -21,8 +21,8 @@ namespace GenshinNotifier {
 
     public class WidgetStyle : INotifyPropertyChanged {
         public static WidgetStyle Empty = new WidgetStyle();
-        public static WidgetStyle User { get; private set; }
-        public static WidgetStyle ResDefault { get; private set; }
+        public static WidgetStyle User { get; private set; } = Empty;
+        public static WidgetStyle ResDefault { get; private set; } = Empty;
 
         public static WidgetStyle FromResource(ResourceDictionary res) {
             var rTextNormalColor = (Color)res["TextNormalColor"];
@@ -63,17 +63,17 @@ namespace GenshinNotifier {
             TextFontStyle = fontStyle;
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         #region normal properties
 
-        public Color TextNormalColor { get; set; }
-        public Color TextHighlightColor { get; set; }
-        public Color TextErrorColor { get; set; }
-        public Color BackgroundColor { get; set; }
-        public bool BackgroundTransparent { get; set; }
+        public Color TextNormalColor { get; set; } = ERROR_COLOR;
+        public Color TextHighlightColor { get; set; } = ERROR_COLOR;
+        public Color TextErrorColor { get; set; } = ERROR_COLOR;
+        public Color BackgroundColor { get; set; } = ERROR_COLOR;
+        public bool BackgroundTransparent { get; set; } = false;
         public double TextFontSize { get; set; } = double.NaN;
-        public FontFamily TextFontFamily { get; set; }
+        public FontFamily? TextFontFamily { get; set; }
         public FontWeight? TextFontWeight { get; set; }
         public FontStyle? TextFontStyle { get; set; }
 
@@ -82,13 +82,13 @@ namespace GenshinNotifier {
         #region calculated properties
         [JsonIgnore]
         [DoNotNotify]
-        public List<ColorComboBoxItem> AppendBgColors { get; private set; }
+        public List<ColorComboBoxItem>? AppendBgColors { get; private set; }
         [JsonIgnore]
         [DoNotNotify]
-        public List<ColorComboBoxItem> AppendTextNColors { get; private set; }
+        public List<ColorComboBoxItem>? AppendTextNColors { get; private set; }
         [JsonIgnore]
         [DoNotNotify]
-        public List<ColorComboBoxItem> AppendTextHColors { get; private set; }
+        public List<ColorComboBoxItem>? AppendTextHColors { get; private set; }
         [JsonIgnore]
         [DoNotNotify]
         public List<double> FontSizeRange => Enumerable.Range(12, 9).Select(it => Convert.ToDouble(it)).ToList();
@@ -112,10 +112,10 @@ namespace GenshinNotifier {
         }
 
         [JsonIgnore]
-        public double HeaderFontSize => MiscUtils.Clamp(TextFontSize + 3, ResDefault.TextFontSize, 24);
+        public double HeaderFontSize => MiscUtils.Clamp(TextFontSize + 3, ResDefault!.TextFontSize, 24);
 
         [JsonIgnore]
-        public double FooterFontSize => MiscUtils.Clamp(TextFontSize - 3, 12, ResDefault.TextFontSize);
+        public double FooterFontSize => MiscUtils.Clamp(TextFontSize - 3, 12, ResDefault!.TextFontSize);
 
         #endregion
 
@@ -123,8 +123,8 @@ namespace GenshinNotifier {
             return JsonConvert.SerializeObject(this);
         }
 
-        private static bool IsValidFontSize(double fontSize) {
-            return !double.IsNaN(fontSize) && fontSize >= 8 && fontSize <= 24;
+        private static bool IsValidFontSize(double? fontSize) {
+            return fontSize >= 8 && fontSize <= 24;
         }
 
         private static string GetUserStyleFilePath() {
@@ -147,7 +147,7 @@ namespace GenshinNotifier {
             }
         }
 
-        private static WidgetStyle LoadUserStyle() {
+        private static WidgetStyle? LoadUserStyle() {
             var fileName = GetUserStyleFilePath();
             if (!File.Exists(fileName)) {
                 return WidgetStyle.Empty;
@@ -187,7 +187,7 @@ namespace GenshinNotifier {
             DeleteUserStyle();
             var res = Application.Current.Resources;
             var rs = WidgetStyle.FromResource(res);
-            var us = WidgetStyle.User;
+            var us = WidgetStyle.User!;
             us.TextNormalColor = rs.TextNormalColor;
             us.TextHighlightColor = rs.TextHighlightColor;
             us.TextErrorColor = rs.TextErrorColor;
@@ -212,15 +212,15 @@ namespace GenshinNotifier {
             var resourceStyle = WidgetStyle.FromResource(res);
 
             var userStyle = new WidgetStyle();
-            userStyle.TextNormalColor = settingStyle.TextNormalColor == ERROR_COLOR ? resourceStyle.TextNormalColor : settingStyle.TextNormalColor;
-            userStyle.TextHighlightColor = settingStyle.TextHighlightColor == ERROR_COLOR ? resourceStyle.TextHighlightColor : settingStyle.TextHighlightColor;
-            userStyle.TextErrorColor = settingStyle.TextErrorColor == ERROR_COLOR ? resourceStyle.TextErrorColor : settingStyle.TextErrorColor;
-            userStyle.BackgroundColor = settingStyle.BackgroundColor == ERROR_COLOR ? resourceStyle.BackgroundColor : settingStyle.BackgroundColor;
-            userStyle.BackgroundTransparent = settingStyle.BackgroundTransparent;
-            userStyle.TextFontSize = IsValidFontSize(settingStyle.TextFontSize) ? settingStyle.TextFontSize : resourceStyle.TextFontSize;
-            userStyle.TextFontFamily = settingStyle.TextFontFamily ?? resourceStyle.TextFontFamily;
-            userStyle.TextFontWeight = settingStyle.TextFontWeight ?? resourceStyle.TextFontWeight;
-            userStyle.TextFontStyle = settingStyle.TextFontStyle ?? resourceStyle.TextFontStyle;
+            userStyle.TextNormalColor = settingStyle?.TextNormalColor ?? resourceStyle.TextNormalColor;
+            userStyle.TextHighlightColor = settingStyle?.TextHighlightColor ?? resourceStyle.TextHighlightColor;
+            userStyle.TextErrorColor = settingStyle?.TextErrorColor ?? resourceStyle.TextErrorColor;
+            userStyle.BackgroundColor = settingStyle?.BackgroundColor ?? resourceStyle.BackgroundColor;
+            userStyle.BackgroundTransparent = settingStyle?.BackgroundTransparent ?? false;
+            userStyle.TextFontSize = settingStyle?.TextFontSize ?? resourceStyle.TextFontSize;
+            userStyle.TextFontFamily = settingStyle?.TextFontFamily ?? resourceStyle.TextFontFamily;
+            userStyle.TextFontWeight = settingStyle?.TextFontWeight ?? resourceStyle.TextFontWeight;
+            userStyle.TextFontStyle = settingStyle?.TextFontStyle ?? resourceStyle.TextFontStyle;
 
             userStyle.AppendBgColors = new List<ColorComboBoxItem>() {
             CreateColorPair("当前", userStyle.BackgroundColor),

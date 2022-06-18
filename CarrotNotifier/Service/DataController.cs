@@ -19,11 +19,11 @@ namespace GenshinNotifier {
 
         private readonly GenshinAPI Api;
         public readonly CacheManager Cache;
-        public UserGameRole UserCached {
+        public UserGameRole? UserCached {
             get => this.ViewModel.User;
             set => this.ViewModel.User = value;
         }
-        public DailyNote NoteCached {
+        public DailyNote? NoteCached {
             get => this.ViewModel.Note;
             set => this.ViewModel.Note = value;
 
@@ -51,24 +51,24 @@ namespace GenshinNotifier {
             }
         }
 
-        private string _uid;
+        private string? _uid;
 
-        public string UID {
+        public string? UID {
             get => User?.GameUid ?? _uid;
             set => _uid = value;
         }
 
-        public string Cookie {
+        public string? Cookie {
             get => Api.Cookie;
             private set {
                 Api.Cookie = value;
             }
         }
 
-        private UserGameRole User {
+        private UserGameRole? User {
             get => Api.User; set {
                 Api.User = value;
-                Cache.Name = value?.GameUid;
+                Cache.Name = value?.GameUid ?? string.Empty;
             }
         }
 
@@ -85,11 +85,11 @@ namespace GenshinNotifier {
             var cookie = Properties.Settings.Default.MihoyoCookie;
             var userJson = Properties.Settings.Default.MihoyoUser;
             var cookieValid = Utility.ValiteCookieFields(cookie);
-            UserGameRole user;
+            UserGameRole? user;
             bool userValid;
             try {
                 user = JsonConvert.DeserializeObject<UserGameRole>(userJson);
-                userValid = !String.IsNullOrEmpty(user.GameUid) && !String.IsNullOrEmpty(user.GameBiz);
+                userValid = !String.IsNullOrEmpty(user?.GameUid) && !String.IsNullOrEmpty(user?.GameBiz);
             } catch (Exception) {
                 user = null;
                 userValid = false;
@@ -119,7 +119,7 @@ namespace GenshinNotifier {
             Properties.Settings.Default.Save();
         }
 
-        public void SaveUserData(string newCookie, UserGameRole user = null) {
+        public void SaveUserData(string? newCookie, UserGameRole? user = null) {
             Logger.Debug($"SaveUserData cookie={newCookie} uid={user?.GameUid}");
             if (!String.IsNullOrEmpty(newCookie) && newCookie != this.Cookie) {
                 this.Cookie = newCookie;
@@ -134,11 +134,11 @@ namespace GenshinNotifier {
             Properties.Settings.Default.Save();
         }
 
-        public async Task<(UserGameRole, Exception)> Initialize() {
+        public async Task<(UserGameRole?, Exception?)> Initialize() {
             return await GetGameRoleInfo("Initialize", true);
         }
 
-        public async Task<(UserGameRole, Exception)> GetGameRoleInfo(string source, bool forInit = false) {
+        public async Task<(UserGameRole?, Exception?)> GetGameRoleInfo(string source, bool forInit = false) {
             if (string.IsNullOrEmpty(Cookie)) {
                 return default;
             }
@@ -172,7 +172,7 @@ namespace GenshinNotifier {
             }
         }
 
-        public async Task<(DailyNote, Exception)> GetDailyNote() {
+        public async Task<(DailyNote?, Exception?)> GetDailyNote() {
             if (string.IsNullOrEmpty(Cookie)) {
                 return default;
             }
@@ -201,27 +201,27 @@ namespace GenshinNotifier {
             }
         }
 
-        public async Task<(int, string, Exception)> PostSignReward() {
+        public async Task<(int, string?, Exception?)> PostSignReward() {
             if (string.IsNullOrEmpty(Cookie)) {
                 return default;
             }
             var (result, error) = await Api.PostSignReward();
             Logger.Debug($"DataController.PostSignReward sign={result} error={error?.Message}");
-            dynamic obj = JsonConvert.DeserializeObject(result);
+            dynamic? obj = JsonConvert.DeserializeObject(result);
             // retcode == 0 success sign
             // retcode == -5003 already sign
-            if (obj.retcode == 0 || obj.retcode == -5003) {
+            if (obj?.retcode == 0 || obj?.retcode == -5003) {
                 (result, error) = await Api.GetSignReward();
                 Logger.Debug($"DataController.PostSignReward reward={result} error={error?.Message}");
-                dynamic robj = JsonConvert.DeserializeObject(result);
-                if (robj.retcode == 0) {
-                    return (obj.retcode, result, error);
+                dynamic? robj = JsonConvert.DeserializeObject(result);
+                if (robj?.retcode == 0) {
+                    return (obj?.retcode, result, error);
                 }
             }
-            return (obj.retcode, result, error);
+            return (obj?.retcode, result, error);
         }
 
-        public static async Task<UserGameRole> ValidateCookie(string tempCookie) {
+        public static async Task<UserGameRole?> ValidateCookie(string tempCookie) {
             // use temp api instance to verify cookie
             GenshinAPI tempApi = new GenshinAPI(tempCookie);
             try {

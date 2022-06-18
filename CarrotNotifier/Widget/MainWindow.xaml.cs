@@ -20,6 +20,7 @@ using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.System;
 using System.Configuration;
 using Carrot.UI.Controls.Dialog;
+using System.Diagnostics.CodeAnalysis;
 
 namespace GenshinNotifier {
 
@@ -29,12 +30,12 @@ namespace GenshinNotifier {
     /// MainWindow.xaml 的交互逻辑
     /// </summary>
     public partial class MainWindow : Window {
-        private double _dpiScale;
-        private IntPtr _windowHandle;
-        private HwndSource _wndSource;
+        private double _dpiScale = 1;
+        private IntPtr? _windowHandle;
+        private HwndSource? _wndSource;
         private bool _windowSink = false;
-        private double _lastPosX;
-        private double _lastPosY;
+        private double _lastPosX = double.NaN;
+        private double _lastPosY = double.NaN;
 
         private WidgetViewModel _viewModel = DataController.Default.ViewModel;
 
@@ -75,8 +76,8 @@ namespace GenshinNotifier {
             Settings.Default.PropertyChanged -= Settings_PropertyChanged;
 
             Settings.Default.Save();
-            _wndSource.RemoveHook(WndProc);
-            _wndSource.Dispose();
+            _wndSource?.RemoveHook(WndProc);
+            _wndSource?.Dispose();
         }
 
         private void Settings_PropertyChanged(object sender, PropertyChangedEventArgs e) {
@@ -104,17 +105,19 @@ namespace GenshinNotifier {
             //_wndSource = HwndSource.FromHwnd(_windowHandle);
             //_wndSource.AddHook(WndProc);
             _wndSource = PresentationSource.FromVisual(this) as HwndSource;
-            _dpiScale = _wndSource.CompositionTarget.TransformToDevice.M11;
-            _windowHandle = _wndSource.Handle;
-            _wndSource.AddHook(WndProc);
-            if (_windowSink) {
-                WindowUtils.SetCommonStyles(_windowHandle);
-                WindowUtils.ShowAlwaysOnDesktop(_windowHandle);
-                if (Environment.OSVersion.Version.Major >= 10) {
-                    WindowUtils.ShowBehindDesktopIcons(_windowHandle);
+            _dpiScale = _wndSource?.CompositionTarget.TransformToDevice.M11 ?? 1;
+            _windowHandle = _wndSource?.Handle;
+            _wndSource?.AddHook(WndProc);
+            if (_windowHandle is IntPtr hwnd) {
+                if (_windowSink) {
+                    WindowUtils.SetCommonStyles(hwnd);
+                    WindowUtils.ShowAlwaysOnDesktop(hwnd);
+                    if (Environment.OSVersion.Version.Major >= 10) {
+                        WindowUtils.ShowBehindDesktopIcons(hwnd);
+                    }
+                } else {
+                    WindowUtils.MakeWindowSpecial(hwnd);
                 }
-            } else {
-                WindowUtils.MakeWindowSpecial(_windowHandle);
             }
 
             Logger.Debug($"MainWindow_Loaded dpiScale={_dpiScale}");
@@ -144,16 +147,14 @@ namespace GenshinNotifier {
 
         }
 
-        private static Action EmptyDelegate = () => { };
         private void WidgetStyle_PropertyChanged(object sender, PropertyChangedEventArgs e) {
-            var key = e.PropertyName;
-            var value = sender.GetType().GetProperty(key).GetValue(sender);
+            var key = e.PropertyName ?? String.Empty;
+            var value = sender?.GetType().GetProperty(name: key)?.GetValue(sender);
             Logger.Debug($"WidgetStyle_PropertyChanged {key} = {value}");
             // alternative method
             // https://stackoverflow.com/questions/20770173
             // var prop = TypeDescriptor.GetProperties(sender)[e.PropertyName];
             // Logger.Debug($"WidgetStyle_PropertyChanged other {prop.Name} = {prop.GetValue(sender)}");
-            //this.Dispatcher.Invoke(DispatcherPriority.Render, EmptyDelegate);
         }
 
         private void InitLocation() {
@@ -237,22 +238,24 @@ namespace GenshinNotifier {
             }
 #endif
             if (lockPos) { return; }
-            switch (e.ChangedButton) {
-                case MouseButton.Left:
-                    NativeMethods.ReleaseCapture();
-                    NativeMethods.SendMessage(_windowHandle, NativeMethods.WM_NCLBUTTONDOWN, NativeMethods.HT_CAPTION, 0);
-                    break;
+            if (_windowHandle is IntPtr hwnd) {
+                switch (e.ChangedButton) {
+                    case MouseButton.Left:
+                        NativeMethods.ReleaseCapture();
+                        NativeMethods.SendMessage(hwnd, NativeMethods.WM_NCLBUTTONDOWN, NativeMethods.HT_CAPTION, 0);
+                        break;
 
-                case MouseButton.Right:
-                    break;
+                    case MouseButton.Right:
+                        break;
+                }
             }
         }
 
         #region update ui controls
-        private Style styleHeader;
-        private Style styleFooter;
-        private Style StyleTextNormal;
-        private Style styleTextHighlight;
+        private Style? styleHeader;
+        private Style? styleFooter;
+        private Style? StyleTextNormal;
+        private Style? styleTextHighlight;
 
         private void InitilizeStyles() {
             styleHeader = FindResource("HeaderStyle") as Style;
@@ -261,16 +264,7 @@ namespace GenshinNotifier {
             styleTextHighlight = FindResource("GIStyleHighlight") as Style;
         }
 
-
-        private void UpdateUIControls() {
-            var user = _viewModel.User;
-            var note = _viewModel.Note;
-            if (user == null || note == null) {
-                Debug.WriteLine($"UpdateUIControls skip null data");
-                return;
-            }
-            Debug.WriteLine($"UpdateUIControls uid={user?.GameUid} resin={note?.CurrentResin}");
-
+        private void UpdateUIControls(UserGameRole user, DailyNote note) {
             lbHeader.Style = styleHeader;
             lbHeader.Content = "原神实时便签";
 
@@ -341,6 +335,16 @@ namespace GenshinNotifier {
 
             lbUpdateAt.Style = outdated ? styleHightlight : styleNormal;
             lbUpdateAtValue.Style = lbUpdateAt.Style;
+        }
+
+
+        private void UpdateUIControls() {
+            if (_viewModel.User is UserGameRole user
+                && _viewModel.Note is DailyNote note) {
+                Debug.WriteLine($"UpdateUIControls uid={user.GameUid} " +
+                    $"resin={note.CurrentResin}");
+                UpdateUIControls(user!, note!);
+            }
         }
         #endregion
 
@@ -416,7 +420,7 @@ namespace GenshinNotifier {
         }
 
 
-        private void OnCookieChanged(string newCookie, UserGameRole newUser) {
+        private void OnCookieChanged(string? newCookie, UserGameRole? newUser) {
             var oldCookie = DataController.Default.Cookie;
             Logger.Debug($"OnCookieChanged newCookie={newCookie} newUser={newUser?.GameUid}");
             if (string.IsNullOrWhiteSpace(newCookie)) {

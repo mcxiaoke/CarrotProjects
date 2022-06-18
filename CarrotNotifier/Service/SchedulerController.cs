@@ -100,10 +100,10 @@ namespace GenshinNotifier {
 
         private readonly RemindConfig Config;
         private readonly RemindStatus Status;
-        private System.Timers.Timer ATimer;
-        private string TodaySigned = null;
-        private string TodaySignOKShown = null;
-        private string TodaySignErrorShown = null;
+        private System.Timers.Timer? ATimer;
+        private string? TodaySigned;
+        private string? TodaySignOKShown;
+        private string? TodaySignErrorShown;
 
         private static int ToastId = 0;
 
@@ -139,10 +139,11 @@ namespace GenshinNotifier {
         }
 
         private void SystemEvents_SessionSwitch(object sender, EventArgs e) {
-            var args = e as SessionSwitchEventArgs;
-            Logger.Debug($"===> {args.Reason} {DateTime.Now}");
-            if (args.Reason == SessionSwitchReason.SessionUnlock) {
-                CheckData("SessionUnlock");
+            if (e is SessionSwitchEventArgs args) {
+                Logger.Debug($"===> {args.Reason} {DateTime.Now}");
+                if (args.Reason == SessionSwitchReason.SessionUnlock) {
+                    CheckData("SessionUnlock");
+                }
             }
         }
 
@@ -168,7 +169,7 @@ namespace GenshinNotifier {
 
         private void Start() {
             Logger.Debug("SchedulerController.Start");
-            ATimer.Start();
+            ATimer?.Start();
             Status.StartAt = DateTime.Now;
             Status.LastCheckedAt = DateTime.MinValue;
             Status.LastSignAt = DateTime.MinValue;
@@ -256,7 +257,7 @@ namespace GenshinNotifier {
             });
         }
 
-        private static FileVersionInfo ReadFileVersion(string path) {
+        private static FileVersionInfo? ReadFileVersion(string path) {
             try {
                 return FileVersionInfo.GetVersionInfo(path);
             } catch (Exception ex) {
@@ -312,7 +313,7 @@ namespace GenshinNotifier {
             }
         }
 
-        private async Task<DailyNote> CheckDailyNote(string source, bool forceUpdate = false) {
+        private async Task<DailyNote?> CheckDailyNote(string source, bool forceUpdate = false) {
             var checkElapsed = (DateTime.Now - Status.LastCheckedAt);
             if (checkElapsed.TotalMilliseconds < INTERVAL_NOTE - TIME_ONE_MINUTE_MS) {
                 if (!forceUpdate) {
@@ -364,7 +365,7 @@ namespace GenshinNotifier {
             try {
                 var (code, result, error) = await DataController.Default.PostSignReward();
                 Logger.Info($"DoSignReward code={code} result={result} error={error?.Message}");
-                dynamic obj = JsonConvert.DeserializeObject(result ?? error?.Message);
+                dynamic? obj = JsonConvert.DeserializeObject(result ?? error?.Message ?? string.Empty);
                 if (code == 0 || code == -5003) {
                     var title = (code == 0) ?
                         $"本月已连续签到 {obj?.data?.total_sign_day ?? 0} 天" : "旅行者，你今天已经签到过了";
@@ -372,7 +373,7 @@ namespace GenshinNotifier {
                     TodaySigned = todayStr;
                     ShowSignOKNotification(title, text);
                 } else {
-                    ShowSignErrorNotification($"遇到错误 {obj.message}", result ?? error?.Message);
+                    ShowSignErrorNotification($"遇到错误 {obj?.message}", result ?? error?.Message ?? string.Empty);
                 }
             } catch (Exception ex) {
                 Logger.Debug($"DoSignReward error={ex}");
@@ -390,19 +391,20 @@ namespace GenshinNotifier {
             }
             TodaySignOKShown = todayNotiStr;
             var image = AppUtils.IconFilePath;
-            var user = DataController.Default.UserCached;
-            var toast = new ToastContentBuilder()
-                .SetToastScenario(ToastScenario.Default)
-                .AddHeader($"1002", $"{user.Nickname}，米游社原神签到成功", "action=signopen&id=1002")
-                .AddText(title)
-                .AddText(text)
-                .AddAttributionText(DateTime.Now.ToString("F"))
-                .AddAppLogoOverride(new Uri(image), ToastGenericAppLogoCrop.Circle);
-            toast.Show(t => {
-                t.Group = Application.ProductName;
-                t.Tag = "SignReward";
-                t.ExpirationTime = DateTimeOffset.Now.AddMinutes(5);
-            });
+            if (DataController.Default.UserCached is UserGameRole user) {
+                var toast = new ToastContentBuilder()
+                    .SetToastScenario(ToastScenario.Default)
+                    .AddHeader($"1002", $"{user.Nickname}，米游社原神签到成功", "action=signopen&id=1002")
+                    .AddText(title)
+                    .AddText(text)
+                    .AddAttributionText(DateTime.Now.ToString("F"))
+                    .AddAppLogoOverride(new Uri(image), ToastGenericAppLogoCrop.Circle);
+                toast.Show(t => {
+                    t.Group = Application.ProductName;
+                    t.Tag = "SignReward";
+                    t.ExpirationTime = DateTimeOffset.Now.AddMinutes(5);
+                });
+            }
         }
 
         private void ShowSignErrorNotification(string title, string text) {
@@ -415,19 +417,20 @@ namespace GenshinNotifier {
             }
             TodaySignErrorShown = todayNotiStr;
             var image = AppUtils.IconFilePath;
-            var user = DataController.Default.UserCached;
-            var toast = new ToastContentBuilder()
-                .SetToastScenario(ToastScenario.Default)
-                .AddHeader($"1003", $"{user.Nickname}，米游社原神签到失败", "action=signopen&id=1003")
-                .AddText(title)
-                .AddText(text)
-                .AddAttributionText(DateTime.Now.ToString("F"))
-                .AddAppLogoOverride(new Uri(image), ToastGenericAppLogoCrop.Circle);
-            toast.Show(t => {
-                t.Group = Application.ProductName;
-                t.Tag = "SignReward";
-                t.ExpirationTime = DateTimeOffset.Now.AddHours(5);
-            });
+            if (DataController.Default.UserCached is UserGameRole user) {
+                var toast = new ToastContentBuilder()
+                    .SetToastScenario(ToastScenario.Default)
+                    .AddHeader($"1003", $"{user.Nickname}，米游社原神签到失败", "action=signopen&id=1003")
+                    .AddText(title)
+                    .AddText(text)
+                    .AddAttributionText(DateTime.Now.ToString("F"))
+                    .AddAppLogoOverride(new Uri(image), ToastGenericAppLogoCrop.Circle);
+                toast.Show(t => {
+                    t.Group = Application.ProductName;
+                    t.Tag = "SignReward";
+                    t.ExpirationTime = DateTimeOffset.Now.AddHours(5);
+                });
+            }
         }
 
         public void ShowNotification(UserGameRole user, DailyNote note) {
@@ -437,6 +440,7 @@ namespace GenshinNotifier {
                 $"enabled={Config.Enabled}");
             if (!Settings.Default.OptionEnableNotifications) { return; }
             if (IsMutedToday) { return; }
+            if (user == null || note == null) { return; }
             var now = DateTime.Now;
             var title = new List<string>();
             var text = new List<string>();

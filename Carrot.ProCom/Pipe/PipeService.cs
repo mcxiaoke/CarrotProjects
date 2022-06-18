@@ -9,9 +9,9 @@ namespace Carrot.ProCom.Pipe {
     public delegate bool PipeMessageHandler(NamedPipeServerStream server, string message);
 
     public class PipeServiceEventArgs : EventArgs {
-        public string Message { get; set; }
-        public Exception Error { get; set; }
-        public bool Failed { get; set; }
+        public string? Message { get; set; }
+        public Exception? Error { get; set; }
+        public bool Failed { get; set; } = false;
 
         public PipeServiceEventArgs(bool failed, string message) {
             this.Failed = failed;
@@ -33,12 +33,12 @@ namespace Carrot.ProCom.Pipe {
         private static readonly Lazy<PipeService> lazy =
        new Lazy<PipeService>(() => new PipeService());
 
-        public EventHandler Handlers;
-        public PipeMessageHandler MessageHandler;
+        public EventHandler? Handlers;
+        public PipeMessageHandler? MessageHandler;
 
-        private bool serverReady;
-        private NamedPipeServerStream pipeServer;
-        public string PipeName { get; set; }
+        private bool serverReady = false;
+        private NamedPipeServerStream? pipeServer;
+        public string? PipeName { get; set; }
 
         public PipeService() {
             Debug.WriteLine("PipeService");
@@ -70,10 +70,12 @@ namespace Carrot.ProCom.Pipe {
 
         private void OnPipeReceived(IAsyncResult asyncResult) {
             if (serverReady) {
-                NamedPipeServerStream server = asyncResult.AsyncState as NamedPipeServerStream;
+                var server = asyncResult.AsyncState as NamedPipeServerStream;
                 Debug.WriteLine($"PipeService.OnPipeReceived {PipeName}");
-                server.EndWaitForConnection(asyncResult);
-                HandleMessage(server);
+                server?.EndWaitForConnection(asyncResult);
+                if (server is NamedPipeServerStream ps) {
+                    HandleMessage(ps);
+                }
             }
         }
 
@@ -101,14 +103,14 @@ namespace Carrot.ProCom.Pipe {
         }
 
         public static void SendAndReceiveCallback(string pipe, string message,
-            Action<string, Exception> callback) {
+            Action<string?, Exception?> callback) {
             Task.Run(() => {
                 var (response, error) = SendAndReceive(pipe, message);
                 callback?.Invoke(response, error);
             });
         }
 
-        public static (string, Exception) SendAndReceive(string pName, string message) {
+        public static (string?, Exception?) SendAndReceive(string pName, string message) {
             Debug.WriteLine($"PipeService.SendAndReceive {pName} create");
             try {
                 var pipe = new NamedPipeClientStream(".", pName, PipeDirection.InOut, PipeOptions.Asynchronous);

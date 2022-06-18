@@ -6,14 +6,14 @@ using GenshinLib;
 namespace GenshinNotifier {
 
     public partial class CookieDialog : Form {
-        public string OldCookie;
-        public string NewCookie;
-        public UserGameRole NewUser;
+        public string? OldCookie;
+        public string? NewCookie;
+        public UserGameRole? NewUser;
 
         private static string COOKIE_GUIDE =
             "Cookie获取方法：浏览器隐身模式登录 http://bbs.mihoyo.com/ys/ 再登录 https://user.mihoyo.com/ 开开发者工具控制台输入 document.cookie 复制文本。 https://gitee.com/osap/CarrotProjects/issues/I59RIY 这里有详细的说明和动图演示。";
 
-        public event EventHandler<SimpleEventArgs> CookieHandlers;
+        public event EventHandler<SimpleEventArgs>? CookieHandlers;
 
         public CookieDialog() {
             InitializeComponent();
@@ -43,7 +43,7 @@ namespace GenshinNotifier {
             switch (ret) {
                 case DialogResult.No:
                     // clear button
-                    CookieHandlers?.Invoke(this, new SimpleEventArgs(null));
+                    CookieHandlers?.Invoke(this, new SimpleEventArgs(0));
                     DialogResult = DialogResult.Cancel;
                     Close();
                     break;
@@ -59,7 +59,7 @@ namespace GenshinNotifier {
         private async void YesButton_Click(object sender, EventArgs e) {
             var tempCookie = CookieTextBox.Text?.Trim().Replace("\"", "").Replace("'", "");
             Logger.Debug($"YesButton_Click tempCookie: {tempCookie}");
-            if (String.IsNullOrEmpty(tempCookie)) {
+            if (string.IsNullOrEmpty(tempCookie)) {
                 ShowToolTip("Cookie不能为空");
                 return;
             }
@@ -72,22 +72,26 @@ namespace GenshinNotifier {
                 Close();
                 return;
             }
-            var user = await DataController.ValidateCookie(tempCookie);
-            Logger.Debug($"YesButton_Click uid={user?.GameUid}");
-            if (user?.GameUid != null) {
-                CookieHandlers?.Invoke(this, new SimpleEventArgs(tempCookie));
-                NewCookie = tempCookie;
-                NewUser = user;
-                DialogResult = DialogResult.OK;
-                Close();
-            } else {
-                ShowToolTip("Cookie验证失败，请检查");
+            var result = await DataController.ValidateCookie(tempCookie!);
+            if (result is UserGameRole user) {
+                Logger.Debug($"YesButton_Click uid={user.GameUid}");
+                if (user.GameUid != null) {
+                    CookieHandlers?.Invoke(this, new SimpleEventArgs(tempCookie!));
+                    NewCookie = tempCookie;
+                    NewUser = user;
+                    DialogResult = DialogResult.OK;
+                    Close();
+                } else {
+                    ShowToolTip("Cookie验证失败，请检查");
+                }
             }
         }
 
         private void CookieLabel_LinkClicked(object sender, LinkClickedEventArgs e) {
             Logger.Debug($"CookieLabel_LinkClicked {e.LinkText}");
-            System.Diagnostics.Process.Start(e.LinkText);
+            if (e.LinkText is string url) {
+                System.Diagnostics.Process.Start(url);
+            }
         }
 
         private void CookieDialog_FormClosed(object sender, FormClosedEventArgs e) {

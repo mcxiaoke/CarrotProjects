@@ -27,7 +27,7 @@ namespace GenshinNotifier {
         public static string UpdaterExeFileName = "SharpUpdater.exe";
 
         public static bool HasNewVersion;
-        public static VersionInfo CachedVersionInfo;
+        public static VersionInfo? CachedVersionInfo;
 
         private static void WriteUpdaterConfig(string url) {
             var config = Path.Combine(Application.StartupPath, UpdaterConfigFileName);
@@ -44,15 +44,15 @@ namespace GenshinNotifier {
             }
         }
 
-        private static (string, string) ReadUpdaterConfig() {
+        private static (string?, string?) ReadUpdaterConfig() {
             var config = Path.Combine(Application.StartupPath, UpdaterConfigFileName);
             try {
-                dynamic obj = JsonConvert.DeserializeObject(File.ReadAllText(config));
-                Logger.Info($"ReadUpdaterConfig config={obj.name} {obj.url}");
-                return (obj.name, obj.url);
+                dynamic? obj = JsonConvert.DeserializeObject(File.ReadAllText(config));
+                Logger.Info($"ReadUpdaterConfig config={obj?.name} {obj?.url}");
+                return (obj?.name, obj?.url);
             } catch (Exception ex) {
                 Logger.Debug($"ReadUpdaterConfig failed={ex.Message}");
-                return (null, null);
+                return default;
             }
         }
 
@@ -71,34 +71,35 @@ namespace GenshinNotifier {
             }
         }
 
-        public static async Task<VersionInfo> CheckUpdate() {
-            return await Task.Run(async () => {
-                var url = VersionUrls[0];
-                using (var client = new HttpClient()) {
-                    Logger.Debug($"CheckUpdate info url={url}");
-                    try {
-                        var text = await client.GetStringAsync(new Uri(url));
-                        var info = JsonConvert.DeserializeObject<VersionInfo>(text);
-                        Logger.Info($"CheckUpdate info={info}");
-                        if (info.HasUpdate) {
-                            var newVersion = SemVersion.Parse(info.Version, SemVersionStyles.Any);
-                            var oldVersion = SemVersion.Parse(Application.ProductVersion, SemVersionStyles.Any);
-                            HasNewVersion = newVersion.CompareSortOrderTo(oldVersion) > 0;
-                            Logger.Debug($"CheckUpdate new={newVersion} old={oldVersion} hasNew={HasNewVersion}");
+        public static async Task<VersionInfo?> CheckUpdate() {
+            return await DoCheckUpdate();
+        }
 
-                            CachedVersionInfo = info;
-                            WriteUpdaterConfig(url);
-                            if (HasNewVersion) {
-                                CheckNotification(info);
-                            }
-                        }
-                        return info;
-                    } catch (Exception ex) {
-                        Logger.Debug($"CheckUpdate failed error={ex.Message}");
-                        return null;
+        private static async Task<VersionInfo?> DoCheckUpdate() {
+            var url = VersionUrls[0];
+            using var client = new HttpClient();
+            Logger.Debug($"CheckUpdate info url={url}");
+            try {
+                var text = await client.GetStringAsync(new Uri(url));
+                var info = JsonConvert.DeserializeObject<VersionInfo>(text);
+                Logger.Info($"CheckUpdate info={info}");
+                if (info?.HasUpdate == true) {
+                    var newVersion = SemVersion.Parse(info.Version, SemVersionStyles.Any);
+                    var oldVersion = SemVersion.Parse(Application.ProductVersion, SemVersionStyles.Any);
+                    HasNewVersion = newVersion.CompareSortOrderTo(oldVersion) > 0;
+                    Logger.Debug($"CheckUpdate new={newVersion} old={oldVersion} hasNew={HasNewVersion}");
+
+                    CachedVersionInfo = info;
+                    WriteUpdaterConfig(url);
+                    if (HasNewVersion) {
+                        CheckNotification(info);
                     }
                 }
-            });
+                return info;
+            } catch (Exception ex) {
+                Logger.Debug($"CheckUpdate failed error={ex.Message}");
+                return null;
+            }
         }
 
         private static void CheckNotification(VersionInfo info) {

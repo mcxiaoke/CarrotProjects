@@ -88,7 +88,7 @@ namespace GenshinLib {
         /// 恢复时间包装
         /// </summary>
         [JsonProperty("recovery_time")]
-        public RecoveryTime RecoveryTime { get; set; }
+        public RecoveryTime? RecoveryTime { get; set; }
 
         /// <summary>
         /// Wiki链接
@@ -115,13 +115,13 @@ namespace GenshinLib {
         /// 状态 Ongoing:派遣中 Finished:已完成
         /// </summary>
         [JsonProperty("status")]
-        public string Status { get; set; }
+        public string? Status { get; set; }
 
         /// <summary>
         /// 剩余时间
         /// </summary>
         [JsonProperty("remained_time")]
-        public string RemainedTime { get; set; }
+        public string? RemainedTime { get; set; }
 
         /// <summary>
         /// 格式化的剩余时间
@@ -137,7 +137,7 @@ namespace GenshinLib {
                     return ts.Hours > 0 ? $"{ts.Hours}时" : $"{ts.Minutes}分";
                 }
 
-                return null;
+                return string.Empty;
             }
         }
 
@@ -149,19 +149,12 @@ namespace GenshinLib {
     public class DailyNote {
 
         public static string GetDayName(int days) {
-            switch (days) {
-                case 0:
-                    return "今天";
-
-                case 1:
-                    return "明天";
-
-                case 2:
-                    return "后天";
-
-                default:
-                    return $"{days}天";
-            }
+            return days switch {
+                0 => "今天",
+                1 => "明天",
+                2 => "后天",
+                _ => $"{days}天",
+            };
         }
 
         // added for convenince
@@ -176,7 +169,7 @@ namespace GenshinLib {
         public bool HomeCoinFull => CurrentHomeCoin >= MaxHomeCoin;
         public bool DailyTaskAllFinished => FinishedTaskNum >= TotalTaskNum;
         public bool ExpeditionAllFinished => Expeditions?.FindAll(it => it.RemainedTime == "0").Count >= CurrentExpeditionNum;
-        public bool TransformerReady => Transformer.RecoveryTime.Reached;
+        public bool TransformerReady => Transformer?.RecoveryTime?.Reached ?? false;
 
         /// <summary>
         /// 数据更新时间
@@ -200,7 +193,7 @@ namespace GenshinLib {
         /// 树脂恢复时间 <see cref="string"/>类型的秒数
         /// </summary>
         [JsonProperty("resin_recovery_time")]
-        public string ResinRecoveryTime { get; set; }
+        public string ResinRecoveryTime { get; set; } = string.Empty;
 
         /// <summary>
         /// 获取格式化的剩余时间
@@ -301,7 +294,7 @@ namespace GenshinLib {
         /// 派遣
         /// </summary>
         [JsonProperty("expeditions")]
-        public List<Expedition> Expeditions { get; set; }
+        public List<Expedition>? Expeditions { get; set; }
 
         /// <summary>
         /// 当前洞天宝钱
@@ -319,7 +312,7 @@ namespace GenshinLib {
         /// 洞天宝钱恢复时间 <see cref="string"/>类型的秒数
         /// </summary>
         [JsonProperty("home_coin_recovery_time")]
-        public string HomeCoinRecoveryTime { get; set; }
+        public string HomeCoinRecoveryTime { get; set; } = string.Empty;
 
         /// <summary>
         /// 格式化的洞天宝钱恢复时间
@@ -333,7 +326,7 @@ namespace GenshinLib {
                     return $"{day} {tt:HH:mm}";
                 }
 
-                return null;
+                return string.Empty;
             }
         }
 
@@ -341,7 +334,7 @@ namespace GenshinLib {
         /// 参量质变仪
         /// </summary>
         [JsonProperty("transformer")]
-        public Transformer Transformer { get; set; }
+        public Transformer? Transformer { get; set; }
 
         public override string ToString() {
             return Utility.Stringify(this);

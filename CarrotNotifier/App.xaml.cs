@@ -18,8 +18,9 @@ namespace GenshinNotifier {
     public partial class App : Application {
         private const string GUID_STR = "{82761839-E200-402E-8C1D-2FDE9571239C}";
 
-        private GlobalExceptionHandler _handler;
-        public TaskbarIcon TrayIcon;
+        private GlobalExceptionHandler? _handler;
+        public TaskbarIcon? TrayIcon;
+        private Mutex? mutex;
 
         public App() {
             _handler = new GlobalExceptionHandler();
@@ -27,7 +28,6 @@ namespace GenshinNotifier {
             this.Exit += App_Exit;
         }
 
-        private Mutex mutex;
         private void App_Startup(object sender, StartupEventArgs e) {
             // https://stackoverflow.com/questions/14506406/wpf-single-instance-best-practices
             // https://github.com/it3xl/WPF-app-Single-Instance-in-one-line-of-code
