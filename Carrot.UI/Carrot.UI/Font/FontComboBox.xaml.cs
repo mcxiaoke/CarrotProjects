@@ -45,7 +45,7 @@ namespace Carrot.UI.Controls.Font {
 
         #endregion
 
-        public static IEnumerable<FontExtraInfo> AllFonts => FontUtilities.LocalizedFonts();
+        public static IEnumerable<FontExtraInfo> AllFonts => FontUtilities.AllFontExtraInfo();
 
         public static readonly DependencyProperty SelectedFontProperty = DependencyProperty.Register(
                 name: nameof(SelectedFont),

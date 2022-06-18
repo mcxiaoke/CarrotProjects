@@ -20,8 +20,10 @@ namespace Carrot.UI.Controls.Picker {
 
     public class ColorComboBoxItem {
 
-        public static readonly ColorComboBoxItem INVALID = ColorComboBoxItem.Create("Invalid", UIHelper.ParseColor("#000001"));
+        public static readonly ColorComboBoxItem INVALID = ColorComboBoxItem.Create("Invalid", UIHelper.ParseColor("#000000"));
 
+
+        public static ColorComboBoxItem Create(Color value) => new ColorComboBoxItem(Convert.ToString(value), value);
         public static ColorComboBoxItem Create(string key, Color value) => new ColorComboBoxItem(key, value);
         public static ColorComboBoxItem Create(string key, string hex) => new ColorComboBoxItem(key, UIHelper.ParseColor(hex));
 
@@ -35,6 +37,24 @@ namespace Carrot.UI.Controls.Picker {
 
         public override string ToString() {
             return $"{Key} {Value}";
+        }
+
+        public override bool Equals(object? obj) {
+            return obj is ColorComboBoxItem item && Value.Equals(item.Value);
+        }
+
+        public override int GetHashCode() {
+            int hashCode = 206514262;
+            hashCode = hashCode * -1521134295 + Value.GetHashCode();
+            return hashCode;
+        }
+
+        public static bool operator ==(ColorComboBoxItem? left, ColorComboBoxItem? right) {
+            return EqualityComparer<ColorComboBoxItem>.Default.Equals(left, right);
+        }
+
+        public static bool operator !=(ColorComboBoxItem? left, ColorComboBoxItem? right) {
+            return !(left == right);
         }
     }
     /// <summary>

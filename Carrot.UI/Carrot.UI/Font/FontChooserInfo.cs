@@ -35,7 +35,7 @@ namespace Carrot.UI.Controls.Font {
 
         public static FontChooserInfo GetControlFont(Control control) {
             FontChooserInfo font = new FontChooserInfo();
-            font.Font = FontUtilities.GetLocalizedFontFamily(control.FontFamily);
+            font.Font = FontUtilities.GetFontExtraInfo(control.FontFamily);
             font.Size = control.FontSize;
             font.Style = control.FontStyle;
             font.Stretch = control.FontStretch;
@@ -51,7 +51,7 @@ namespace Carrot.UI.Controls.Font {
 
         public FontChooserInfo(FontFamily fam, double sz, FontStyle style,
                         FontStretch strc, FontWeight weight, SolidColorBrush c) {
-            this.Font = FontUtilities.GetLocalizedFontFamily(fam);
+            this.Font = FontUtilities.GetFontExtraInfo(fam);
             this.Size = sz;
             this.Style = style;
             this.Stretch = strc;

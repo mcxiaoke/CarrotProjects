@@ -11,11 +11,11 @@ namespace Carrot.UI.Controls.Font {
     public static class FontUtilities {
 
         public static readonly string[] ZhLocales = { "zh-CN", "zh-HK", "zh-TW" };
-        public static FontExtraInfo GetLocalizedFontFamily(FontFamily fontfamily) {
+        public static FontExtraInfo GetFontExtraInfo(FontFamily fontfamily) {
 
             var lsd = fontfamily.FamilyNames;
             lsd.TryGetValue(XmlLanguage.GetLanguage("en-US"), out string englishName);
-            string localizedName = null;
+            string localizedName = string.Empty;
             //var locale = CultureInfo.CurrentCulture.Name;
             foreach (var loc in ZhLocales) {
                 if (!string.IsNullOrEmpty(localizedName)) { break; }
@@ -24,18 +24,18 @@ namespace Carrot.UI.Controls.Font {
             //if (lsd.ContainsKey(XmlLanguage.GetLanguage(locale))) {
             //    lsd.TryGetValue(XmlLanguage.GetLanguage(locale), out localizedName);
             //}
-            return new FontExtraInfo(englishName ?? lsd.FirstOrDefault().Value, localizedName, fontfamily);
+            return new FontExtraInfo(englishName ?? fontfamily.Source, localizedName, fontfamily);
         }
 
-        public static ICollection<FontExtraInfo> AllFonts => LocalizedFonts();
+        public static ICollection<FontExtraInfo> AllFonts => AllFontExtraInfo();
 
-        public static ICollection<FontExtraInfo> LocalizedFonts() {
+        public static ICollection<FontExtraInfo> AllFontExtraInfo() {
             var cnlist = new List<FontExtraInfo>();
             var enlist = new List<FontExtraInfo>();
             foreach (var font in Fonts.SystemFontFamilies) {
                 var names = string.Join(", ", font.FamilyNames.Select(it => $"{it.Value}({it.Key})"));
                 //Debug.WriteLine($"Add Font {font.Source} {names}");
-                var localizedFont = GetLocalizedFontFamily(font);
+                var localizedFont = GetFontExtraInfo(font);
                 if (string.IsNullOrEmpty(localizedFont.LocalizedName)) {
                     enlist.Add(localizedFont);
                 } else {

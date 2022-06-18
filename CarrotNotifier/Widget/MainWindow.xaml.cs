@@ -242,7 +242,8 @@ namespace GenshinNotifier {
                 switch (e.ChangedButton) {
                     case MouseButton.Left:
                         NativeMethods.ReleaseCapture();
-                        NativeMethods.SendMessage(hwnd, NativeMethods.WM_NCLBUTTONDOWN, NativeMethods.HT_CAPTION, 0);
+                        NativeMethods.SendMessage(hwnd, NativeMethods.WM_NCLBUTTONDOWN,
+                            NativeMethods.HT_CAPTION, 0);
                         break;
 
                     case MouseButton.Right:
@@ -324,7 +325,7 @@ namespace GenshinNotifier {
             lbDiscountValue.Style = lbDiscount.Style;
 
             var transformerReady = note.TransformerReady;
-            lbTransformerValue.Content = $"{note.Transformer.RecoveryTime.TimeFormatted}";
+            lbTransformerValue.Content = $"{note.Transformer?.RecoveryTime?.TimeFormatted}";
 
             lbTransformer.Style = (transformerReady ? styleHightlight : styleNormal);
             lbTransformerValue.Style = lbTransformer.Style;

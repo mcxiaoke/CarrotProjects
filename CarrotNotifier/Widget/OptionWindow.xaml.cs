@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.ComponentModel;
 using Newtonsoft.Json;
 using Carrot.UI.Controls.Utils;
 using Carrot.UI.Controls.Picker;
@@ -41,15 +42,22 @@ namespace GenshinNotifier {
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
             Logger.Debug($"Window_Loaded");
+            WidgetStyle.User.PropertyChanged += UserStyle_PropertyChanged;
+        }
+
+        private void UserStyle_PropertyChanged(object sender, PropertyChangedEventArgs e) {
+            var key = e.PropertyName ?? String.Empty;
+            var value = sender?.GetType().GetProperty(name: key)?.GetValue(sender);
+            Logger.Debug($"UserStyle_PropertyChanged {key} = {value}");
+            if (key == nameof(WidgetStyle.BackgroundColor)) {
+                btnBackground.Foreground = new SolidColorBrush(WidgetStyle.User.BackgroundColorOpposite);
+                btnBackground.Background = new SolidColorBrush(WidgetStyle.User.BackgroundColor);
+            }
         }
 
         private void PreviewLayout_Loaded(object sender, RoutedEventArgs e) {
             Logger.Debug($"PreviewLayout_Loaded");
             //ApplyStyle(previewLayout, WidgetStyle.ResDefault);
-            //Task.Run(async () => {
-            //    await Task.Delay(3000);
-            //    WidgetStyle.User.BackgroundColor = Colors.Red;
-            //});
 
         }
 
@@ -63,7 +71,7 @@ namespace GenshinNotifier {
             foreach (var label in labels) {
                 Logger.Debug($"Update {label}");
                 label.FontSize = style.TextFontSize;
-                label.FontFamily = style.TextFontFamily;
+                label.FontFamily = style.TextFontFamily ?? WidgetStyle.FONT_FAMILY_DEFAULT;
                 label.FontWeight = style.TextFontWeight ?? FontWeights.Normal;
                 label.FontStyle = style.TextFontStyle ?? FontStyles.Normal;
                 if (label.Name.Contains("value")) {
@@ -72,7 +80,6 @@ namespace GenshinNotifier {
                     label.Foreground = new SolidColorBrush(style.TextNormalColor);
                 }
             }
-
         }
 
         private void CbBackground_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<ColorComboBoxItem> e) {
@@ -139,6 +146,14 @@ namespace GenshinNotifier {
         private void BtnReset_Click(object sender, RoutedEventArgs e) {
             // reset to default
             WidgetStyle.ResetUserStyle();
+            if (WidgetStyle.User is WidgetStyle style) {
+                //btnBackground.Background = new SolidColorBrush(style.BackgroundColor);
+                //btnBackground.Foreground = new SolidColorBrush(style.BackgroundColorOpposite);
+                cbTextNormal.SelectedIndex = 0;
+                cbTextHightlight.SelectedIndex = 0;
+                cbFontFamily.SelectedFont = style.TextFontExtraInfo;
+                cbFontSize.SelectedItem = style.TextFontSize;
+            }
         }
     }
 }

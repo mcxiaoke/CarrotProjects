@@ -24,18 +24,9 @@ namespace GenshinNotifier {
         public static WidgetStyle User { get; private set; } = Empty;
         public static WidgetStyle ResDefault { get; private set; } = Empty;
 
-        public static WidgetStyle FromResource(ResourceDictionary res) {
-            var rTextNormalColor = (Color)res["TextNormalColor"];
-            var rTextHighlightColor = (Color)res["TextHighlightColor"];
-            var rTextErrorColor = (Color)res["TextErrorColor"];
-            var rBackgroundColor = (Color)res["BackgroundColor"];
-            var rTextFontSize = (double)res["TextFontSize"];
-            var rFontFamily = (FontFamily)res["TextFontFamily"];
-            var rFontWeight = (FontWeight)res["TextFontWeight"];
-            var rFontStyle = (FontStyle)res["TextFontStyle"];
-            return new WidgetStyle(rTextNormalColor, rTextHighlightColor, rTextErrorColor, rBackgroundColor, rTextFontSize, rFontFamily, rFontWeight, rFontStyle);
-        }
-
+        public static FontFamily FONT_FAMILY_DEFAULT = new FontFamily("NSimsun");
+        public static FontWeight FONT_WEIGHT_DEFAULT = FontWeights.Normal;
+        public static FontStyle FONT_STYLE_DEFAULT = FontStyles.Normal;
         public static Color ERROR_COLOR = UIHelper.ParseColor("#00000000");
 
         private static ColorComboBoxItem CreateColorPair(string s, Color c) {
@@ -45,22 +36,53 @@ namespace GenshinNotifier {
         public WidgetStyle() {
         }
 
-        public WidgetStyle(Color textNormalColor,
-            Color textHighlightColor,
-            Color textErrorColor,
-            Color backgroundColor,
-            double textFontSize,
-            FontFamily fontFamily,
-            FontWeight fontWeight,
-            FontStyle fontStyle) {
-            TextNormalColor = textNormalColor;
-            TextHighlightColor = textHighlightColor;
-            TextErrorColor = textErrorColor;
-            BackgroundColor = backgroundColor;
-            TextFontSize = textFontSize;
-            TextFontFamily = fontFamily;
-            TextFontWeight = fontWeight;
-            TextFontStyle = fontStyle;
+        public WidgetStyle(ResourceDictionary res) {
+            TextNormalColor = (Color)res["TextNormalColor"];
+            TextHighlightColor = (Color)res["TextHighlightColor"];
+            TextErrorColor = (Color)res["TextErrorColor"];
+            BackgroundColor = (Color)res["BackgroundColor"];
+            TextFontSize = (double)res["TextFontSize"];
+            TextFontFamily = (FontFamily)res["TextFontFamily"];
+            TextFontWeight = (FontWeight)res["TextFontWeight"];
+            TextFontStyle = (FontStyle)res["TextFontStyle"];
+        }
+
+        public WidgetStyle(WidgetStyle other) {
+            TextNormalColor = other.TextNormalColor;
+            TextHighlightColor = other.TextHighlightColor;
+            TextErrorColor = other.TextErrorColor;
+            BackgroundColor = other.BackgroundColor;
+            TextFontSize = other.TextFontSize;
+            TextFontFamily = other.TextFontFamily;
+            TextFontWeight = other.TextFontWeight;
+            TextFontStyle = other.TextFontStyle;
+        }
+
+        public void MergeValues(WidgetStyle other) {
+            if (other.TextNormalColor != ERROR_COLOR) {
+                TextNormalColor = other.TextNormalColor;
+            }
+            if (other.TextHighlightColor != ERROR_COLOR) {
+                TextHighlightColor = other.TextHighlightColor;
+            }
+            if (other.TextErrorColor != ERROR_COLOR) {
+                TextErrorColor = other.TextErrorColor;
+            }
+            if (other.BackgroundColor != ERROR_COLOR) {
+                BackgroundColor = other.BackgroundColor;
+            }
+            if (other.TextFontSize != 0) {
+                TextFontSize = other.TextFontSize;
+            }
+            if (other.TextFontFamily != null) {
+                TextFontFamily = other.TextFontFamily;
+            }
+            if (other.TextFontWeight != null) {
+                TextFontWeight = other.TextFontWeight;
+            }
+            if (other.TextFontStyle != null) {
+                TextFontStyle = other.TextFontStyle;
+            }
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -72,7 +94,7 @@ namespace GenshinNotifier {
         public Color TextErrorColor { get; set; } = ERROR_COLOR;
         public Color BackgroundColor { get; set; } = ERROR_COLOR;
         public bool BackgroundTransparent { get; set; } = false;
-        public double TextFontSize { get; set; } = double.NaN;
+        public double TextFontSize { get; set; } = 0;
         public FontFamily? TextFontFamily { get; set; }
         public FontWeight? TextFontWeight { get; set; }
         public FontStyle? TextFontStyle { get; set; }
@@ -98,7 +120,10 @@ namespace GenshinNotifier {
         public Color BackgroundColorOpposite => BackgroundColor.IsDark() ? Colors.White : Colors.Black;
 
         [JsonIgnore]
-        public FontExtraInfo TextFontExtraInfo => FontUtilities.GetLocalizedFontFamily(TextFontFamily);
+        public FontExtraInfo TextFontExtraInfo => FontUtilities.GetFontExtraInfo(TextFontFamily ?? FONT_FAMILY_DEFAULT);
+
+        [JsonIgnore]
+        public int TextFontSizeIndex => FontSizeRange.IndexOf(TextFontSize);
 
         [JsonIgnore]
         public bool TextFontBold {
@@ -185,60 +210,38 @@ namespace GenshinNotifier {
         public static void ResetUserStyle() {
             Logger.Debug("ResetUserStyle");
             DeleteUserStyle();
-            var res = Application.Current.Resources;
-            var rs = WidgetStyle.FromResource(res);
-            var us = WidgetStyle.User!;
-            us.TextNormalColor = rs.TextNormalColor;
-            us.TextHighlightColor = rs.TextHighlightColor;
-            us.TextErrorColor = rs.TextErrorColor;
-            us.BackgroundColor = rs.BackgroundColor;
-            us.BackgroundTransparent = rs.BackgroundColor.A == 0;
-            us.TextFontSize = rs.TextFontSize;
-            us.TextFontFamily = rs.TextFontFamily;
-            us.TextFontWeight = rs.TextFontWeight;
-            us.TextFontStyle = rs.TextFontStyle;
+            WidgetStyle.User.MergeValues(WidgetStyle.ResDefault);
 
         }
 
         // must call on app start
         public static void Initialize() {
-            // read user setting values
-            var settingStyle = LoadUserStyle();
-            Logger.Debug("WidgetStyle settings=" + settingStyle);
 
             // read xaml resource values
-            var res = Application.Current.Resources;
             //UI.PrintResources(res);
-            var resourceStyle = WidgetStyle.FromResource(res);
-
-            var userStyle = new WidgetStyle();
-            userStyle.TextNormalColor = settingStyle?.TextNormalColor ?? resourceStyle.TextNormalColor;
-            userStyle.TextHighlightColor = settingStyle?.TextHighlightColor ?? resourceStyle.TextHighlightColor;
-            userStyle.TextErrorColor = settingStyle?.TextErrorColor ?? resourceStyle.TextErrorColor;
-            userStyle.BackgroundColor = settingStyle?.BackgroundColor ?? resourceStyle.BackgroundColor;
-            userStyle.BackgroundTransparent = settingStyle?.BackgroundTransparent ?? false;
-            userStyle.TextFontSize = settingStyle?.TextFontSize ?? resourceStyle.TextFontSize;
-            userStyle.TextFontFamily = settingStyle?.TextFontFamily ?? resourceStyle.TextFontFamily;
-            userStyle.TextFontWeight = settingStyle?.TextFontWeight ?? resourceStyle.TextFontWeight;
-            userStyle.TextFontStyle = settingStyle?.TextFontStyle ?? resourceStyle.TextFontStyle;
-
-            userStyle.AppendBgColors = new List<ColorComboBoxItem>() {
+            var res = Application.Current.Resources;
+            var resourceStyle = new WidgetStyle(res);
+            var userStyle = new WidgetStyle(resourceStyle);
+            // read user setting values
+            if (LoadUserStyle() is WidgetStyle settingStyle) {
+                Logger.Debug("WidgetStyle settings=" + settingStyle);
+                userStyle.MergeValues(settingStyle);
+                userStyle.AppendBgColors = new List<ColorComboBoxItem>() {
             CreateColorPair("当前", userStyle.BackgroundColor),
-            CreateColorPair("默认", resourceStyle.BackgroundColor)
-            };
+            CreateColorPair("默认", resourceStyle.BackgroundColor)};
 
-            userStyle.AppendTextNColors = new List<ColorComboBoxItem>() {
+                userStyle.AppendTextNColors = new List<ColorComboBoxItem>() {
             CreateColorPair("当前", userStyle.TextNormalColor),
-            CreateColorPair("默认", resourceStyle.TextNormalColor)
-        };
+            CreateColorPair("默认", resourceStyle.TextNormalColor)};
 
-            userStyle.AppendTextHColors = new List<ColorComboBoxItem>() {
+                userStyle.AppendTextHColors = new List<ColorComboBoxItem>() {
             CreateColorPair("当前", userStyle.TextHighlightColor),
-            CreateColorPair("默认", resourceStyle.TextHighlightColor)
-        };
+            CreateColorPair("默认", resourceStyle.TextHighlightColor) };
+            }
 
-            WidgetStyle.User = userStyle;
+
             WidgetStyle.ResDefault = resourceStyle;
+            WidgetStyle.User = userStyle;
             Logger.Debug("WidgetStyle res=" + ResDefault);
             Logger.Debug("WidgetStyle user=" + User);
 

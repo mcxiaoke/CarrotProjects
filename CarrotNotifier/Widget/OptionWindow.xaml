@@ -6,9 +6,9 @@
         xmlns:local="clr-namespace:GenshinNotifier"
         xmlns:cui="clr-namespace:Carrot.UI.Controls.Picker;assembly=Carrot.UI.Controls"
         xmlns:cfont="clr-namespace:Carrot.UI.Controls.Font;assembly=Carrot.UI.Controls"
-        mc:Ignorable="d" Title="自定义小组件" MinWidth="440" MinHeight="410" MaxWidth="600"
-        MaxHeight="540" Width="440" Height="410" WindowStartupLocation="Manual"
-        SnapsToDevicePixels="True" Loaded="Window_Loaded" ResizeMode="CanMinimize">
+        mc:Ignorable="d" Title="主题和样式" MinWidth="440" MinHeight="410" MaxWidth="600" MaxHeight="540"
+        Width="440" Height="410" WindowStartupLocation="Manual" SnapsToDevicePixels="True"
+        Loaded="Window_Loaded" ResizeMode="CanMinimize" Topmost="True">
     <Window.Resources>
         <ResourceDictionary>
             <cui:ColorToSolidBrushConverter x:Key="ColorToBrush" />
