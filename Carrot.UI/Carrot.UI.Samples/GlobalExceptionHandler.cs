@@ -14,7 +14,7 @@ namespace NotifierWidget {
             AppDomain.CurrentDomain.UnhandledException += OnAppDomainUnhandledException;
             Application.Current.DispatcherUnhandledException += OnDispatcherUnhandledException;
             Application.Current.Dispatcher.UnhandledExceptionFilter += OnFilterDispatcherException;
-            TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
+            TaskScheduler.UnobservedTaskException += (f, f2) => OnUnobservedTaskException(sender: f, e: f2);
         }
 
         /// <summary>

@@ -62,9 +62,7 @@ namespace Carrot.UI.Controls.Font {
 
         public FontComboBox() {
             InitializeComponent();
-            Debug.WriteLine(CultureInfo.CurrentCulture);
             cbFonts.DataContext = this;
-            //this.DataContext = this;
         }
 
 
@@ -72,7 +70,6 @@ namespace Carrot.UI.Controls.Font {
             get => (FontExtraInfo)GetValue(SelectedFontProperty);
             set {
                 SetValue(SelectedFontProperty, value);
-                Debug.WriteLine($"SelectedFont set to {value}");
             }
         }
 

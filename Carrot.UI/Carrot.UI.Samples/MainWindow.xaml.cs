@@ -87,5 +87,15 @@ namespace Carrot.UI.Samples {
                 textBox.Foreground = new SolidColorBrush(dialog.PickedColor);
             }
         }
+
+        public IEnumerable<string> SampleValues => Enumerable.Range(50, 20).Select(it => $"简单数据项 Simple Item No.{it}");
+        private void Window_Loaded(object sender, RoutedEventArgs e) {
+            simpleCombo.ItemSource = SampleValues;
+
+        }
+
+        private void SimpleCombo_SelectionChanged(object sender, RoutedPropertyChangedEventArgs<object> e) {
+            Debug.WriteLine($"SimpleCombo_SelectionChanged old={e.OldValue} new={e.NewValue}");
+        }
     }
 }
