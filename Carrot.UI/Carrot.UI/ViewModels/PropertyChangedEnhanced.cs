@@ -34,7 +34,7 @@ namespace Carrot.UI.Controls.ViewModels {
         public event EventHandler<PropertyChangedEnhancedEventArgs> PropertyChangedEnhanced;
 
         protected bool SetProperty<T>(ref T field, T value, [CallerMemberName]
-    string propertyName = null) {
+    string? propertyName = null) {
             if (EqualityComparer<T>.Default.Equals(field, value)) {
                 return false;
             }
@@ -44,7 +44,7 @@ namespace Carrot.UI.Controls.ViewModels {
             this.OnPropertyChangedEnhanced(oldValue, value, propertyName);
             return true;
         }
-        protected void OnPropertyChangedEnhanced<T>(T oldValue, T newValue, [CallerMemberName] string propertyName = null) {
+        protected void OnPropertyChangedEnhanced<T>(T oldValue, T newValue, [CallerMemberName] string? propertyName = null) {
             this.PropertyChangedEnhanced?.Invoke(this, new PropertyChangedEnhancedEventArgs(propertyName, oldValue, newValue));
         }
     }

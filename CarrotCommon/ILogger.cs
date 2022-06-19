@@ -38,14 +38,16 @@ namespace CarrotCommon {
             Serilog.Log.Logger = _logger;
         }
 
-        public override void Log(LogEventLevel lv, string message) {
+        public override void Log(LogEventLevel lv, string? message) {
             //Debug.WriteLine(message);
-            _logger.Write(lv, message);
+            if (message != null) {
+                _logger.Write(lv, message);
+            }
         }
 
-        public override void Error(string message, Exception error) {
+        public override void Error(string? message, Exception error) {
             //Trace.WriteLine(message + " " + error.Message);
-            _logger.Error(error, message);
+            _logger.Error(error, message ?? "Error");
         }
     }
 
@@ -80,15 +82,15 @@ namespace CarrotCommon {
         private static readonly ILogger Default = new ReleaseLogger();
 #endif
 
-        public static void Verbose(string m) => Default.Log(LogEventLevel.Verbose, m);
+        public static void Verbose(string? m) => Default.Log(LogEventLevel.Verbose, m ?? string.Empty);
 
-        public static void Debug(string m) => Default.Log(LogEventLevel.Debug, m);
+        public static void Debug(string? m) => Default.Log(LogEventLevel.Debug, m ?? string.Empty);
 
-        public static void Info(string m) => Default.Log(LogEventLevel.Information, m);
+        public static void Info(string? m) => Default.Log(LogEventLevel.Information, m ?? string.Empty);
 
-        public static void Warning(string m) => Default.Log(LogEventLevel.Warning, m);
+        public static void Warning(string? m) => Default.Log(LogEventLevel.Warning, m ?? string.Empty);
 
-        public static void Error(string m, Exception e) => Default.Error(m, e);
+        public static void Error(string? m, Exception e) => Default.Error(m ?? string.Empty, e);
 
         public static void Close() => Log.CloseAndFlush();
     }

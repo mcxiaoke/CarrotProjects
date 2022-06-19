@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using System.ComponentModel;
 using System.Diagnostics;
 using Carrot.UI.Controls.Picker;
+using System.Collections;
 
 namespace Carrot.UI.Controls.Font {
 
@@ -38,9 +39,11 @@ namespace Carrot.UI.Controls.Font {
 
         private static void OnSelectedFontChanged(DependencyObject dpobj,
             DependencyPropertyChangedEventArgs e) {
-            var fcb = dpobj as FontComboBox;
-            fcb.oldItem = e.OldValue as FontExtraInfo;
-            Debug.WriteLine($"OnSelectedFontChanged {e.OldValue} => {e.NewValue}");
+            if (dpobj is FontComboBox fcb) {
+                fcb.oldItem = e.OldValue as FontExtraInfo;
+                Debug.WriteLine($"OnSelectedFontChanged {e.OldValue} => {e.NewValue}");
+            }
+
         }
 
         #endregion
@@ -80,6 +83,10 @@ namespace Carrot.UI.Controls.Font {
             }
         }
 
+        public IEnumerable ItemsSource => cbFonts.ItemsSource;
+        public ItemCollection ItemsControl => cbFonts.Items;
+
+
         private void FontComboBox_Loaded(object sender, RoutedEventArgs e) {
             Debug.WriteLine($"FontComboBox_Loaded {Name} init=[{SelectedFont}] index=[{SelectedIndex}]");
         }
@@ -89,7 +96,7 @@ namespace Carrot.UI.Controls.Font {
             oldItem = (FontExtraInfo)cbFonts.SelectedItem;
         }
 
-        private FontExtraInfo oldItem;
+        private FontExtraInfo? oldItem;
         private void CBFonts_DropDownClosed(object sender, EventArgs e) {
             var newItem = (FontExtraInfo)cbFonts.SelectedItem;
             Debug.WriteLine($"CBFonts_DropDownClosed new={newItem}");

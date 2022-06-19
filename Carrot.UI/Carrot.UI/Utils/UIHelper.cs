@@ -95,7 +95,7 @@ namespace Carrot.UI.Controls.Utils {
         }
 
         public static SolidColorBrush GetSolidColorBrush2(string hex) {
-            return (SolidColorBrush)new BrushConverter().ConvertFrom(hex);
+            return (SolidColorBrush)new BrushConverter().ConvertFrom(hex)!;
         }
     }
 }

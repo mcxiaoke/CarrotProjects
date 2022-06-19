@@ -16,8 +16,15 @@ using CarrotCommon;
 using System.Xml.Linq;
 using System.Windows.Input;
 using Carrot.UI.Controls;
+using System.Text;
 
 namespace GenshinNotifier {
+
+    public readonly record struct WidgetColor(
+    [JsonProperty("name")] string Name,
+    [JsonProperty("background")] Color Background,
+    [JsonProperty("textNormal")] Color TextNormal,
+    [JsonProperty("textHighlight")] Color TextHighlight);
 
     public class WidgetStyle : INotifyPropertyChanged {
         public static WidgetStyle Empty = new WidgetStyle();
@@ -28,6 +35,53 @@ namespace GenshinNotifier {
         public static FontWeight FONT_WEIGHT_DEFAULT = FontWeights.Normal;
         public static FontStyle FONT_STYLE_DEFAULT = FontStyles.Normal;
         public static Color ERROR_COLOR = UIHelper.ParseColor("#00000000");
+
+        public static List<WidgetColor> ThemeColors = new List<WidgetColor>();
+
+        public static IEnumerable<ColorComboBoxItem> GetAllColors() =>
+    typeof(Colors).GetProperties()
+    .Where(prop => typeof(Color).IsAssignableFrom(prop.PropertyType))
+    .Select(prop => ColorComboBoxItem.Create(prop.Name, (Color)prop.GetValue(null)!));
+
+
+        private static int WidgetColorCompare(WidgetColor a, WidgetColor b) {
+            var acv = a.Background.PerceivedBrightness();
+            var bcv = b.Background.PerceivedBrightness();
+            if (acv > bcv) { return 1; } else if (acv < bcv) { return -1; } else { return 0; }
+        }
+
+        private static void LoadColors() {
+
+            //var allColors = GetAllColors();
+            //foreach (var color in allColors) {
+            //    var name = color.Key;
+            //    var bg = color.Value;
+            //    if (bg.IsDark()) {
+            //        var normal = bg.IsDark() ? Colors.White : Colors.Black;
+            //        var highlight = bg.IsDark() ? Colors.Yellow : Colors.Blue;
+            //        var wc = new WidgetColor(name, bg, normal, highlight);
+            //        ThemeColors.Add(wc);
+            //    }
+            //}
+            //return;
+            const string resourceName = "Resources/WidgetColors.json";
+            try {
+                var uri = new Uri(resourceName, UriKind.RelativeOrAbsolute);
+                if (Application.GetResourceStream(uri)?.Stream is Stream stream) {
+                    using StreamReader reader = new StreamReader(stream, Encoding.UTF8);
+                    string result = reader.ReadToEnd();
+                    var colors = JsonConvert.DeserializeObject<List<WidgetColor>>(result);
+                    if (colors is not null) {
+                        Logger.Debug($"WidgetStyle.LoadColors loaded colors.Count={colors.Count}");
+                    }
+                } else {
+                    Logger.Debug($"WidgetStyle.LoadColors loaded no data");
+                }
+            } catch (Exception ex) {
+                Logger.Debug($"WidgetStyle.LoadColors loaded failed {ex}");
+                Logger.Debug(ex.StackTrace);
+            }
+        }
 
         private static ColorComboBoxItem CreateColorPair(string s, Color c) {
             return ColorComboBoxItem.Create(s, c);
@@ -244,6 +298,9 @@ namespace GenshinNotifier {
             WidgetStyle.User = userStyle;
             Logger.Debug("WidgetStyle res=" + ResDefault);
             Logger.Debug("WidgetStyle user=" + User);
+
+            WidgetStyle.LoadColors();
+            Logger.Debug("WidgetStyle colors=" + ThemeColors.Count);
 
             //Settings.Default.WidgetStyle = User.ToString();
             //Settings.Default.Save();

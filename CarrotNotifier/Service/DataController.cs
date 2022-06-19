@@ -207,13 +207,13 @@ namespace GenshinNotifier {
             }
             var (result, error) = await Api.PostSignReward();
             Logger.Debug($"DataController.PostSignReward sign={result} error={error?.Message}");
-            dynamic? obj = JsonConvert.DeserializeObject(result);
+            dynamic? obj = JsonConvert.DeserializeObject(result ?? string.Empty);
             // retcode == 0 success sign
             // retcode == -5003 already sign
             if (obj?.retcode == 0 || obj?.retcode == -5003) {
                 (result, error) = await Api.GetSignReward();
                 Logger.Debug($"DataController.PostSignReward reward={result} error={error?.Message}");
-                dynamic? robj = JsonConvert.DeserializeObject(result);
+                dynamic? robj = JsonConvert.DeserializeObject(result ?? string.Empty);
                 if (robj?.retcode == 0) {
                     return (obj?.retcode, result, error);
                 }
@@ -226,7 +226,7 @@ namespace GenshinNotifier {
             GenshinAPI tempApi = new GenshinAPI(tempCookie);
             try {
                 var user = await tempApi.GetGameRoleInfo();
-                Logger.Info($"ValidateCookie uid={user.GameUid}");
+                Logger.Info($"ValidateCookie uid={user?.GameUid}");
                 return user;
             } catch (Exception ex) {
                 Logger.Info($"ValidateCookie {ex.Message}");

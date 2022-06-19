@@ -11,7 +11,7 @@ namespace System.Runtime.CompilerServices {
     /// This class should not be used by developers in source code.
     /// </summary>
     [EditorBrowsable(EditorBrowsableState.Never)]
-    internal static class IsExternalInit {
+    public static class IsExternalInit {
     }
 
     /// <summary>
@@ -28,7 +28,7 @@ namespace System.Runtime.CompilerServices {
         AttributeTargets.Property |
         AttributeTargets.Event,
         Inherited = false)]
-    internal sealed class SkipLocalsInitAttribute : Attribute {
+    public sealed class SkipLocalsInitAttribute : Attribute {
     }
 }
 

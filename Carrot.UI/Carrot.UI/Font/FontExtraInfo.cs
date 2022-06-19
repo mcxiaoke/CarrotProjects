@@ -29,7 +29,7 @@ namespace Carrot.UI.Controls.Font {
         }
 
         // needed for set selectedItem
-        public override bool Equals(object obj) {
+        public override bool Equals(object? obj) {
             return obj is FontExtraInfo family &&
                    EqualityComparer<FontFamily>.Default.Equals(Family, family.Family);
         }

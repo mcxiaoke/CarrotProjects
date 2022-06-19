@@ -35,13 +35,13 @@ namespace Carrot.UI.Controls.Font {
 
             foreach (var prop in properties) {
                 string name = prop.Name;
-                SolidColorBrush brush = new SolidColorBrush((Color)(prop.GetValue(null, null)));
+                SolidColorBrush brush = new SolidColorBrush((Color)(prop.GetValue(null, null))!);
                 this.Add(new FontColor(name, brush));
             }
         }
 
-        public FontColor GetFontColorByName(string name) {
-            FontColor found = null;
+        public FontColor? GetFontColorByName(string name) {
+            FontColor? found = null;
             foreach (FontColor b in this) {
                 if (b.Name == name) {
                     found = b;
@@ -51,8 +51,8 @@ namespace Carrot.UI.Controls.Font {
             return found;
         }
 
-        public FontColor GetFontColorByBrush(SolidColorBrush b) {
-            FontColor found = null;
+        public FontColor? GetFontColorByBrush(SolidColorBrush b) {
+            FontColor? found = null;
             foreach (FontColor brush in this) {
                 if (brush.Brush.Color.Equals(b.Color)) {
                     found = brush;

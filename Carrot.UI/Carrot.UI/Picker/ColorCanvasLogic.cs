@@ -20,11 +20,10 @@ namespace Carrot.UI.Controls.Picker {
         /// <summary>
         /// Color is changed by user
         /// </summary>
-        public event EventHandler<ColorEventArgs> ColorChanged;
+        public event EventHandler<ColorEventArgs>? ColorChanged;
 
         protected virtual void OnColorChanged(ColorEventArgs e) {
-            EventHandler<ColorEventArgs> handler = ColorChanged;
-            handler?.Invoke(this, e);
+            ColorChanged?.Invoke(this, e);
         }
 
         private readonly Canvas HostingCanvas;

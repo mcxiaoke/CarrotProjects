@@ -512,7 +512,7 @@ namespace GenshinNotifier {
             text.Add($"每日委托 {note.FinishedTaskNum}/{note.TotalTaskNum}，" +
                 $"探索派遣 {note.CurrentExpeditionNum}/{note.MaxExpeditionNum}");
             text.Add($"减半周本 {note.ResinDiscountUsedNum}/{note.ResinDiscountNumLimit}，" +
-                $"参量质变仪 {note.Transformer.RecoveryTime.TimeFormatted}");
+                $"参量质变仪 {note.Transformer?.RecoveryTime?.TimeFormatted}");
 
             var titleStr = string.Concat(title.Take(3));
             var textStr = string.Join("，", text);

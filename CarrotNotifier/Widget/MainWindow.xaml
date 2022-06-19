@@ -53,7 +53,7 @@
             </Style>
         </ResourceDictionary>
     </Window.Resources>
-    <Border CornerRadius="10"
+    <Border CornerRadius="10" BorderThickness="0.5" BorderBrush="#80000000"
             Background="{Binding BackgroundColor,Converter={StaticResource ColorToBrush}}">
         <StackPanel x:Name="spLayoutBox" Orientation="Vertical" Margin="6"
                 Grid.IsSharedSizeScope="True">

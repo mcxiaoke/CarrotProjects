@@ -107,7 +107,7 @@ namespace Carrot.UI.Controls.ColorUtils {
         }
 
         public override bool Equals(
-            object obj) {
+            object? obj) {
             var equal = false;
 
             if (obj is HsbColor color) {
@@ -124,7 +124,7 @@ namespace Carrot.UI.Controls.ColorUtils {
         }
 
         public override int GetHashCode() {
-            return $"H:{Hue}-S:{Saturation}-B:{Brightness}-A:{Alpha}".GetHashCode();
+            return 1357924680 + $"H:{Hue}-S:{Saturation}-B:{Brightness}-A:{Alpha}".GetHashCode();
         }
     }
 
@@ -246,8 +246,10 @@ namespace Carrot.UI.Controls.ColorUtils {
             return ColorConverting.RgbToHsb(ToRgbColor());
         }
 
+
+
         public override bool Equals(
-            object obj) {
+            object? obj) {
             var equal = false;
 
             if (obj is HslColor color) {
@@ -266,6 +268,7 @@ namespace Carrot.UI.Controls.ColorUtils {
         public override int GetHashCode() {
             return $"H:{PreciseHue}-S:{PreciseSaturation}-L:{PreciseLight}".GetHashCode();
         }
+
     }
 
 
@@ -346,7 +349,7 @@ namespace Carrot.UI.Controls.ColorUtils {
         }
 
         public override bool Equals(
-            object obj) {
+            object? obj) {
             var equal = false;
 
             if (obj is RgbColor color) {

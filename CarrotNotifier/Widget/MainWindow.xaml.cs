@@ -263,7 +263,7 @@ namespace GenshinNotifier {
             if (Settings.Default.OptionLockWidgetPos) { return; }
             // https://stackoverflow.com/questions/867140/drag-a-wpf-form-around-the-desktop
             // https://stackoverflow.com/questions/1761854/cant-drag-and-move-a-wpf-form
-            // https://stackoverflow.com/questions/7417739/make-wpf-window-draggable-no-matter-what-element-is-clicked
+            // https://stackoverflow.com/questions/7417739/
             this.DragMove();
         }
 

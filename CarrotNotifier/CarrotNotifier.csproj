@@ -14,6 +14,7 @@
   <ItemGroup>
     <None Remove="Assets\carrot_512.png" />
     <None Remove="Assets\loading_100.gif" />
+    <None Remove="Resources\WidgetColors.json" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,7 +35,7 @@
 
   <ItemGroup>
     <PackageReference Include="Carrot.UI.ColorPicker" Version="0.2.1" />
-    <PackageReference Include="Carrot.UI.Controls" Version="0.4.4" />
+    <PackageReference Include="Carrot.UI.Controls" Version="0.4.5" />
     <PackageReference Include="Costura.Fody">
       <Version>5.7.0</Version>
       <IncludeAssets>runtime; compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -74,6 +75,7 @@
       <PackagePath>\</PackagePath>
     </Resource>
     <Resource Include="Assets\loading_100.gif" />
+    <Resource Include="Resources\WidgetColors.json" />
   </ItemGroup>
 
   <ItemGroup>

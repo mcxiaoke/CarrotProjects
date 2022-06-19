@@ -41,9 +41,11 @@ namespace Carrot.UI.Controls.Common {
 
         private static void OnSelectionChanged(DependencyObject dpobj,
             DependencyPropertyChangedEventArgs e) {
-            var fcb = dpobj as SimpleComboBox;
-            fcb.oldItem = e.OldValue;
-            Debug.WriteLine($"OnSelectedItemChanged {e.OldValue} => {e.NewValue}");
+            if (dpobj is SimpleComboBox combo) {
+                combo.oldItem = e.OldValue;
+                Debug.WriteLine($"OnSelectedItemChanged {e.OldValue} => {e.NewValue}");
+            }
+
         }
 
         #endregion
@@ -89,6 +91,8 @@ namespace Carrot.UI.Controls.Common {
             }
         }
 
+        public IEnumerable ItemsSource => superCombo.ItemsSource;
+        public ItemCollection ItemsControl => superCombo.Items;
 
         public SimpleComboBox() {
             InitializeComponent();

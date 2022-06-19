@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+﻿using System.Collections.Generic;
+using System.Windows.Media;
 
 namespace Carrot.UI.Controls.Font {
 
@@ -11,32 +12,21 @@ namespace Carrot.UI.Controls.Font {
             Brush = brush;
         }
 
-        public override bool Equals(System.Object obj) {
-            if (obj == null) {
-                return false;
-            }
-
-            if (!(obj is FontColor p)) {
-                return false;
-            }
-
-            return (this.Name == p.Name) && (this.Brush.Equals(p.Brush));
+        public override string ToString() {
+            return "FontColor [Color=" + this.Name + ", " + this.Brush.ToString() + "]";
         }
 
-        public bool Equals(FontColor p) {
-            if (p == null) {
-                return false;
-            }
-
-            return (this.Name == p.Name) && (this.Brush.Equals(p.Brush));
+        public override bool Equals(object? obj) {
+            return obj is FontColor color &&
+                   Name == color.Name &&
+                   EqualityComparer<SolidColorBrush>.Default.Equals(Brush, color.Brush);
         }
 
         public override int GetHashCode() {
-            return base.GetHashCode();
-        }
-
-        public override string ToString() {
-            return "FontColor [Color=" + this.Name + ", " + this.Brush.ToString() + "]";
+            int hashCode = -320841079;
+            hashCode = hashCode * -1521134295 + EqualityComparer<string>.Default.GetHashCode(Name);
+            hashCode = hashCode * -1521134295 + EqualityComparer<SolidColorBrush>.Default.GetHashCode(Brush);
+            return hashCode;
         }
     }
 }

@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using Carrot.UI.Controls;
 using Carrot.UI.Controls.Utils;
 using Color = System.Windows.Media.Color;
+using System.Collections;
 
 namespace Carrot.UI.Controls.Picker {
 
@@ -31,7 +32,7 @@ namespace Carrot.UI.Controls.Picker {
         public Color Value { get; set; }
 
         internal ColorComboBoxItem(string key, Color value) {
-            Key = key ?? Convert.ToString(value);
+            Key = key ?? Convert.ToString(value) ?? string.Empty;
             Value = value;
         }
 
@@ -44,9 +45,7 @@ namespace Carrot.UI.Controls.Picker {
         }
 
         public override int GetHashCode() {
-            int hashCode = 206514262;
-            hashCode = hashCode * -1521134295 + Value.GetHashCode();
-            return hashCode;
+            return 206514262 + Value.GetHashCode();
         }
 
         public static bool operator ==(ColorComboBoxItem? left, ColorComboBoxItem? right) {
@@ -102,6 +101,9 @@ namespace Carrot.UI.Controls.Picker {
             set => cmbColors.SelectedItem = value;
         }
 
+        public IEnumerable ItemsSource => cmbColors.ItemsSource;
+        public ItemCollection ItemsControl => cmbColors.Items;
+
         public ColorComboBox() {
             InitializeComponent();
             Debug.WriteLine("ColorComboBox_Init");
@@ -111,7 +113,7 @@ namespace Carrot.UI.Controls.Picker {
         private static IEnumerable<ColorComboBoxItem> GetAllColors() =>
             typeof(Colors).GetProperties()
             .Where(prop => typeof(Color).IsAssignableFrom(prop.PropertyType))
-            .Select(prop => ColorComboBoxItem.Create(prop.Name, (Color)prop.GetValue(null)));
+            .Select(prop => ColorComboBoxItem.Create(prop.Name, (Color)prop.GetValue(null)!));
 
         private void ColorComboBox_Loaded(object sender, RoutedEventArgs e) {
             Debug.WriteLine($"ColorComboBox_Loaded {Name}");
@@ -149,11 +151,13 @@ namespace Carrot.UI.Controls.Picker {
         private void CmbColors_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             var oldColor = ColorComboBoxItem.INVALID;
             var newColor = ColorComboBoxItem.INVALID;
-            if (e.RemovedItems.Count > 0) {
-                oldColor = (ColorComboBoxItem)e.RemovedItems[0];
+            if (e.RemovedItems is IEnumerable<ColorComboBoxItem> removed
+                && removed.FirstOrDefault() is ColorComboBoxItem oldItem) {
+                oldColor = oldItem;
             }
-            if (e.AddedItems.Count > 0) {
-                newColor = (ColorComboBoxItem)e.AddedItems[0];
+            if (e.AddedItems is IEnumerable<ColorComboBoxItem> added
+                && added.FirstOrDefault() is ColorComboBoxItem newItem) {
+                newColor = newItem;
             }
             Debug.WriteLine($"SelectionChanged {Name} old={oldColor} new={newColor}");
             var newEventArgs = new RoutedPropertyChangedEventArgs<ColorComboBoxItem>

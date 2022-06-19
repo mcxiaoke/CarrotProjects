@@ -7,7 +7,7 @@ namespace Carrot.UI.Controls.Font {
     /// Interaction logic for ColorFontDialog.xaml
     /// </summary>
     public partial class ColorFontDialog : Window {
-        private FontChooserInfo selectedFont;
+        private FontChooserInfo? selectedFont;
 
         public ColorFontDialog() {
             this.selectedFont = null; // Default
@@ -31,21 +31,24 @@ namespace Carrot.UI.Controls.Font {
         }
 
         private void SyncFontName() {
-            string fontFamilyName = this.selectedFont.Font.Name;
-            int idx = 0;
-            foreach (FontExtraInfo item in this.colorFontChooser.lstFamily.Items) {
-                if (fontFamilyName == item.Name) {
-                    break;
+            if (this.selectedFont is FontChooserInfo font) {
+                string fontFamilyName = font.Font.Name;
+                int idx = 0;
+                foreach (FontExtraInfo item in this.colorFontChooser.lstFamily.Items) {
+                    if (fontFamilyName == item.Name) {
+                        break;
+                    }
+                    idx++;
                 }
-                idx++;
+                this.colorFontChooser.lstFamily.SelectedIndex = idx;
+                this.colorFontChooser.lstFamily.ScrollIntoView(this.colorFontChooser.lstFamily.Items[idx]);
             }
-            this.colorFontChooser.lstFamily.SelectedIndex = idx;
-            this.colorFontChooser.lstFamily.ScrollIntoView(this.colorFontChooser.lstFamily.Items[idx]);
         }
 
         private void SyncFontSize() {
-            double fontSize = this.selectedFont.Size;
-            this.colorFontChooser.fontSizeSlider.Value = fontSize;
+            if (this.selectedFont is FontChooserInfo font) {
+                this.colorFontChooser.fontSizeSlider.Value = font.Size;
+            }
         }
 
         private void SyncFontColor() {
@@ -56,16 +59,22 @@ namespace Carrot.UI.Controls.Font {
         }
 
         private void SyncFontTypeface() {
-            string fontTypeFaceSb = FontChooserInfo.TypefaceToString(this.selectedFont.Typeface);
-            int idx = 0;
-            foreach (var item in this.colorFontChooser.lstTypefaces.Items) {
-                FamilyTypeface face = item as FamilyTypeface;
-                if (fontTypeFaceSb == FontChooserInfo.TypefaceToString(face)) {
-                    break;
+
+            if (this.selectedFont is FontChooserInfo font) {
+
+                string fontTypeFaceSb = FontChooserInfo.TypefaceToString(font.Typeface);
+                int idx = 0;
+                foreach (var item in this.colorFontChooser.lstTypefaces.Items) {
+                    if (item is FamilyTypeface face
+                        && fontTypeFaceSb == FontChooserInfo.TypefaceToString(face)) {
+                        break;
+                    }
+                    idx++;
                 }
-                idx++;
+                this.colorFontChooser.lstTypefaces.SelectedIndex = idx;
             }
-            this.colorFontChooser.lstTypefaces.SelectedIndex = idx;
+
+
         }
 
         private void BtnOk_Click(object sender, RoutedEventArgs e) {

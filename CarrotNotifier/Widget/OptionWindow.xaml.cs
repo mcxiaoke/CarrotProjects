@@ -33,12 +33,7 @@ namespace GenshinNotifier {
         public OptionWindow() {
             InitializeComponent();
             this.DataContext = UserStyle;
-            //previewLayout.DataContext = UserStyle;
-            //btnBackground.DataContext = UserStyle;
-            //cbTextNormal.DataContext = UserStyle;
-            //cbTextHightlight.DataContext = UserStyle;
-            //cbFontFamily.DataContext = UserStyle;
-            //cbFontSize.DataContext = UserStyle;
+            this.cbThemeStyles.DataContext = WidgetStyle.ThemeColors;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
@@ -152,8 +147,6 @@ namespace GenshinNotifier {
             // reset to default
             WidgetStyle.ResetUserStyle();
             if (WidgetStyle.User is WidgetStyle style) {
-                //btnBackground.Background = new SolidColorBrush(style.BackgroundColor);
-                //btnBackground.Foreground = new SolidColorBrush(style.BackgroundColorOpposite);
                 cbTextNormal.SelectedIndex = 0;
                 cbTextHightlight.SelectedIndex = 0;
                 cbFontFamily.SelectedFont = style.TextFontExtraInfo;
@@ -166,7 +159,16 @@ namespace GenshinNotifier {
         }
 
         private void CbThemeStyles_DropDownClosed(object sender, EventArgs e) {
-
+            var theme = (WidgetColor)cbThemeStyles.SelectedItem;
+            UserStyle.BackgroundColor = theme.Background;
+            UserStyle.TextNormalColor = theme.TextNormal;
+            UserStyle.TextHighlightColor = theme.TextHighlight;
+            cbTextNormal.SelectedIndex = 0;
+            cbTextHightlight.SelectedIndex = 0;
+            //var tnFirst = cbTextNormal.ItemsControl[0] as ColorComboBoxItem;
+            //tnFirst.Value = theme.TextNormal;
+            //var thFirst = cbTextHightlight.ItemsControl[0] as ColorComboBoxItem;
+            //thFirst.Value = theme.TextHighlight;
         }
 
         private void ChkThemeTranparent_Checked(object sender, RoutedEventArgs e) {

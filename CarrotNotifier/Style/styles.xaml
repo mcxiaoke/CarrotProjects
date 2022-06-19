@@ -2,9 +2,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:system="clr-namespace:System;assembly=mscorlib">
     <system:Double x:Key="TextFontSize">15</system:Double>
-    <Color x:Key="TextNormalColor">#f7f7f7</Color>
-    <Color x:Key="TextHighlightColor">#ffff00</Color>
-    <Color x:Key="TextErrorColor">#ff0000</Color>
+    <Color x:Key="TextNormalColor">#FFF5F5F5</Color>
+    <Color x:Key="TextHighlightColor">#FFFFFF00</Color>
+    <Color x:Key="TextErrorColor">#FFFF0000</Color>
     <Color x:Key="BackgroundColor">#80000000</Color>
     <FontFamily x:Key="TextFontFamily">NSimSun</FontFamily>
     <FontWeight x:Key="TextFontWeight">Normal</FontWeight>
