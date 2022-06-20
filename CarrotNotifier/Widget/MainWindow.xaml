@@ -24,7 +24,7 @@
             </Style>
             <Style x:Key="GIStyleNormal" TargetType="Label" BasedOn="{StaticResource GIStyleBase}">
                 <Setter Property="Foreground"
-                        Value="{Binding TextNormalColor,Converter={StaticResource ColorToBrush}}" />
+                        Value="{Binding CurrentTextNormalColor,Converter={StaticResource ColorToBrush}}" />
             </Style>
             <Style x:Key="HeaderStyle" TargetType="Label" BasedOn="{StaticResource GIStyleNormal}">
                 <Setter Property="FontSize" Value="{Binding HeaderFontSize}" />
@@ -49,12 +49,12 @@
             <Style x:Key="GIStyleHighlight" TargetType="Label"
                     BasedOn="{StaticResource GIStyleBase}">
                 <Setter Property="Foreground"
-                        Value="{Binding TextHighlightColor,Converter={StaticResource ColorToBrush}}" />
+                        Value="{Binding CurrentTextHighlightColor,Converter={StaticResource ColorToBrush}}" />
             </Style>
         </ResourceDictionary>
     </Window.Resources>
     <Border CornerRadius="10" BorderThickness="0.5" BorderBrush="#80000000"
-            Background="{Binding BackgroundColor,Converter={StaticResource ColorToBrush}}">
+            Background="{Binding CurrentBackgroundColor,Converter={StaticResource ColorToBrush}}">
         <StackPanel x:Name="spLayoutBox" Orientation="Vertical" Margin="6"
                 Grid.IsSharedSizeScope="True">
             <Grid x:Name="layoutHeader" MouseLeftButtonDown="LayoutHeader_MouseLeftButtonDown">

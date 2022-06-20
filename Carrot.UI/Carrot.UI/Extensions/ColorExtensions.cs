@@ -17,8 +17,7 @@ namespace Carrot.UI.Controls {
         }
 
         public static bool IsDarkColor(this Color c, int threhold = 150) {
-            // if (red*0.299 + green*0.587 + blue*0.114) > 186 use #000000 else use #ffffff
-            return c.PerceivedBrightness() > threhold;
+            return c.PerceivedBrightness() < threhold;
         }
 
         public static Color ContrastColor(this Color iColor, Color darkColor, Color lightColor) {

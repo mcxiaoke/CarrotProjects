@@ -288,6 +288,8 @@ namespace GenshinNotifier {
             user.Level = 60;
             user.Nickname = "大白猫";
             note = (DailyNote)note.Clone();
+            note.CurrentResin = note.MaxResin;
+            note.ResinRecoveryTime = "0";
             note.CurrentHomeCoin = note.MaxHomeCoin;
 #endif
 
@@ -337,7 +339,8 @@ namespace GenshinNotifier {
 
             var homeCoinMayFull = note.HomeCoinAlmostFull();
             lbHomeCoinValue.Content = $"{note.CurrentHomeCoin}/{note.MaxHomeCoin}";
-            lbHomeCoinValue.Style = homeCoinMayFull ? styleHightlight : styleNormal;
+            lbHomeCoin.Style = homeCoinMayFull ? styleHightlight : styleNormal;
+            lbHomeCoinValue.Style = lbHomeCoin.Style;
 
             var discountAllUsed = note.ResinDiscountAllUsed;
             var discountStr = $"{note.ResinDiscountUsedNum}/{note.ResinDiscountNumLimit}";

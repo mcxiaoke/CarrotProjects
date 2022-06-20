@@ -24,16 +24,11 @@ namespace GenshinNotifier {
         // https://stackoverflow.com/questions/30440634
         // https://wpf-tutorial.com/list-controls/combobox-control/
 
-        private static ColorComboBoxItem CreatePair(string s, Color c) {
-            return ColorComboBoxItem.Create(s, c);
-        }
-
         public WidgetStyle UserStyle => WidgetStyle.User;
 
         public OptionWindow() {
             InitializeComponent();
             this.DataContext = UserStyle;
-            this.cbThemeStyles.DataContext = WidgetStyle.ThemeColors;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
@@ -47,49 +42,28 @@ namespace GenshinNotifier {
             Logger.Debug($"UserStyle_PropertyChanged {key} = {value}");
             if (key == nameof(WidgetStyle.BackgroundColor)) {
                 btnBackground.Foreground = new SolidColorBrush(WidgetStyle.User.BackgroundColorOpposite);
-                btnBackground.Background = new SolidColorBrush(WidgetStyle.User.BackgroundColor);
+                btnBackground.Background = new SolidColorBrush(WidgetStyle.User.CurrentBackgroundColor);
             }
         }
 
         private void PreviewLayout_Loaded(object sender, RoutedEventArgs e) {
             Logger.Debug($"PreviewLayout_Loaded");
-            //ApplyStyle(previewLayout, WidgetStyle.ResDefault);
-
         }
 
-        private void ApplyStyle(Panel container, WidgetStyle style) {
-            if (style.BackgroundTransparent) {
-                container.Background = Brushes.Transparent;
-            } else {
-                container.Background = new SolidColorBrush(style.BackgroundColor);
-            }
-            var labels = container.FindLogicalChildren<Label>();
-            foreach (var label in labels) {
-                Logger.Debug($"Update {label}");
-                label.FontSize = style.TextFontSize;
-                label.FontFamily = style.TextFontFamily ?? WidgetStyle.FONT_FAMILY_DEFAULT;
-                label.FontWeight = style.TextFontWeight ?? FontWeights.Normal;
-                label.FontStyle = style.TextFontStyle ?? FontStyles.Normal;
-                if (label.Name.Contains("value")) {
-                    label.Foreground = new SolidColorBrush(style.TextHighlightColor);
-                } else {
-                    label.Foreground = new SolidColorBrush(style.TextNormalColor);
-                }
-            }
-        }
-
-        private void CbBackground_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<ColorComboBoxItem> e) {
+        private void CbBackground_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<NamedColor> e) {
             Logger.Debug($"CbBackground_SelectedColorChanged ${e.OldValue} => {e.NewValue}");
         }
 
-        private void CbTextNormal_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<ColorComboBoxItem> e) {
+        private void CbTextNormal_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<NamedColor> e) {
             Logger.Debug($"CbTextNormal_SelectedColorChanged ${e.OldValue} => {e.NewValue}");
             UserStyle.TextNormalColor = e.NewValue.Value;
+            UserStyle.ThemeIndex = -1;
         }
 
-        private void CbTextHightlight_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<ColorComboBoxItem> e) {
+        private void CbTextHightlight_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<NamedColor> e) {
             Logger.Debug($"CbTextHightlight_SelectedColorChanged ${e.OldValue} => {e.NewValue}");
             UserStyle.TextHighlightColor = e.NewValue.Value;
+            UserStyle.ThemeIndex = -1;
         }
 
         private void CbFontFamily_FontChanged(object sender, RoutedPropertyChangedEventArgs<FontExtraInfo> e) {
@@ -131,6 +105,7 @@ namespace GenshinNotifier {
             if (dialog.ShowDialog() == true) {
                 Logger.Debug($"ColorPickerDialog result={dialog.PickedColor}");
                 UserStyle.BackgroundColor = dialog.PickedColor;
+                UserStyle.ThemeIndex = -1;
             }
         }
 
@@ -163,12 +138,17 @@ namespace GenshinNotifier {
             UserStyle.BackgroundColor = theme.Background;
             UserStyle.TextNormalColor = theme.TextNormal;
             UserStyle.TextHighlightColor = theme.TextHighlight;
+
+            var tnFirst = cbTextNormal.ItemSource[0];
+            var tnFirstNew = NamedColor.Create(tnFirst.Key, theme.TextNormal);
+            cbTextNormal.ItemSource[0] = tnFirstNew;
+            // reselect hack for update combobox item
             cbTextNormal.SelectedIndex = 0;
+
+            var thFirst = cbTextHightlight.ItemSource[0];
+            var thFirstNew = NamedColor.Create(thFirst.Key, theme.TextHighlight);
+            cbTextHightlight.ItemSource[0] = thFirstNew;
             cbTextHightlight.SelectedIndex = 0;
-            //var tnFirst = cbTextNormal.ItemsControl[0] as ColorComboBoxItem;
-            //tnFirst.Value = theme.TextNormal;
-            //var thFirst = cbTextHightlight.ItemsControl[0] as ColorComboBoxItem;
-            //thFirst.Value = theme.TextHighlight;
         }
 
         private void ChkThemeTranparent_Checked(object sender, RoutedEventArgs e) {

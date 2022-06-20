@@ -1,232 +1,164 @@
 [
   {
-    "name": "Default",
-    "background": "#80000000",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#FFFF00"
-  },
-
-  {
-    "name": "Black White Yellow",
-    "background": "#000000",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#FFFF00"
+    "Name": "Default 50% Black",
+    "Background": "#80000000",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFFFFF00"
   },
   {
-    "name": "Blue Sunset",
-    "background": "#36688D",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#F3CD05"
+    "Name": "Default 100% Black",
+    "Background": "#FF000000",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFFFFF00"
   },
   {
-    "name": "Classic and Retro",
-    "background": "#A7414A",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#F3CD05"
+    "Name": "Aqua Greens",
+    "Background": "#FF107050",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFADFF2F"
   },
-
   {
-    "name": "Shimmering Blues",
-    "background": "#0444BF",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#EDF259"
+    "Name": "Berries Galore",
+    "Background": "#FFBB1924",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFFFFF00"
   },
-
   {
-    "name": "Exotic Orchids",
-    "background": "#192E5B",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#F2A104"
+    "Name": "Blue Sundew",
+    "Background": "#FF05328E",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FF00FF7F"
   },
-
   {
-    "name": "Sophisticated and Calm",
-    "background": "#040C0E",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#BE9036"
+    "Name": "Blue Sunset",
+    "Background": "#FF36688D",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFF3CD05"
   },
-
   {
-    "name": "Magentas and Yellows",
-    "background": "#DE8CF0",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#FFFF00"
+    "Name": "Bright and Energetic",
+    "Background": "#FF118C8B",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FF98FB98"
   },
-
   {
-    "name": " Vintage 1950s",
-    "background": "#0ABDA0",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#D4DCA9"
+    "Name": "Bright and Fruity",
+    "Background": "#FF8B281F",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFFFFF00"
   },
-
-
   {
-    "name": "Ornamental Reds and Yellows",
-    "background": "#720017",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#D9AC2A"
+    "Name": "Classic and Retro",
+    "Background": "#FFA7414A",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFF3CD05"
   },
-
   {
-    "name": "Turquoise and Red",
-    "background": "#03353E",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#C1403D"
+    "Name": "Earthy and Natural",
+    "Background": "#FF52733B",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FF7FFFD4"
   },
-
   {
-    "name": "Blue Sundew",
-    "background": "#05328E",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#00FF7F"
+    "Name": "Earthy Greens",
+    "Background": "#FF776B04",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FF7CFC00"
   },
-
   {
-    "name": "Gothic Architecture",
-    "background": "#2E303E",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#CD853F"
+    "Name": "Exotic Orchids",
+    "Background": "#FF192E5B",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFF2A104"
   },
-
   {
-    "name": "Fiery Red Landscape",
-    "background": "#F22F08",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#FFFF00"
+    "Name": "Gothic Architecture",
+    "Background": "#FF2E303E",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFCD853F"
   },
-
   {
-    "name": "Urban Skyline",
-    "background": "#522E75",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#FF4500"
+    "Name": "Inspirational and Romantic",
+    "Background": "#FF8D2D56",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFFF8C00"
   },
-
   {
-    "name": "Summer Blueberries",
-    "background": "#824CA7",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#FFFF00"
+    "Name": "Kaleidoscope Illusions",
+    "Background": "#FF704307",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFF7B178"
   },
-
   {
-    "name": "Earthy Greens",
-    "background": "#776B04",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#7CFC00"
+    "Name": "Ornamental Reds and Yellows",
+    "Background": "#FF720017",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFD9AC2A"
   },
-
   {
-    "name": "Berries Galore",
-    "background": "#BB1924",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#FFD700"
+    "Name": "Purple Garlic",
+    "Background": "#FFBE302B",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFFFD700"
   },
-
   {
-    "name": "Refreshing and Invigorating",
-    "background": "#C05640",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#F0E68C"
+    "Name": "Refreshing and Invigorating",
+    "Background": "#FFC05640",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFF0E68C"
   },
-
   {
-    "name": "Aqua Greens",
-    "background": "#107050",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#55D9C0"
+    "Name": "Shimmering Blues",
+    "Background": "#FF0444BF",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFEDF259"
   },
-
   {
-    "name": "Summer Vacation",
-    "background": "#73C04F",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#8F4F06"
+    "Name": "Summer Blueberries",
+    "Background": "#FF824CA7",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFFFFF00"
   },
-
   {
-    "name": "Twilight Moon",
-    "background": "#8A2C02",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#EECC8D"
+    "Name": "Swiss Meadows",
+    "Background": "#FFBD3E85",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFFFC0CB"
   },
-
   {
-    "name": "Swiss Meadows",
-    "background": "#BD3E85",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#FFC0CB"
+    "Name": "The Colors of Nature",
+    "Background": "#FF253F5B",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFF0E68C"
   },
-
   {
-    "name": "Tropical Wildlife",
-    "background": "#6B7436",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#EEE8AA"
+    "Name": "Tropical Wildlife",
+    "Background": "#FF6B7436",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFEEE8AA"
   },
-
-
   {
-    "name": "Inspirational and Romantic",
-    "background": "#8D2D56",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#FF4500"
+    "Name": "Turquoise and Green",
+    "Background": "#FF03353E",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FF7CFC00"
   },
-
   {
-    "name": "Black and Bright Orange",
-    "background": "#10000C",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#EFA747"
+    "Name": "Twilight Moon",
+    "Background": "#FF8A2C02",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFEECC8D"
   },
-
   {
-    "name": "Bright and Energetic",
-    "background": "#118C8B",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#98FB98"
+    "Name": "Urban Skyline",
+    "Background": "#FF522E75",
+    "TextNormal": "#FFFFFFFF",
+    "TextHighlight": "#FFADD8E6"
   },
-
   {
-    "name": "Earthy and Natural",
-    "background": "#52733B",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#E4EBF2"
-  },
-
-  {
-    "name": "Kaleidoscope Illusions",
-    "background": "#704307",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#F7B178"
-  },
-
-  {
-    "name": "Bright and Fruity",
-    "background": "#8B281F",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#FFFF00"
-  },
-
-  {
-    "name": "Purple Garlic",
-    "background": "#BE302B",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#00FF00"
-  },
-
-  {
-    "name": "The Colors of Nature",
-    "background": "#253F5B",
-    "textNormal": "#FFFFFF",
-    "textHighlight": "#F0E68C"
-  },
-
-  {
-    "name": "White Black Blue",
-    "background": "#FFFFFF",
-    "textNormal": "#000000",
-    "textHighlight": "#0000FF"
+    "Name": "White Black Blue",
+    "Background": "#FFFFFFFF",
+    "TextNormal": "#FF000000",
+    "TextHighlight": "#FF0000FF"
   }
 ]

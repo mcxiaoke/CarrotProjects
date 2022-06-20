@@ -8,6 +8,7 @@ using Microsoft.Toolkit.Diagnostics;
 using Newtonsoft.Json;
 
 namespace Carrot.Common.Extensions {
+
     static class ObjectExtCache<T> where T : new() {
         private static readonly Func<T, T> cloner;
         static ObjectExtCache() {
@@ -42,7 +43,7 @@ namespace Carrot.Common.Extensions {
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="ArgumentNullException"></exception>
-        public static T DeepClone<T>(this T value, JsonSerializerSettings? settings = null) where T : class {
+        public static T CloneJson<T>(this T value, JsonSerializerSettings? settings = null) where T : class {
             Guard.IsNotNull(value, "source object is null");
             if (value.GetType() is Type objectType) {
                 string cereal = JsonConvert.SerializeObject(value, settings);
@@ -54,6 +55,20 @@ namespace Carrot.Common.Extensions {
 
             } else {
                 throw new ArgumentNullException("source object type is null");
+            }
+        }
+
+        public static void CopyPropertiesFrom(this object self, object parent) {
+            var fromProperties = parent.GetType().GetProperties();
+            var toProperties = self.GetType().GetProperties();
+
+            foreach (var fromProperty in fromProperties) {
+                foreach (var toProperty in toProperties) {
+                    if (fromProperty.Name == toProperty.Name && fromProperty.PropertyType == toProperty.PropertyType) {
+                        toProperty.SetValue(self, fromProperty.GetValue(parent));
+                        break;
+                    }
+                }
             }
         }
 
