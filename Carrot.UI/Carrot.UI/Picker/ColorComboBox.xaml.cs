@@ -21,7 +21,7 @@ namespace Carrot.UI.Controls.Picker {
 
     public class ColorComboBoxItem {
 
-        public static readonly ColorComboBoxItem INVALID = ColorComboBoxItem.Create("Invalid", UIHelper.ParseColor("#000000"));
+        public static readonly ColorComboBoxItem INVALID = ColorComboBoxItem.Create("Invalid", UIHelper.ParseColor("#00000000"));
 
 
         public static ColorComboBoxItem Create(Color value) => new ColorComboBoxItem(Convert.ToString(value), value);
@@ -149,21 +149,9 @@ namespace Carrot.UI.Controls.Picker {
 
         #region Event Handlers
         private void CmbColors_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            var oldColor = ColorComboBoxItem.INVALID;
-            var newColor = ColorComboBoxItem.INVALID;
-            if (e.RemovedItems is IEnumerable<ColorComboBoxItem> removed
-                && removed.FirstOrDefault() is ColorComboBoxItem oldItem) {
-                oldColor = oldItem;
+            if (e.RemovedItems.Count > 0 && e.RemovedItems[0] is ColorComboBoxItem removedItem) {
+                oldItem = removedItem;
             }
-            if (e.AddedItems is IEnumerable<ColorComboBoxItem> added
-                && added.FirstOrDefault() is ColorComboBoxItem newItem) {
-                newColor = newItem;
-            }
-            Debug.WriteLine($"SelectionChanged {Name} old={oldColor} new={newColor}");
-            var newEventArgs = new RoutedPropertyChangedEventArgs<ColorComboBoxItem>
-                (oldColor, newColor) { RoutedEvent = SelectedColorChangedEvent };
-
-            RaiseEvent(newEventArgs);
         }
 
 
@@ -185,8 +173,13 @@ namespace Carrot.UI.Controls.Picker {
         }
 
 
+        private ColorComboBoxItem? oldItem;
         private void CmbColors_DropDownClosed(object sender, EventArgs e) {
-            Debug.WriteLine($"CmbColors_DropDownClosed {Name} selected={cmbColors.SelectedItem}");
+            var newItem = (ColorComboBoxItem)cmbColors.SelectedItem;
+            var newEventArgs = new RoutedPropertyChangedEventArgs<ColorComboBoxItem>
+    (oldItem ?? ColorComboBoxItem.INVALID, newItem) { RoutedEvent = SelectedColorChangedEvent };
+            Debug.WriteLine($"CmbColors_DropDownClosed {Name} old={oldItem} new={newItem}");
+            RaiseEvent(newEventArgs);
         }
 
         #endregion

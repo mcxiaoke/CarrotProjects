@@ -100,12 +100,15 @@ namespace Carrot.UI.Controls.Font {
         private void CBFonts_DropDownClosed(object sender, EventArgs e) {
             var newItem = (FontExtraInfo)cbFonts.SelectedItem;
             Debug.WriteLine($"CBFonts_DropDownClosed new={newItem}");
-            if (newItem != oldItem) {
-                var args = new RoutedPropertyChangedEventArgs<FontExtraInfo>(oldItem, newItem);
-                args.RoutedEvent = FontChangedEvent;
-                RaiseEvent(args);
-            }
+            var args = new RoutedPropertyChangedEventArgs<FontExtraInfo>(oldItem, newItem);
+            args.RoutedEvent = FontChangedEvent;
+            RaiseEvent(args);
+        }
 
+        private void CbFonts_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (e.RemovedItems.Count > 0 && e.RemovedItems[0] is FontExtraInfo removeItem) {
+                oldItem = removeItem;
+            }
         }
     }
 }

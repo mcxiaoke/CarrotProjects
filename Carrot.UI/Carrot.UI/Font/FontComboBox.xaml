@@ -9,7 +9,7 @@
     <ComboBox x:Name="cbFonts" Height="30" VerticalContentAlignment="Center"
             ItemsSource="{Binding AllFonts}" SelectedItem="{Binding SelectedFont}"
             ScrollViewer.VerticalScrollBarVisibility="Auto" Loaded="CBFonts_Loaded"
-            DropDownClosed="CBFonts_DropDownClosed">
+            SelectionChanged="CbFonts_SelectionChanged" DropDownClosed="CBFonts_DropDownClosed">
         <ComboBox.ItemTemplate>
             <DataTemplate>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" MinWidth="100">

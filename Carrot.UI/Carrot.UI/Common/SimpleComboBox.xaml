@@ -8,7 +8,8 @@
     <ComboBox x:Name="superCombo" ItemsSource="{Binding ItemSource}"
             SelectedIndex="{Binding SelectedIndex}" SelectedItem="{Binding SelectedItem}"
             VerticalContentAlignment="Center" ScrollViewer.VerticalScrollBarVisibility="Auto"
-            Loaded="SuperCombo_Loaded" DropDownClosed="SuperCombo_DropDownClosed">
+            Loaded="SuperCombo_Loaded" SelectionChanged="SuperCombo_SelectionChanged"
+            DropDownClosed="SuperCombo_DropDownClosed">
         <ComboBox.ItemTemplate>
             <DataTemplate>
                 <StackPanel Orientation="Horizontal" Height="20">

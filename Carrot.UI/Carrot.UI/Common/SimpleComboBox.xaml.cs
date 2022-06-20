@@ -24,8 +24,6 @@ namespace Carrot.UI.Controls.Common {
 
         #region Event Handlers
 
-        private object oldItem;
-
         public static readonly RoutedEvent SelectionChangedEvent =
     EventManager.RegisterRoutedEvent(nameof(SelectionChanged),
         RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<object>),
@@ -105,15 +103,13 @@ namespace Carrot.UI.Controls.Common {
             Debug.WriteLine($"SimpleComboBox_Loaded");
         }
 
+        private object? oldItem;
         private void SuperCombo_DropDownClosed(object sender, EventArgs e) {
             var newItem = superCombo.SelectedItem;
             Debug.WriteLine($"SuperCombo_DropDownClosed selected={superCombo.SelectedIndex} {superCombo.SelectedItem}");
-            if (newItem != oldItem) {
-                var args = new RoutedPropertyChangedEventArgs<object>(oldItem, newItem);
-                args.RoutedEvent = SelectionChangedEvent;
-                RaiseEvent(args);
-            }
-
+            var args = new RoutedPropertyChangedEventArgs<object>(oldItem, newItem);
+            args.RoutedEvent = SelectionChangedEvent;
+            RaiseEvent(args);
         }
 
         private void SuperCombo_Loaded(object sender, RoutedEventArgs e) {
@@ -121,5 +117,10 @@ namespace Carrot.UI.Controls.Common {
             Debug.WriteLine($"SuperCombo_Loaded old={oldItem}");
         }
 
+        private void SuperCombo_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            if (e.RemovedItems.Count > 0 && e.RemovedItems[0] is object removeItem) {
+                oldItem = removeItem;
+            }
+        }
     }
 }
