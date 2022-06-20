@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using CarrotCommon;
+using Carrot.Common;
 using Newtonsoft.Json;
 
 namespace GenshinLib {

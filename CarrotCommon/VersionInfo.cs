@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace CarrotCommon {
+namespace Carrot.Common {
 
     public class VersionInfo {
 

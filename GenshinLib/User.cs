@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace GenshinLib {
 
-    public class UserGameRole {
+    public class UserGameRole : ICloneable {
 
         [JsonProperty("game_biz")]
         public string GameBiz { get; set; } = string.Empty;
@@ -39,6 +39,10 @@ namespace GenshinLib {
 
         public override string ToString() {
             return JsonConvert.SerializeObject(this);
+        }
+
+        public object Clone() {
+            return this.MemberwiseClone();
         }
     }
 }

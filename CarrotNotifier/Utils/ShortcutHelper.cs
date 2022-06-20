@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using CarrotCommon;
+using Carrot.Common;
 using IWshRuntimeLibrary;
 
 namespace GenshinNotifier {

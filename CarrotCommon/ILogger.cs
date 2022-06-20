@@ -3,7 +3,7 @@ using System.IO;
 using Serilog;
 using Serilog.Events;
 
-namespace CarrotCommon {
+namespace Carrot.Common {
 
     public interface ILogger {
 

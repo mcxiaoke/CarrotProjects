@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using CarrotCommon;
+using Carrot.Common;
 using GenshinLib;
 using GenshinNotifier.Properties;
 using Microsoft.Toolkit.Uwp.Notifications;

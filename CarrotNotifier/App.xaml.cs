@@ -5,7 +5,7 @@ using GenshinNotifier.Properties;
 using GenshinNotifier;
 using System.Threading;
 using System.Windows.Controls;
-using CarrotCommon;
+using Carrot.Common;
 using Carrot.ProCom.Common;
 using Microsoft.Toolkit.Uwp.Notifications;
 using H.NotifyIcon;

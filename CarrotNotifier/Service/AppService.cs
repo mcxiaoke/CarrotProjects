@@ -4,7 +4,7 @@ using System.IO.Pipes;
 using System.Threading.Tasks;
 using Carrot.ProCom.Common;
 using Carrot.ProCom.Pipe;
-using CarrotCommon;
+using Carrot.Common;
 
 namespace GenshinNotifier {
 

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using CarrotCommon;
+using Carrot.Common;
 using GenshinNotifier.Properties;
 
 namespace GenshinNotifier {

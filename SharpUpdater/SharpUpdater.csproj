@@ -35,7 +35,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CarrotCommon\CarrotCommon.csproj" />
+    <ProjectReference Include="..\CarrotCommon\Carrot.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

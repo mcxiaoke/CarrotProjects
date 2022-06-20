@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
 using Carrot.ProCom.Common;
-using CarrotCommon;
+using Carrot.Common;
 using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace GenshinNotifier {

@@ -5,7 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace CarrotCommon {
+namespace Carrot.Common {
 
     public static class Utility {
         private static readonly Random GlobalRandom = new Random();

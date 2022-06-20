@@ -4,7 +4,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
-using CarrotCommon;
+using Carrot.Common;
 using System.Linq;
 
 namespace ConsoleTests {

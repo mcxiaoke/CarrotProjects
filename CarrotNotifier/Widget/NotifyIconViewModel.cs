@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using H.NotifyIcon;
 using System.Diagnostics;
-using CarrotCommon;
+using Carrot.Common;
 using GenshinNotifier.Properties;
 using Carrot.UI.Controls.Dialog;
 

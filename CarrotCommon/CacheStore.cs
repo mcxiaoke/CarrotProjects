@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Caching;
 
-namespace CarrotCommon {
+namespace Carrot.Common {
 
     public static class CacheStore {
         private static readonly ObjectCache _cache = MemoryCache.Default;

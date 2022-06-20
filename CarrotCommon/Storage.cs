@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace CarrotCommon {
+namespace Carrot.Common {
 
     public static class Storage {
         private static readonly object _SyncObj = new object();

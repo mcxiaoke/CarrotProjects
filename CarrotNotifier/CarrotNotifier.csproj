@@ -65,7 +65,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Carrot.ProCom\Carrot.ProCom.csproj" />
-    <ProjectReference Include="..\CarrotCommon\CarrotCommon.csproj" />
+    <ProjectReference Include="..\CarrotCommon\Carrot.Common.csproj" />
     <ProjectReference Include="..\GenshinLib\GenshinLib.csproj" />
   </ItemGroup>
 
@@ -95,10 +95,6 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Native\" />
   </ItemGroup>
 
   <PropertyGroup />

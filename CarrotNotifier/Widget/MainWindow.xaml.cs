@@ -10,11 +10,11 @@ using System.Windows.Interop;
 using System.Windows.Media;
 using GenshinLib;
 using GenshinNotifier.Properties;
-using static GenshinNotifier.NativeMethods;
+using Carrot.Common.Native;
 using Carrot.UI.Controls.Utils;
 using System.Windows.Threading;
 using System.Reflection;
-using CarrotCommon;
+using Carrot.Common;
 using Newtonsoft.Json.Linq;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.System;
@@ -198,7 +198,7 @@ namespace GenshinNotifier {
                 case WindowMessage.WM_WINDOWPOSCHANGING:
                     var ox = this.Left;
                     var oy = this.Top;
-                    var windowPos = Marshal.PtrToStructure<WindowPos>(lParam);
+                    var windowPos = Marshal.PtrToStructure<UnsafeTypes.WindowPos>(lParam);
                     //if (ox == windowPos.x && oy == windowPos.y) { break; }
                     Logger.Debug($"WM_WINDOWPOSCHANGING x={windowPos.x} y={windowPos.y} " +
                         $"cx={windowPos.cx} cy={windowPos.cy}");
@@ -208,7 +208,7 @@ namespace GenshinNotifier {
                     break;
 
                 case WindowMessage.WM_DPICHANGED:
-                    var rc = (RECT*)lParam.ToPointer();
+                    var rc = (UnsafeTypes.RECT*)lParam.ToPointer();
                     Logger.Debug($"WM_DPICHANGED x={rc->Left} y={rc->Top} cx={rc->Width} cy={rc->Height}");
                     //SetWindowPos(_windowHandle, IntPtr.Zero, 0, 0, rc->Right, rc->Left, SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOZORDER);
                     break;
@@ -247,8 +247,8 @@ namespace GenshinNotifier {
                         //if (pt.Y < lbHeader.ActualHeight) {
                         //    DragMove();
                         //}
-                        NativeMethods.ReleaseCapture();
-                        NativeMethods.SendMessage(hwnd, NativeMethods.WM_NCLBUTTONDOWN, NativeMethods.HT_CAPTION, 0);
+                        UnsafeNative.ReleaseCapture();
+                        UnsafeNative.SendMessage(hwnd, UnsafeTypes.WM_NCLBUTTONDOWN, UnsafeTypes.HT_CAPTION, 0);
                         break;
 
                     case MouseButton.Right:
@@ -281,6 +281,16 @@ namespace GenshinNotifier {
         }
 
         private void UpdateUIControls(UserGameRole user, DailyNote note) {
+            // https://levelup.gitconnected.com/5-ways-to-clone-an-object-in-c-d1374ec28efa
+#if DEBUG
+            user = (UserGameRole)user.Clone();
+            user.GameUid = "100000001";
+            user.Level = 60;
+            user.Nickname = "大白猫";
+            note = (DailyNote)note.Clone();
+            note.CurrentHomeCoin = note.MaxHomeCoin;
+#endif
+
             lbHeader.Style = styleHeader;
             lbHeader.Content = "原神实时便签";
 
@@ -298,9 +308,6 @@ namespace GenshinNotifier {
             lbResinTimeValue.Content = $"{note.ResinRecoveryTargetTimeFormatted}";
             // apply resin style
             var resinStyle = resinMayFull ? styleHightlight : styleNormal;
-#if DEBUG
-            //resinStyle = styleHightlight;
-#endif
             lbResin.Style = resinStyle;
             lbResinValue.Style = resinStyle;
             lbResinRec.Style = resinStyle;
@@ -311,7 +318,7 @@ namespace GenshinNotifier {
             // apply expedition data
             var expeditionCompleted = note.ExpeditionAllFinished;
             var expeditionStr = $"{note.CurrentExpeditionNum}/{note.MaxExpeditionNum}";
-            expeditionStr += expeditionCompleted ? " 已完成" : " 未完成";
+            expeditionStr = (expeditionCompleted ? "已完成 " : "未完成 ") + expeditionStr;
             lbExpeditionValue.Content = expeditionStr;
             // apply expedition style
             lbExpedition.Style = expeditionCompleted ? styleHightlight : styleNormal;
@@ -319,9 +326,9 @@ namespace GenshinNotifier {
 
             var taskStr = $"{note.FinishedTaskNum}/{note.TotalTaskNum}";
             if (!note.DailyTaskAllFinished) {
-                taskStr += " 未完成";
+                taskStr = "未完成 " + taskStr;
             } else {
-                taskStr += note.IsExtraTaskRewardReceived ? " 已领取" : " 未领取";
+                taskStr = (note.IsExtraTaskRewardReceived ? "已领取 " : "未领取 ") + taskStr;
             }
             lbDailyTaskValue.Content = taskStr;
 
@@ -334,7 +341,7 @@ namespace GenshinNotifier {
 
             var discountAllUsed = note.ResinDiscountAllUsed;
             var discountStr = $"{note.ResinDiscountUsedNum}/{note.ResinDiscountNumLimit}";
-            discountStr += discountAllUsed ? " 已完成" : " 未完成";
+            discountStr = (discountAllUsed ? "已完成 " : "未完成 ") + discountStr;
             lbDiscountValue.Content = discountStr;
             lbDiscount.Style = discountAllUsed ? styleNormal : styleHightlight;
             lbDiscountValue.Style = lbDiscount.Style;

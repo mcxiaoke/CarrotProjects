@@ -6,7 +6,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Windows.Forms;
-using CarrotCommon;
+using Carrot.Common;
 
 namespace SharpUpdater {
 

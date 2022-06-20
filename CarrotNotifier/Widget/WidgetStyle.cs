@@ -12,7 +12,7 @@ using System.Linq;
 using System.IO;
 using Carrot.UI.Controls.Picker;
 using PropertyChanged;
-using CarrotCommon;
+using Carrot.Common;
 using System.Xml.Linq;
 using System.Windows.Input;
 using Carrot.UI.Controls;

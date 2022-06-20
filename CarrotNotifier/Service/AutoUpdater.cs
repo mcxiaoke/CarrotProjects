@@ -5,7 +5,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using CarrotCommon;
+using Carrot.Common;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Newtonsoft.Json;
 using Semver;

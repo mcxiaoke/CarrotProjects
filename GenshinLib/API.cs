@@ -5,7 +5,8 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using CarrotCommon;
+using Carrot.Common;
+using Carrot.Common.Extensions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

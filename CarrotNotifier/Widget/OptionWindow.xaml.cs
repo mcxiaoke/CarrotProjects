@@ -13,7 +13,7 @@ using Carrot.UI.Controls.Utils;
 using Carrot.UI.Controls.Picker;
 using Carrot.UI.Controls.Font;
 using Carrot.UI.ColorPicker;
-using CarrotCommon;
+using Carrot.Common;
 
 namespace GenshinNotifier {
 

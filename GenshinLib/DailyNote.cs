@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CarrotCommon;
+using Carrot.Common;
+using Carrot.Common.Extensions;
 using Newtonsoft.Json;
 
 namespace GenshinLib {
@@ -146,8 +147,7 @@ namespace GenshinLib {
         }
     }
 
-    public class DailyNote {
-
+    public class DailyNote : ICloneable {
         public static string GetDayName(int days) {
             return days switch {
                 0 => "今天",
@@ -200,14 +200,17 @@ namespace GenshinLib {
         /// </summary>
         public string ResinRecoveryTimeFormatted {
             get {
+                if (string.IsNullOrEmpty(ResinRecoveryTime)) {
+                    return "已回满";
+                }
                 if (int.Parse(ResinRecoveryTime) < 60) {
-                    return "已满";
+                    return "已回满";
                 }
                 var Hour = int.Parse(ResinRecoveryTime) / 3600;
                 var Minute = int.Parse(ResinRecoveryTime) % 3600 / 60;
                 return new StringBuilder()
                     .AppendIf(Hour > 0, $"{Hour}小时")
-                    .AppendIf(Minute > 0, $"{Minute}分钟")
+                    .AppendIf(Minute > 0, $"{Minute}分")
                     .ToString();
             }
         }
@@ -217,13 +220,18 @@ namespace GenshinLib {
         /// </summary>
         public string ResinRecoveryTargetTimeFormatted {
             get {
+                if (string.IsNullOrEmpty(ResinRecoveryTime)) {
+                    return "已回满";
+                }
+                if (int.Parse(ResinRecoveryTime) < 60) {
+                    return "已回满";
+                }
                 if (ResinRecoveryTime != null) {
                     DateTime tt = DateTime.Now.AddSeconds(int.Parse(ResinRecoveryTime));
                     int totalDays = (tt - DateTime.Today).Days;
                     string day = GetDayName(totalDays);
                     return $"{day} {tt:HH:mm}";
                 }
-
                 return "";
             }
         }
@@ -338,6 +346,10 @@ namespace GenshinLib {
 
         public override string ToString() {
             return Utility.Stringify(this);
+        }
+
+        public object Clone() {
+            return this.MemberwiseClone();
         }
     }
 }

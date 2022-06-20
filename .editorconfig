@@ -16,11 +16,16 @@ dotnet_diagnostic.CS8622.severity = none
 dotnet_diagnostic.CS8767.severity = none
 
 dotnet_diagnostic.RCS1036.severity = none
+dotnet_diagnostic.RCS1075.severity = none
 dotnet_diagnostic.RCS1123.severity = none
 dotnet_diagnostic.RCS1163.severity = none
+dotnet_diagnostic.RCS1157.severity = none
+dotnet_diagnostic.RCS1158.severity = none
+dotnet_diagnostic.RCS1191.severity = none
 dotnet_diagnostic.RCS1213.severity = none
 dotnet_diagnostic.RCS1214.severity = none
 dotnet_diagnostic.RCS1224.severity = none
+dotnet_diagnostic.RCS1234.severity = none
 
 [*.cs]
 #### 命名样式 ####

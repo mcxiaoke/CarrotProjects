@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
-using CarrotCommon;
+using Carrot.Common;
 using GenshinNotifier.Properties;
 
 namespace GenshinNotifier {

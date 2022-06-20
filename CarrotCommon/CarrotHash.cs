@@ -3,7 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace CarrotCommon {
+namespace Carrot.Common {
 
     public static class CarrotHash {
 

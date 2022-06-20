@@ -18,7 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Carrot.Device\Carrot.Device.csproj" />
     <ProjectReference Include="..\Carrot.ProCom\Carrot.ProCom.csproj" />
-    <ProjectReference Include="..\CarrotCommon\CarrotCommon.csproj" />
+    <ProjectReference Include="..\CarrotCommon\Carrot.Common.csproj" />
   </ItemGroup>
 
 </Project>
