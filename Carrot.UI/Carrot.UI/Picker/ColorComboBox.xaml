@@ -7,7 +7,7 @@
         d:DesignWidth="800" Loaded="ColorComboBox_Loaded">
     <StackPanel>
         <ComboBox x:Name="cmbColors" Height="30" VerticalContentAlignment="Center"
-                SelectionChanged="CmbColors_SelectionChanged"
+                SelectionChanged="CmbColors_SelectionChanged" ItemsSource="{Binding ItemSource}"
                 DropDownClosed="CmbColors_DropDownClosed">
             <ComboBox.Resources>
                 <picker:ColorToSolidBrushConverter x:Key="ColorBrushConverter" />

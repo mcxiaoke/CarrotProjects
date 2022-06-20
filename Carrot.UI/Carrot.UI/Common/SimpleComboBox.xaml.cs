@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Carrot.UI.Controls.Font;
+using Carrot.UI.Controls.Picker;
 
 namespace Carrot.UI.Controls.Common {
     /// <summary>
@@ -88,9 +90,6 @@ namespace Carrot.UI.Controls.Common {
                 SetValue(ItemSourceProperty, value);
             }
         }
-
-        public IEnumerable ItemsSource => superCombo.ItemsSource;
-        public ItemCollection ItemsControl => superCombo.Items;
 
         public SimpleComboBox() {
             InitializeComponent();

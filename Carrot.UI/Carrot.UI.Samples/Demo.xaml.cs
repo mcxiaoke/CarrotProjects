@@ -23,7 +23,7 @@ namespace Carrot.UI.Samples {
             simpleCombo.DataContext = this;
         }
 
-        public IEnumerable<string> SampleValues => Enumerable.Range(50, 20)
+        public static IEnumerable<string> SampleValues => Enumerable.Range(50, 20)
             .Select(it => $"简单数据项 Simple No.{it}");
         private void Window_Loaded(object sender, RoutedEventArgs e) {
             simpleCombo.ItemSource = SampleValues;

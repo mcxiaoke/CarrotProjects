@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,71 +20,50 @@ using System.Collections;
 
 namespace Carrot.UI.Controls.Picker {
 
-    public class ColorComboBoxItem {
 
-        public static readonly ColorComboBoxItem INVALID = ColorComboBoxItem.Create("Invalid", UIHelper.ParseColor("#00000000"));
-
-
-        public static ColorComboBoxItem Create(Color value) => new ColorComboBoxItem(Convert.ToString(value), value);
-        public static ColorComboBoxItem Create(string key, Color value) => new ColorComboBoxItem(key, value);
-        public static ColorComboBoxItem Create(string key, string hex) => new ColorComboBoxItem(key, UIHelper.ParseColor(hex));
-
-        public string Key { get; set; }
-        public Color Value { get; set; }
-
-        internal ColorComboBoxItem(string key, Color value) {
-            Key = key ?? Convert.ToString(value) ?? string.Empty;
-            Value = value;
-        }
-
-        public override string ToString() {
-            return $"{Key} {Value}";
-        }
-
-        public override bool Equals(object? obj) {
-            return obj is ColorComboBoxItem item && Value.Equals(item.Value);
-        }
-
-        public override int GetHashCode() {
-            return 206514262 + Value.GetHashCode();
-        }
-
-        public static bool operator ==(ColorComboBoxItem? left, ColorComboBoxItem? right) {
-            return EqualityComparer<ColorComboBoxItem>.Default.Equals(left, right);
-        }
-
-        public static bool operator !=(ColorComboBoxItem? left, ColorComboBoxItem? right) {
-            return !(left == right);
-        }
-    }
     /// <summary>
     /// ColorComboBox.xaml 的交互逻辑
     /// </summary>
     public partial class ColorComboBox : UserControl {
 
+
+        public static IEnumerable<NamedColor> AllSystemColors =>
+            typeof(Colors).GetProperties()
+            .Where(prop => typeof(Color).IsAssignableFrom(prop.PropertyType))
+            .Select(prop => NamedColor.Create(prop.Name, (Color)prop.GetValue(null)!));
+
         #region DependencyProperty
 
         public static readonly DependencyProperty ExtraColorsProperty =
-    DependencyProperty.Register(nameof(ExtraColors), typeof(List<ColorComboBoxItem>),
-        typeof(ColorComboBox), new PropertyMetadata(null));
+    DependencyProperty.Register(nameof(ExtraColors), typeof(List<NamedColor>),
+        typeof(ColorComboBox), new UIPropertyMetadata(null));
+
+        public static readonly DependencyProperty ItemSourceProperty =
+DependencyProperty.Register(nameof(ItemSource), typeof(ObservableCollection<NamedColor>),
+typeof(ColorComboBox), new UIPropertyMetadata(null));
 
         public static readonly DependencyProperty ColumnCountProperty =
             DependencyProperty.Register(nameof(ColumnCount), typeof(int),
-                typeof(ColorComboBox), new PropertyMetadata(1));
+                typeof(ColorComboBox), new UIPropertyMetadata(1));
 
         public static readonly DependencyProperty SelectedIndexProperty =
             DependencyProperty.Register(nameof(SelectedIndex), typeof(int),
-                typeof(ComboBox), new PropertyMetadata(-1));
+                typeof(ComboBox), new UIPropertyMetadata(-1));
 
         public static readonly DependencyProperty SelectedItemProperty =
-            DependencyProperty.Register(nameof(SelectedItem), typeof(object),
-                typeof(ComboBox), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(SelectedItem), typeof(NamedColor),
+                typeof(ComboBox), new UIPropertyMetadata(null));
 
         #endregion
 
-        public List<ColorComboBoxItem> ExtraColors {
-            get => (List<ColorComboBoxItem>)GetValue(ExtraColorsProperty);
+        public ICollection<NamedColor> ExtraColors {
+            get => (ICollection<NamedColor>)GetValue(ExtraColorsProperty);
             set { SetValue(ExtraColorsProperty, value); }
+        }
+
+        public ObservableCollection<NamedColor> ItemSource {
+            get => (ObservableCollection<NamedColor>)GetValue(ItemSourceProperty);
+            set { SetValue(ItemSourceProperty, value); }
         }
 
         public int ColumnCount {
@@ -96,35 +76,30 @@ namespace Carrot.UI.Controls.Picker {
             set => cmbColors.SelectedIndex = value;
         }
 
-        public object SelectedItem {
-            get => cmbColors.SelectedItem;
+        public NamedColor SelectedItem {
+            get => (NamedColor)cmbColors.SelectedItem;
             set => cmbColors.SelectedItem = value;
         }
 
-        public IEnumerable ItemsSource => cmbColors.ItemsSource;
-        public ItemCollection ItemsControl => cmbColors.Items;
+        public ItemCollection Items => cmbColors.Items;
 
         public ColorComboBox() {
             InitializeComponent();
             Debug.WriteLine("ColorComboBox_Init");
-        }
-
-
-        private static IEnumerable<ColorComboBoxItem> GetAllColors() =>
-            typeof(Colors).GetProperties()
-            .Where(prop => typeof(Color).IsAssignableFrom(prop.PropertyType))
-            .Select(prop => ColorComboBoxItem.Create(prop.Name, (Color)prop.GetValue(null)!));
-
-        private void ColorComboBox_Loaded(object sender, RoutedEventArgs e) {
-            Debug.WriteLine($"ColorComboBox_Loaded {Name}");
-            //ExtraColors?.ForEach(item => Debug.WriteLine($"ColorComboBox_Loaded extra {item.Key} {item.Value}"));
-            var allColors = new List<ColorComboBoxItem>();
+            cmbColors.DataContext = this;
+            var allColors = new List<NamedColor>();
             if (ExtraColors?.Count > 0) {
                 allColors.AddRange(ExtraColors);
             }
-            var sysColors = GetAllColors().ToList();
-            allColors.AddRange(sysColors);
-            cmbColors.ItemsSource = allColors;
+            allColors.AddRange(AllSystemColors);
+            ItemSource = new ObservableCollection<NamedColor>(allColors);
+            //cmbColors.ItemsSource = ItemSource;
+        }
+
+
+        private void ColorComboBox_Loaded(object sender, RoutedEventArgs e) {
+            Debug.WriteLine($"ColorComboBox_Loaded {Name}");
+
         }
 
         private void ComboBox_Table_Loaded(object sender, RoutedEventArgs e) {
@@ -149,20 +124,22 @@ namespace Carrot.UI.Controls.Picker {
 
         #region Event Handlers
         private void CmbColors_SelectionChanged(object sender, SelectionChangedEventArgs e) {
-            if (e.RemovedItems.Count > 0 && e.RemovedItems[0] is ColorComboBoxItem removedItem) {
+            if (e.RemovedItems.Count > 0 && e.RemovedItems[0] is NamedColor removedItem) {
                 oldItem = removedItem;
+                Debug.WriteLine($"CmbColors_SelectionChanged removed={removedItem}");
+            }
+            if (e.AddedItems.Count > 0 && e.AddedItems[0] is NamedColor addedItem) {
+                Debug.WriteLine($"CmbColors_SelectionChanged added={addedItem}");
             }
         }
 
-
-
         public static readonly RoutedEvent SelectedColorChangedEvent =
     EventManager.RegisterRoutedEvent(nameof(SelectedColorChanged),
-        RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<ColorComboBoxItem>),
+        RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<NamedColor>),
         typeof(ColorComboBox));
 
 
-        public event RoutedPropertyChangedEventHandler<ColorComboBoxItem> SelectedColorChanged {
+        public event RoutedPropertyChangedEventHandler<NamedColor> SelectedColorChanged {
             add {
                 AddHandler(SelectedColorChangedEvent, value);
             }
@@ -173,12 +150,12 @@ namespace Carrot.UI.Controls.Picker {
         }
 
 
-        private ColorComboBoxItem? oldItem;
+        private NamedColor oldItem = NamedColor.INVALID;
         private void CmbColors_DropDownClosed(object sender, EventArgs e) {
-            var newItem = (ColorComboBoxItem)cmbColors.SelectedItem;
-            var newEventArgs = new RoutedPropertyChangedEventArgs<ColorComboBoxItem>
-    (oldItem ?? ColorComboBoxItem.INVALID, newItem) { RoutedEvent = SelectedColorChangedEvent };
-            Debug.WriteLine($"CmbColors_DropDownClosed {Name} old={oldItem} new={newItem}");
+            var newItem = this.SelectedItem;
+            var newEventArgs = new RoutedPropertyChangedEventArgs<NamedColor>
+    (oldItem, newItem) { RoutedEvent = SelectedColorChangedEvent };
+            Debug.WriteLine($"CmbColors_DropDownClosed {Name} index={this.SelectedIndex} old={oldItem} new={newItem}");
             RaiseEvent(newEventArgs);
         }
 

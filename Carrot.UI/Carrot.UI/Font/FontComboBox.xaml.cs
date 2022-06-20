@@ -18,6 +18,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using Carrot.UI.Controls.Picker;
 using System.Collections;
+using System.Collections.ObjectModel;
 
 namespace Carrot.UI.Controls.Font {
 
@@ -63,11 +64,9 @@ namespace Carrot.UI.Controls.Font {
             typeof(FontComboBox),
             new UIPropertyMetadata(-1));
 
-        public FontComboBox() {
-            InitializeComponent();
-            cbFonts.DataContext = this;
-        }
-
+        public static readonly DependencyProperty ItemSourceProperty =
+DependencyProperty.Register(nameof(ItemSource), typeof(ObservableCollection<FontExtraInfo>),
+typeof(FontComboBox), new UIPropertyMetadata(null));
 
         public FontExtraInfo SelectedFont {
             get => (FontExtraInfo)GetValue(SelectedFontProperty);
@@ -83,8 +82,21 @@ namespace Carrot.UI.Controls.Font {
             }
         }
 
-        public IEnumerable ItemsSource => cbFonts.ItemsSource;
-        public ItemCollection ItemsControl => cbFonts.Items;
+        public ObservableCollection<FontExtraInfo> ItemSource {
+            get => (ObservableCollection<FontExtraInfo>)GetValue(ItemSourceProperty);
+            set { SetValue(ItemSourceProperty, value); }
+        }
+
+        public ItemCollection Items => cbFonts.Items;
+
+
+        public FontComboBox() {
+            InitializeComponent();
+            cbFonts.DataContext = this;
+            if (ItemSource == null) {
+                ItemSource = new ObservableCollection<FontExtraInfo>(AllFonts);
+            }
+        }
 
 
         private void FontComboBox_Loaded(object sender, RoutedEventArgs e) {

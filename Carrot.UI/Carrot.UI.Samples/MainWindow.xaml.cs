@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,30 +26,31 @@ namespace Carrot.UI.Samples {
     /// </summary>
 
     public partial class MainWindow : Window {
-        public List<ColorComboBoxItem> TestColors => new List<ColorComboBoxItem>() {
-             ColorComboBoxItem.Create("TestColor111",
+        private static List<NamedColor> TestColors => new List<NamedColor>() {
+             NamedColor.Create("TestColor111",
                 UIHelper.ParseColor("#334455")),
-             ColorComboBoxItem.Create("TestColor211",
+             NamedColor.Create("TestColor211",
                 UIHelper.ParseColor("#6688aa")),
         };
 
-        public List<ColorComboBoxItem> _extraColors2 = new List<ColorComboBoxItem>() {
-             ColorComboBoxItem.Create("TestColor133",
+        private static List<NamedColor> _extraColors2 = new List<NamedColor>() {
+             NamedColor.Create("TestColor133",
                 UIHelper.ParseColor("#123456")),
-             ColorComboBoxItem.Create("TestColor244",
+             NamedColor.Create("TestColor244",
                 UIHelper.ParseColor("#80cccccc")),
         };
 
-        public ICollection<FontExtraInfo> SystemFonts => FontUtilities.AllFonts;
-        public FontExtraInfo RandomFont => SystemFonts.Skip(new Random().Next(20)).FirstOrDefault();
+        public static ICollection<FontExtraInfo> SystemFonts => FontUtilities.AllFonts;
+        public static FontExtraInfo RandomFont => SystemFonts.Skip(new Random().Next(20)).FirstOrDefault();
 
 
         public MainWindow() {
             InitializeComponent();
             Debug.WriteLine($"MainWindow init {RandomFont}");
+            colorBox1.ItemSource = new ObservableCollection<NamedColor>(ColorComboBox.AllSystemColors);
         }
 
-        private void ColorBox_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<ColorComboBoxItem> e) {
+        private void ColorBox_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<NamedColor> e) {
             Debug.WriteLine($"ColorBox_SelectedColorChanged changed {e.OldValue} => {e.NewValue}");
         }
 
@@ -88,10 +90,31 @@ namespace Carrot.UI.Samples {
             }
         }
 
-        public IEnumerable<string> SampleValues => Enumerable.Range(50, 20).Select(it => $"简单数据项 Simple Item No.{it}");
-        private void Window_Loaded(object sender, RoutedEventArgs e) {
-            simpleCombo.ItemSource = SampleValues;
+        public static IEnumerable<string> SampleValues => Enumerable.Range(50, 20).Select(it => $"简单数据项 Simple Item No.{it}");
 
+
+        private void Window_Loaded(object sender, RoutedEventArgs e) {
+            Debug.WriteLine("Window_Loaded");
+            simpleCombo.DataContext = this;
+            Task.Run(async () => {
+                await Task.Delay(5000);
+                Dispatcher.Invoke(() => {
+                    Debug.WriteLine("Window_Loaded change color");
+                    if (colorBox1.Items[0] is NamedColor color) {
+                        var preIndex = colorBox1.SelectedIndex;
+                        //color.Key = "Changed";
+                        //color.Value = Colors.Yellow;
+                        var newColor = NamedColor.Create("Changed", Colors.Yellow);
+                        //colorBox1.ItemSource.RemoveAt(0);
+                        //colorBox1.ItemSource.Insert(0, newColor);
+                        colorBox1.ItemSource[0] = newColor;
+                        // important, update index, or index = -1;
+                        colorBox1.SelectedIndex = preIndex;
+
+                        Debug.WriteLine($"Window_Loaded change {colorBox1.SelectedIndex} {colorBox1.SelectedItem}");
+                    }
+                });
+            });
         }
 
         private void SimpleCombo_SelectionChanged(object sender, RoutedPropertyChangedEventArgs<object> e) {
