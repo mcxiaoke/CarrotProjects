@@ -85,20 +85,20 @@ typeof(ColorComboBox), new UIPropertyMetadata(null));
 
         public ColorComboBox() {
             InitializeComponent();
-            Debug.WriteLine("ColorComboBox_Init");
+            Debug.WriteLine($"ColorComboBox_Init extra colors={ExtraColors?.Count}");
             cmbColors.DataContext = this;
-            var allColors = new List<NamedColor>();
-            if (ExtraColors?.Count > 0) {
-                allColors.AddRange(ExtraColors);
-            }
-            allColors.AddRange(AllSystemColors);
-            ItemSource = new ObservableCollection<NamedColor>(allColors);
-            //cmbColors.ItemsSource = ItemSource;
         }
 
 
         private void ColorComboBox_Loaded(object sender, RoutedEventArgs e) {
-            Debug.WriteLine($"ColorComboBox_Loaded {Name}");
+            Debug.WriteLine($"ColorComboBox_Loaded {Name} extra colors={ExtraColors?.Count}");
+            var allColors = new List<NamedColor>();
+            if (ExtraColors?.Count > 0) {
+                allColors.AddRange(ExtraColors);
+
+            }
+            allColors.AddRange(AllSystemColors);
+            ItemSource = new ObservableCollection<NamedColor>(allColors);
 
         }
 

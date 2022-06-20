@@ -26,7 +26,7 @@ namespace Carrot.UI.Samples {
     /// </summary>
 
     public partial class MainWindow : Window {
-        private static List<NamedColor> TestColors => new List<NamedColor>() {
+        public static List<NamedColor> TestColors => new List<NamedColor>() {
              NamedColor.Create("TestColor111",
                 UIHelper.ParseColor("#334455")),
              NamedColor.Create("TestColor211",
@@ -46,8 +46,9 @@ namespace Carrot.UI.Samples {
 
         public MainWindow() {
             InitializeComponent();
+            this.DataContext = this;
             Debug.WriteLine($"MainWindow init {RandomFont}");
-            colorBox1.ItemSource = new ObservableCollection<NamedColor>(ColorComboBox.AllSystemColors);
+            //colorBox1.ItemSource = new ObservableCollection<NamedColor>(ColorComboBox.AllSystemColors);
         }
 
         private void ColorBox_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<NamedColor> e) {
@@ -95,26 +96,25 @@ namespace Carrot.UI.Samples {
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
             Debug.WriteLine("Window_Loaded");
-            simpleCombo.DataContext = this;
-            Task.Run(async () => {
-                await Task.Delay(5000);
-                Dispatcher.Invoke(() => {
-                    Debug.WriteLine("Window_Loaded change color");
-                    if (colorBox1.Items[0] is NamedColor color) {
-                        var preIndex = colorBox1.SelectedIndex;
-                        //color.Key = "Changed";
-                        //color.Value = Colors.Yellow;
-                        var newColor = NamedColor.Create("Changed", Colors.Yellow);
-                        //colorBox1.ItemSource.RemoveAt(0);
-                        //colorBox1.ItemSource.Insert(0, newColor);
-                        colorBox1.ItemSource[0] = newColor;
-                        // important, update index, or index = -1;
-                        colorBox1.SelectedIndex = preIndex;
+            //Task.Run(async () => {
+            //    await Task.Delay(5000);
+            //    Dispatcher.Invoke(() => {
+            //        Debug.WriteLine("Window_Loaded change color");
+            //        if (colorBox1.Items[0] is NamedColor color) {
+            //            var preIndex = colorBox1.SelectedIndex;
+            //            //color.Key = "Changed";
+            //            //color.Value = Colors.Yellow;
+            //            var newColor = NamedColor.Create("Changed", Colors.Yellow);
+            //            //colorBox1.ItemSource.RemoveAt(0);
+            //            //colorBox1.ItemSource.Insert(0, newColor);
+            //            colorBox1.ItemSource[0] = newColor;
+            //            // important, update index, or index = -1;
+            //            colorBox1.SelectedIndex = preIndex;
 
-                        Debug.WriteLine($"Window_Loaded change {colorBox1.SelectedIndex} {colorBox1.SelectedItem}");
-                    }
-                });
-            });
+            //            Debug.WriteLine($"Window_Loaded change {colorBox1.SelectedIndex} {colorBox1.SelectedItem}");
+            //        }
+            //    });
+            //});
         }
 
         private void SimpleCombo_SelectionChanged(object sender, RoutedPropertyChangedEventArgs<object> e) {

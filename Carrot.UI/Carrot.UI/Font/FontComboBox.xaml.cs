@@ -93,14 +93,14 @@ typeof(FontComboBox), new UIPropertyMetadata(null));
         public FontComboBox() {
             InitializeComponent();
             cbFonts.DataContext = this;
-            if (ItemSource == null) {
-                ItemSource = new ObservableCollection<FontExtraInfo>(AllFonts);
-            }
         }
 
 
         private void FontComboBox_Loaded(object sender, RoutedEventArgs e) {
             Debug.WriteLine($"FontComboBox_Loaded {Name} init=[{SelectedFont}] index=[{SelectedIndex}]");
+            if (ItemSource == null) {
+                ItemSource = new ObservableCollection<FontExtraInfo>(AllFonts);
+            }
         }
 
         private void CBFonts_Loaded(object sender, RoutedEventArgs e) {
