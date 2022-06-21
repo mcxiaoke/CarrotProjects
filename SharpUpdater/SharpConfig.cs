@@ -9,7 +9,7 @@ namespace SharpUpdater {
         public static string AppBase => System.AppContext.BaseDirectory;
         public const string DEFAULT_CONFIG = "SharpUpdater.json";
 
-        public static SharpConfig Read(string filename = DEFAULT_CONFIG) {
+        public static SharpConfig? Read(string filename = DEFAULT_CONFIG) {
             var filepath = Path.Combine(AppBase, filename);
             if (!File.Exists(filepath)) {
                 return default;
@@ -39,10 +39,10 @@ namespace SharpUpdater {
         }
 
         [JsonProperty("name")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [JsonProperty("url")]
-        public string URL { get; set; }
+        public string URL { get; set; } = string.Empty;
 
         public SharpConfig() {
         }

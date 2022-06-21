@@ -10,13 +10,13 @@ namespace SharpUpdater {
         public bool Verbose { get; set; }
 
         [Option('n', "name", Required = false, HelpText = "检查更新的应用程序名称")]
-        public string Name { get; set; }
+        public string Name { get; set; } = String.Empty;
 
         [Option('u', "url", Required = false, HelpText = "检查更新的网络配置文件地址")]
-        public string URL { get; set; }
+        public string URL { get; set; } = String.Empty;
 
         [Option('c', "config", Required = false, HelpText = "更新工具的本地配置文件")]
-        public string ConfigFile { get; set; }
+        public string ConfigFile { get; set; } = String.Empty;
 
         public override string ToString() {
             return $"CommandOptions(Name={Name} URL={URL} ConfigFile={ConfigFile})";

@@ -9,7 +9,7 @@ namespace SharpUpdater {
     // https://stackoverflow.com/questions/20661652
     public static class StreamExtensions {
 
-        public static async Task CopyToAsync(this Stream source, Stream destination, int bufferSize, IProgress<long> progress = null, CancellationToken cancellationToken = default) {
+        public static async Task CopyToAsync(this Stream source, Stream destination, int bufferSize, IProgress<long>? progress = null, CancellationToken cancellationToken = default) {
             if (source == null)
                 throw new ArgumentNullException(nameof(source));
             if (!source.CanRead)
@@ -34,7 +34,7 @@ namespace SharpUpdater {
 
     public static class HttpClientExtensions {
 
-        public static async Task DownloadAsync(this HttpClient client, Uri requestUri, Stream destination, IProgress<float> progress = null, CancellationToken cancellationToken = default) {
+        public static async Task DownloadAsync(this HttpClient client, Uri requestUri, Stream destination, IProgress<float>? progress = null, CancellationToken cancellationToken = default) {
             // Get the http headers first to examine the content length
             using (var response = await client.GetAsync(requestUri, HttpCompletionOption.ResponseHeadersRead, cancellationToken)) {
                 var contentLength = response.Content.Headers.ContentLength;

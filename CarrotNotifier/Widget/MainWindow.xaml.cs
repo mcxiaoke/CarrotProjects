@@ -288,13 +288,17 @@ namespace GenshinNotifier {
             user.Level = 60;
             user.Nickname = "大白猫";
             note = (DailyNote)note.Clone();
-            note.CurrentResin = note.MaxResin;
-            note.ResinRecoveryTime = "0";
+            note.FinishedTaskNum = 0;
             note.CurrentHomeCoin = note.MaxHomeCoin;
+            note.RemainResinDiscountNum = 3;
+            note.IsExtraTaskRewardReceived = false;
 #endif
 
             lbHeader.Style = styleHeader;
             lbHeader.Content = "原神实时便签";
+#if DEBUG
+            lbHeader.Content = "原神实时便签 DEBUG";
+#endif
 
             lbAccountInfo.Style = styleFooter;
             lbAccountInfo.Content = $"{user.Nickname} {user.Level}级 {user.RegionName} {user.GameUid}";

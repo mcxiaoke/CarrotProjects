@@ -32,7 +32,7 @@ namespace SharpUpdater {
             }
         }
 
-        public static string ZipFileFind(string zipSource, string fileName) {
+        public static string? ZipFileFind(string zipSource, string fileName) {
             var zipPath = Path.GetFullPath(zipSource);
             using (ZipArchive archive = ZipFile.OpenRead(zipPath)) {
                 return archive.Entries.ToList().Find(it => it.FullName.EndsWith(fileName))?.FullName;
@@ -49,11 +49,11 @@ namespace SharpUpdater {
         public static void UnzipFile(string zipSource,
             string zipDest,
             bool backupOld = false,
-            bool stripPrefix = false, string prefixStr = null) {
+            bool stripPrefix = false, string? prefixStr = null) {
             var zipPath = Path.GetFullPath(zipSource);
             var destPath = Path.GetFullPath(zipDest);
             if (!File.Exists(zipPath)) { return; }
-            var backupPath = backupOld ? Path.Combine(destPath, "backups") : null;
+            var backupPath = backupOld ? Path.Combine(destPath, "backups") : string.Empty;
             Logger.Debug($"UnzipFile \nSRC={zipPath} \nDST={destPath} \nbackup={backupPath} " +
                 $"\nstrip={stripPrefix} prefix={prefixStr}");
 
@@ -110,7 +110,7 @@ namespace SharpUpdater {
                                 if (File.Exists(destinationBackupPath)) {
                                     File.Delete(destinationBackupPath);
                                 }
-                                var destinationBackupDir = Path.GetDirectoryName(destinationBackupPath);
+                                string destinationBackupDir = Path.GetDirectoryName(destinationBackupPath) ?? string.Empty;
                                 if (!Directory.Exists(destinationBackupDir)) {
                                     Directory.CreateDirectory(destinationBackupDir);
                                 }
@@ -123,7 +123,7 @@ namespace SharpUpdater {
                     }
                     Logger.Debug("UnzipFile ==> " + entryDestination);
                     FileInfo fileInfo = new FileInfo(entryDestination);
-                    fileInfo.Directory.Create();
+                    fileInfo?.Directory?.Create();
                     entry.ExtractToFile(entryDestination, true);
                 }
             }
@@ -173,18 +173,19 @@ namespace SharpUpdater {
             return Directory.GetFiles(path).Select(it => Path.GetFileName(it)).ToList();
         }
 
-        public static Exception StopProcessByPath(string fullpath) {
+        public static Exception? StopProcessByPath(string fullpath) {
             Logger.Debug($"StopProcessByPath fullpath={fullpath}");
             var fileName = Path.GetFileName(fullpath);
             var moduleName = Path.GetFileNameWithoutExtension(fileName);
             try {
                 Process[] existing = Process.GetProcessesByName(moduleName);
                 foreach (Process p in existing) {
-                    Logger.Debug($"StopProcessByName process={p.ProcessName} {p.Id} {p.MainModule.FileName} {p.MainModule.ModuleName}");
-                    string path = p.MainModule.FileName;
-                    if (path == fullpath) {
-                        p.Kill();
-                        p.WaitForExit(100);
+                    Logger.Debug($"StopProcessByName process={p.ProcessName} {p.Id} {p.MainModule?.FileName} {p.MainModule?.ModuleName}");
+                    if (p.MainModule?.FileName is string path) {
+                        if (path == fullpath) {
+                            p.Kill();
+                            p.WaitForExit(100);
+                        }
                     }
                 }
                 return null;
