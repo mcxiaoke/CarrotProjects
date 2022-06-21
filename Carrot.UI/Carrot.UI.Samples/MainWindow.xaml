@@ -28,6 +28,7 @@
 
         <cuc:SimpleComboBox x:Name="simpleCombo" Width="300" Height="40" SelectedIndex="6"
                 SelectionChanged="SimpleCombo_SelectionChanged" ItemSource="{Binding SampleValues}" />
-
+        <Button Margin="6" Padding="6" x:Name="btnShowDialog" Content="Show Dialog"
+                Click="BtnShowDialog_Click" />
     </StackPanel>
 </Window>

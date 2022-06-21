@@ -19,6 +19,7 @@ using Carrot.UI.Controls.Utils;
 using Carrot.UI.Controls.Picker;
 using Carrot.UI.Controls.Font;
 using Carrot.UI.ColorPicker;
+using Carrot.UI.Controls.Dialog;
 
 namespace Carrot.UI.Samples {
     /// <summary>
@@ -119,6 +120,10 @@ namespace Carrot.UI.Samples {
 
         private void SimpleCombo_SelectionChanged(object sender, RoutedPropertyChangedEventArgs<object> e) {
             Debug.WriteLine($"SimpleCombo_SelectionChanged old={e.OldValue} new={e.NewValue}");
+        }
+
+        private void BtnShowDialog_Click(object sender, RoutedEventArgs e) {
+            MessageDialog.Show(this, "This is a message text.", "Message Title");
         }
     }
 }
