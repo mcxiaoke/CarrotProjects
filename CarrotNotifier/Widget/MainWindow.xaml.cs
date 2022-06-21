@@ -381,17 +381,22 @@ namespace GenshinNotifier {
             SchedulerController.Default.ForceRefresh();
         }
 
+        private bool optionWindowVisible = false;
         private void CxmItemOption_Click(object sender, RoutedEventArgs e) {
             Logger.Debug("CxmItemOption_Click");
             if (!this.IsLoaded) { return; }
-            OptionWindow option = new OptionWindow();
-            option.Owner = this;
-            option.WindowStartupLocation = WindowStartupLocation.Manual;
+            if (!optionWindowVisible) {
+                optionWindowVisible = true;
+                OptionWindow option = new OptionWindow();
+                option.Owner = this;
+                option.WindowStartupLocation = WindowStartupLocation.Manual;
 
-            var (left, top) = GetDialogPosition();
-            option.Left = left;
-            option.Top = top;
-            option.Show();
+                var (left, top) = GetDialogPosition();
+                option.Left = left;
+                option.Top = top;
+                option.ShowDialog();
+                optionWindowVisible = false;
+            }
         }
 
         private void CxmItemAbout_Click(object sender, RoutedEventArgs e) {
@@ -435,8 +440,7 @@ namespace GenshinNotifier {
 
         private void ShowCookieDialog() {
             var cd = new CookieDialog {
-                Location = ToDrawingPoint(this.Left - 400, this.Top + 80),
-                TopMost = true
+                Location = this.ToDrawingPoint(this.Left - 400, this.Top + 80),
             };
             var result = cd.ShowDialog();
             Logger.Debug($"ShowCookieDialog result={result} cookie={cd.NewCookie}");
@@ -470,28 +474,8 @@ namespace GenshinNotifier {
             ShowCookieDialog();
         }
 
-        private System.Drawing.Point ToDrawingPoint(double x, double y) {
-            var sw = SystemParameters.WorkArea.Width;
-            var sh = SystemParameters.WorkArea.Height;
-            var cx = MiscUtils.Clamp(x, 0, sw - this.Width);
-            var cy = MiscUtils.Clamp(y, 0, sh - this.Height);
-            return new System.Drawing.Point(Convert.ToInt32(cx * _dpiScale), Convert.ToInt32(cy * _dpiScale));
-        }
-
-        private void ShowSettingsDialog() {
-            var point = new System.Windows.Point(this.Left, this.Top);
-            var transform = PresentationSource.FromVisual(this).CompositionTarget.TransformFromDevice;
-            point = transform.Transform(point);
-            var hit = VisualTreeHelper.HitTest(this, point);
-            var cd = new OptionForm {
-                Location = ToDrawingPoint(this.Left - this.Width, this.Top + 80),
-                TopMost = true
-            };
-            cd.ShowDialog();
-        }
-
         private void CxmItemSettings_Click(object sender, RoutedEventArgs e) {
-            ShowSettingsDialog();
+            MiscUtils.ShowSettingsDialog(this);
         }
 
         private void CxmItemHide_Click(object sender, RoutedEventArgs e) {

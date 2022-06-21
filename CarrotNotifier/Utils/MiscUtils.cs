@@ -53,6 +53,23 @@ where T : System.IComparable<T> {
 
         }
 
+        public static System.Drawing.Point ToDrawingPoint(this Window window, double x, double y) {
+            var sw = SystemParameters.WorkArea.Width;
+            var sh = SystemParameters.WorkArea.Height;
+            var cx = MiscUtils.Clamp(x, 0, sw - window.Width);
+            var cy = MiscUtils.Clamp(y, 0, sh - window.Height);
+            return new System.Drawing.Point(Convert.ToInt32(cx * window.GetDpiScale()), Convert.ToInt32(cy * window.GetDpiScale()));
+        }
+
+        public static void ShowSettingsDialog(Window window) {
+            var point = new System.Windows.Point(window.Left, window.Top);
+            var transform = PresentationSource.FromVisual(window).CompositionTarget.TransformFromDevice;
+            var cd = new OptionForm {
+                Location = window.ToDrawingPoint(window.Left - window.Width, window.Top + 80),
+            };
+            cd.ShowDialog();
+        }
+
     }
 
 

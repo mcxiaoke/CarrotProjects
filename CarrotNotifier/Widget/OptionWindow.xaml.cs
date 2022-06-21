@@ -99,7 +99,7 @@ namespace GenshinNotifier {
             var dialog = new Carrot.UI.ColorPicker.ColorPickerDialog(UserStyle.BackgroundColor) {
                 Owner = this,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
-                Title = "选择背景颜色",
+                Title = "选择颜色",
                 ButtonOKText = "确定",
                 ButtonCancelText = "取消"
             };

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Input;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,6 +77,10 @@ namespace GenshinNotifier.Widget {
         /// </summary>
         public ICommand CheckUpdateCommand => new SimpleCommand {
             CommandAction = () => AutoUpdater.ShowUpdater()
+        };
+
+        public ICommand OptionWindowCommand => new SimpleCommand {
+            CommandAction = () => MiscUtils.ShowSettingsDialog(Application.Current.MainWindow)
         };
 
         /// <summary>

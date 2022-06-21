@@ -11,10 +11,10 @@
         <MenuItem Header="显示小组件" Command="{Binding ShowWindowCommand}" />
         <MenuItem Header="隐藏小组件" Command="{Binding HideWindowCommand}" />
         <Separator />
+        <!--<MenuItem Header="通用设置" Command="{Binding OptionWindowCommand}" />-->
         <MenuItem Header="检查更新" Command="{Binding CheckUpdateCommand}" />
-        <MenuItem Header="项目主页" Command="{Binding GoToProjectCommmand}" />
         <Separator />
-        <MenuItem Header="重启" Command="{Binding RestartApplicationCommand}" />
+        <!--<MenuItem Header="重启" Command="{Binding RestartApplicationCommand}" />-->
         <MenuItem Header="退出" Command="{Binding ExitApplicationCommand}" />
     </ContextMenu>
 
