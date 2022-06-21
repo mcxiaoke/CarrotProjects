@@ -13,20 +13,11 @@
     <Window.Resources>
         <ResourceDictionary>
             <cui:ColorToSolidBrushConverter x:Key="ColorToBrush" />
-            <Style x:Key="WindowBorder" TargetType="{x:Type Border}">
-                <Style.Resources>
-                    <DropShadowEffect x:Key="dropShadowEffect" BlurRadius="2" ShadowDepth="1"
-                            Color="Black" RenderingBias="Quality" />
-                </Style.Resources>
-
-                <Setter Property="CornerRadius" Value="2" />
-                <Setter Property="Effect" Value="{StaticResource dropShadowEffect}" />
-                <Setter Property="BorderBrush" Value="Gray" />
-                <Setter Property="BorderThickness" Value="0.5,0.5,0.3,0.3" />
-            </Style>
+            <DropShadowEffect x:Key="BorderDropShadowEffect" BlurRadius="0.1" ShadowDepth="0.1"
+                    Color="LightGray" RenderingBias="Quality" />
         </ResourceDictionary>
     </Window.Resources>
-    <Border BorderBrush="Gray" BorderThickness="0.5">
+    <Border BorderBrush="LightGray" BorderThickness="0.2">
         <StackPanel Orientation="Vertical">
             <Grid x:Name="TopHeader">
                 <Label Padding="12,12,12,6" x:Name="OptionTitle" Content="主题样式编辑器" FontSize="20"
@@ -40,7 +31,7 @@
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" MinHeight="120" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" SharedSizeGroup="ItemRow" />
                     <RowDefinition Height="Auto" SharedSizeGroup="ItemRow" />
                     <RowDefinition Height="Auto" SharedSizeGroup="ItemRow" />
                     <RowDefinition Height="Auto" SharedSizeGroup="ItemRow" />
@@ -55,8 +46,7 @@
                         <Setter Property="Margin" Value="0,0,6,0" />
                     </Style>
                 </Grid.Resources>
-
-                <GroupBox Margin="0,0,0,6" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
+                <GroupBox Margin="0,3,0,3" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
                         Header="效果预览">
                     <Grid Margin="6" x:Name="previewLayout" Loaded="PreviewLayout_Loaded"
                             Background="{Binding BackgroundColor,Converter={StaticResource ColorToBrush}}">
@@ -91,17 +81,17 @@
                         </Grid.ColumnDefinitions>
                         <Label Margin="6,0,6,0" Style="{DynamicResource lbNameStyle}"
                                 Grid.Column="0" Grid.ColumnSpan="2">原粹树脂</Label>
-                        <Label Margin="132,0,0,0" Style="{DynamicResource lbNameStyle}"
-                                Grid.Column="2" HorizontalAlignment="Left">128/160</Label>
+                        <Label Margin="6,0,6,0" Style="{DynamicResource lbNameStyle}"
+                                Grid.Column="2" HorizontalAlignment="Right">128/160</Label>
                         <Label Margin="6,0,6,0" Style="{DynamicResource lbValueStyle}"
                                 Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">预计恢复时间</Label>
-                        <Label Margin="104,0,0,0" Style="{DynamicResource lbValueStyle}"
-                                Grid.Column="2" Grid.Row="1" HorizontalAlignment="Left">明天19时45分</Label>
+                        <Label Margin="6,0,6,0" Style="{DynamicResource lbValueStyle}"
+                                Grid.Column="2" Grid.Row="1" HorizontalAlignment="Right">明天19时45分</Label>
                     </Grid>
                 </GroupBox>
 
-                <Label Margin="0,0,0,6" Grid.Column="0" Grid.Row="1" FontSize="14" FontWeight="Bold">预设颜色主题</Label>
-                <ComboBox x:Name="cbThemeStyles" Margin="0,0,0,6" Grid.Column="2" Grid.Row="1"
+                <Label Grid.Column="0" Grid.Row="1" FontSize="14" FontWeight="Bold">预设颜色主题</Label>
+                <ComboBox x:Name="cbThemeStyles" Margin="0,3,0,3" Grid.Column="2" Grid.Row="1"
                         Loaded="CbThemeStyles_Loaded" DropDownClosed="CbThemeStyles_DropDownClosed"
                         ItemsSource="{Binding ThemeStyles}" SelectedIndex="{Binding ThemeIndex}">
                     <ComboBox.ItemTemplate>
@@ -130,38 +120,35 @@
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-
                 <Label Grid.Column="0" Grid.Row="2">背景颜色</Label>
-                <Label HorizontalAlignment="Stretch" VerticalContentAlignment="Center"
-                        VerticalAlignment="Stretch" x:Name="btnBackground" Margin="0,0,0,6"
-                        Grid.Column="2" Grid.Row="2" Content="{Binding BackgroundColor}"
+                <Label Grid.Column="2" Grid.Row="2" Margin="0,3,0,3"
+                        VerticalContentAlignment="Center" VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch" x:Name="btnBackground"
+                        Content="{Binding BackgroundColor}"
                         Foreground="{Binding BackgroundColorOpposite,Converter={StaticResource ColorToBrush}}"
                         Background="{Binding BackgroundColor,Converter={StaticResource ColorToBrush}}"
                         MouseLeftButtonUp="BtnBackground_Click" />
-                <!--<cui:ColorComboBox Margin="0,0,0,6" x:Name="cbBackground" Grid.Column="2" Grid.Row="1"
-                SelectedIndex="0" VerticalAlignment="Center" ExtraColors="{Binding}"
-                SelectedColorChanged="CbBackground_SelectedColorChanged" />-->
 
                 <Label Grid.Column="0" Grid.Row="3">字体颜色（普通）</Label>
-                <cui:ColorComboBox Margin="0,0,0,6" VerticalAlignment="Center" x:Name="cbTextNormal"
+                <cui:ColorComboBox Margin="0,3,0,3" VerticalAlignment="Center" x:Name="cbTextNormal"
                         Grid.Column="2" Grid.Row="3" SelectedIndex="0"
                         ExtraColors="{Binding AppendTextNColors}"
                         SelectedColorChanged="CbTextNormal_SelectedColorChanged" />
 
                 <Label Grid.Column="0" Grid.Row="4">字体颜色（高亮）</Label>
-                <cui:ColorComboBox Margin="0,0,0,6" VerticalAlignment="Center"
+                <cui:ColorComboBox Margin="0,3,0,3" VerticalAlignment="Center"
                         x:Name="cbTextHightlight" Grid.Column="2" Grid.Row="4" SelectedIndex="0"
                         ExtraColors="{Binding AppendTextHColors}"
                         SelectedColorChanged="CbTextHightlight_SelectedColorChanged" />
 
-                <Label Margin="0,0,0,6" Grid.Column="0" Grid.Row="5">选择字体</Label>
-                <cfont:FontComboBox VerticalContentAlignment="Center" Margin="0,0,0,6"
+                <Label Grid.Column="0" Grid.Row="5">选择字体</Label>
+                <cfont:FontComboBox VerticalContentAlignment="Center" Margin="0,3,0,3"
                         VerticalAlignment="Center" x:Name="cbFontFamily" Grid.Column="2"
                         Grid.Row="5" FontChanged="CbFontFamily_FontChanged"
                         SelectedFont="{Binding TextFontExtraInfo}" />
 
-                <Label Margin="0,0,0,6" Grid.Column="0" Grid.Row="6">字体大小</Label>
-                <StackPanel Margin="0,0,0,6" Grid.Column="2" Grid.Row="6" Orientation="Horizontal"
+                <Label Grid.Column="0" Grid.Row="6">字体大小</Label>
+                <StackPanel Margin="0,3,0,3" Grid.Column="2" Grid.Row="6" Orientation="Horizontal"
                         VerticalAlignment="Center">
                     <ComboBox x:Name="cbFontSize" Width="160" Margin="0,0,6,0"
                             ItemsSource="{Binding FontSizeRange}"

@@ -18,6 +18,7 @@ using System.Windows.Input;
 using Carrot.UI.Controls;
 using System.Text;
 using System.Collections.ObjectModel;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
 
 namespace GenshinNotifier {
 
@@ -111,6 +112,8 @@ namespace GenshinNotifier {
             TextFontFamily = (FontFamily)res["TextFontFamily"];
             TextFontWeight = (FontWeight)res["TextFontWeight"];
             TextFontStyle = (FontStyle)res["TextFontStyle"];
+            ThemeIndex = (int)res["ThemeIndex"];
+            UseTheme = (bool)res["UseTheme"];
         }
 
         public WidgetStyle(WidgetStyle other) {
@@ -122,6 +125,8 @@ namespace GenshinNotifier {
             TextFontFamily = other.TextFontFamily;
             TextFontWeight = other.TextFontWeight;
             TextFontStyle = other.TextFontStyle;
+            ThemeIndex = other.ThemeIndex;
+            UseTheme = other.UseTheme;
         }
 
         public void MergeValues(WidgetStyle other) {
@@ -149,33 +154,43 @@ namespace GenshinNotifier {
             if (other.TextFontStyle != null) {
                 TextFontStyle = other.TextFontStyle;
             }
+            ThemeIndex = other.ThemeIndex;
+            UseTheme = other.UseTheme;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
         #region normal properties
-
+        // 文本颜色 普通状态
         public Color TextNormalColor { get; set; } = ERROR_COLOR;
+        // 文本颜色 高亮状态
         public Color TextHighlightColor { get; set; } = ERROR_COLOR;
+        // 文本颜色 警示
         public Color TextErrorColor { get; set; } = ERROR_COLOR;
+        // 背景颜色
         public Color BackgroundColor { get; set; } = ERROR_COLOR;
-        public bool BackgroundTransparent { get; set; } = false;
+        // 字体大小
         public double TextFontSize { get; set; } = 0;
+        // 字体家族
         public FontFamily? TextFontFamily { get; set; }
+        // 字体字重
         public FontWeight? TextFontWeight { get; set; }
+        // 字体样式
         public FontStyle? TextFontStyle { get; set; }
-
-        public int ThemeIndex { get; set; } = -1;
+        // 颜色主题索引
+        public int ThemeIndex { get; set; } = 0;
+        // 是否使用主题
+        public bool UseTheme { get; set; } = true;
 
         #endregion
 
         #region calculated properties
         [JsonIgnore]
-        public Color CurrentBackgroundColor => ThemeStyle?.Background ?? BackgroundColor;
+        public Color CurrentBackgroundColor => UseTheme ? ThemeStyle?.Background ?? BackgroundColor : BackgroundColor;
         [JsonIgnore]
-        public Color CurrentTextNormalColor => ThemeStyle?.TextNormal ?? TextNormalColor;
+        public Color CurrentTextNormalColor => UseTheme ? ThemeStyle?.TextNormal ?? TextNormalColor : TextNormalColor;
         [JsonIgnore]
-        public Color CurrentTextHighlightColor => ThemeStyle?.TextHighlight ?? TextHighlightColor;
+        public Color CurrentTextHighlightColor => UseTheme ? ThemeStyle?.TextHighlight ?? TextHighlightColor : TextHighlightColor;
         [JsonIgnore]
         public WidgetColor? ThemeStyle => ThemeIndex >= 0 && ThemeIndex <= ThemeColors.Count ? ThemeColors[ThemeIndex] : null;
         [JsonIgnore]

@@ -52,18 +52,19 @@ namespace GenshinNotifier {
 
         private void CbBackground_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<NamedColor> e) {
             Logger.Debug($"CbBackground_SelectedColorChanged ${e.OldValue} => {e.NewValue}");
+            UserStyle.UseTheme = false;
         }
 
         private void CbTextNormal_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<NamedColor> e) {
             Logger.Debug($"CbTextNormal_SelectedColorChanged ${e.OldValue} => {e.NewValue}");
+            UserStyle.UseTheme = false;
             UserStyle.TextNormalColor = e.NewValue.Value;
-            UserStyle.ThemeIndex = -1;
         }
 
         private void CbTextHightlight_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<NamedColor> e) {
             Logger.Debug($"CbTextHightlight_SelectedColorChanged ${e.OldValue} => {e.NewValue}");
+            UserStyle.UseTheme = false;
             UserStyle.TextHighlightColor = e.NewValue.Value;
-            UserStyle.ThemeIndex = -1;
         }
 
         private void CbFontFamily_FontChanged(object sender, RoutedPropertyChangedEventArgs<FontExtraInfo> e) {
@@ -105,7 +106,7 @@ namespace GenshinNotifier {
             if (dialog.ShowDialog() == true) {
                 Logger.Debug($"ColorPickerDialog result={dialog.PickedColor}");
                 UserStyle.BackgroundColor = dialog.PickedColor;
-                UserStyle.ThemeIndex = -1;
+                UserStyle.UseTheme = false;
             }
         }
 
@@ -134,21 +135,24 @@ namespace GenshinNotifier {
         }
 
         private void CbThemeStyles_DropDownClosed(object sender, EventArgs e) {
-            var theme = (WidgetColor)cbThemeStyles.SelectedItem;
-            UserStyle.BackgroundColor = theme.Background;
-            UserStyle.TextNormalColor = theme.TextNormal;
-            UserStyle.TextHighlightColor = theme.TextHighlight;
+            Debug.WriteLine($"CbThemeStyles_DropDownClosed item={cbThemeStyles.SelectedItem}");
+            if (cbThemeStyles.SelectedItem is WidgetColor theme) {
+                UserStyle.UseTheme = true;
+                UserStyle.BackgroundColor = theme.Background;
+                UserStyle.TextNormalColor = theme.TextNormal;
+                UserStyle.TextHighlightColor = theme.TextHighlight;
 
-            var tnFirst = cbTextNormal.ItemSource[0];
-            var tnFirstNew = NamedColor.Create(tnFirst.Key, theme.TextNormal);
-            cbTextNormal.ItemSource[0] = tnFirstNew;
-            // reselect hack for update combobox item
-            cbTextNormal.SelectedIndex = 0;
+                var tnFirst = cbTextNormal.ItemSource[0];
+                var tnFirstNew = NamedColor.Create(tnFirst.Key, theme.TextNormal);
+                cbTextNormal.ItemSource[0] = tnFirstNew;
+                // reselect hack for update combobox item
+                cbTextNormal.SelectedIndex = 0;
 
-            var thFirst = cbTextHightlight.ItemSource[0];
-            var thFirstNew = NamedColor.Create(thFirst.Key, theme.TextHighlight);
-            cbTextHightlight.ItemSource[0] = thFirstNew;
-            cbTextHightlight.SelectedIndex = 0;
+                var thFirst = cbTextHightlight.ItemSource[0];
+                var thFirstNew = NamedColor.Create(thFirst.Key, theme.TextHighlight);
+                cbTextHightlight.ItemSource[0] = thFirstNew;
+                cbTextHightlight.SelectedIndex = 0;
+            }
         }
 
         private void ChkThemeTranparent_Checked(object sender, RoutedEventArgs e) {
