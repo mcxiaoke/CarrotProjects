@@ -6,188 +6,200 @@
         xmlns:local="clr-namespace:GenshinNotifier"
         xmlns:cui="clr-namespace:Carrot.UI.Controls.Picker;assembly=Carrot.UI.Controls"
         xmlns:cfont="clr-namespace:Carrot.UI.Controls.Font;assembly=Carrot.UI.Controls"
-        mc:Ignorable="d" Title="主题和样式" MinWidth="440" MinHeight="450" MaxWidth="600" MaxHeight="540"
-        Width="440" Height="450" WindowStartupLocation="Manual" SnapsToDevicePixels="True"
-        WindowStyle="None" Loaded="Window_Loaded" ResizeMode="NoResize" Topmost="True"
+        mc:Ignorable="d" Title="主题和样式" MinWidth="440" MinHeight="460" MaxWidth="600" MaxHeight="540"
+        Width="440" Height="460" WindowStartupLocation="Manual" SnapsToDevicePixels="True"
+        WindowStyle="None" Loaded="Window_Loaded" ResizeMode="CanResize" Topmost="True"
         MouseLeftButtonDown="Window_MouseLeftButtonDown">
+    <WindowChrome.WindowChrome>
+        <!-- http://yuezhizizhang.github.io/wpf/2017/09/27/drop-shadow-on-chromeless-wpf-window.html -->
+        <WindowChrome ResizeBorderThickness="0" CaptionHeight="0" />
+    </WindowChrome.WindowChrome>
     <Window.Resources>
         <ResourceDictionary>
             <cui:ColorToSolidBrushConverter x:Key="ColorToBrush" />
-            <DropShadowEffect x:Key="BorderDropShadowEffect" BlurRadius="0.1" ShadowDepth="0.1"
-                    Color="LightGray" RenderingBias="Quality" />
         </ResourceDictionary>
     </Window.Resources>
-    <Border BorderBrush="LightGray" BorderThickness="0.2">
-        <StackPanel Orientation="Vertical">
-            <Grid x:Name="TopHeader">
-                <Label Padding="12,12,12,6" x:Name="OptionTitle" Content="主题样式编辑器" FontSize="20"
-                        HorizontalContentAlignment="Center" />
-            </Grid>
-            <Grid Margin="12,6,12,6" Grid.IsSharedSizeScope="True">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" MinWidth="100" />
-                    <ColumnDefinition Width="6" />
-                    <ColumnDefinition Width="*" MinWidth="240" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" MinHeight="120" />
-                    <RowDefinition Height="Auto" SharedSizeGroup="ItemRow" />
-                    <RowDefinition Height="Auto" SharedSizeGroup="ItemRow" />
-                    <RowDefinition Height="Auto" SharedSizeGroup="ItemRow" />
-                    <RowDefinition Height="Auto" SharedSizeGroup="ItemRow" />
-                    <RowDefinition Height="Auto" SharedSizeGroup="ItemRow" />
-                    <RowDefinition Height="Auto" SharedSizeGroup="ItemRow" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Grid.Resources>
-                    <Style TargetType="Label">
-                        <Setter Property="HorizontalAlignment" Value="Left" />
-                        <Setter Property="VerticalAlignment" Value="Center" />
-                        <Setter Property="Margin" Value="0,0,6,0" />
-                    </Style>
-                </Grid.Resources>
-                <GroupBox Margin="0,3,0,3" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
-                        Header="效果预览">
-                    <Grid Margin="6" x:Name="previewLayout" Loaded="PreviewLayout_Loaded"
-                            Background="{Binding BackgroundColor,Converter={StaticResource ColorToBrush}}">
-                        <Grid.Resources>
-                            <Style TargetType="Label" x:Key="ItemLabelStyle">
-                                <Setter Property="FontFamily" Value="{Binding TextFontFamily}" />
-                                <Setter Property="FontWeight" Value="{Binding TextFontWeight}" />
-                                <Setter Property="FontStyle" Value="{Binding TextFontStyle}" />
-                                <Setter Property="FontSize" Value="{Binding TextFontSize}" />
-                                <Setter Property="VerticalAlignment" Value="Center" />
-                            </Style>
+    <StackPanel Orientation="Vertical">
+        <Grid x:Name="TopHeader">
+            <Label Padding="12,12,12,6" x:Name="OptionTitle" Content="主题样式编辑器" FontSize="20"
+                    HorizontalContentAlignment="Center" />
+        </Grid>
+        <Grid Margin="12,6,12,6" Grid.IsSharedSizeScope="True">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" MinWidth="100" />
+                <ColumnDefinition Width="6" />
+                <ColumnDefinition Width="*" MinWidth="240" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" MinHeight="120" />
+                <RowDefinition Height="Auto" SharedSizeGroup="ItemRow" />
+                <RowDefinition Height="Auto" SharedSizeGroup="ItemRow" />
+                <RowDefinition Height="Auto" SharedSizeGroup="ItemRow" />
+                <RowDefinition Height="Auto" SharedSizeGroup="ItemRow" />
+                <RowDefinition Height="Auto" SharedSizeGroup="ItemRow" />
+                <RowDefinition Height="Auto" SharedSizeGroup="ItemRow" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.Resources>
+                <Style TargetType="Label">
+                    <Setter Property="HorizontalAlignment" Value="Left" />
+                    <Setter Property="VerticalAlignment" Value="Center" />
+                    <Setter Property="Margin" Value="0,0,6,0" />
+                </Style>
+            </Grid.Resources>
+            <GroupBox Margin="0,3,0,3" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3"
+                    Header="效果预览">
+                <Grid Margin="6" x:Name="previewLayout" Loaded="PreviewLayout_Loaded"
+                        Background="{Binding BackgroundColor,Converter={StaticResource ColorToBrush}}">
+                    <Grid.Resources>
+                        <Style TargetType="Label" x:Key="ItemLabelStyle">
+                            <Setter Property="FontFamily" Value="{Binding TextFontFamily}" />
+                            <Setter Property="FontWeight" Value="{Binding TextFontWeight}" />
+                            <Setter Property="FontStyle" Value="{Binding TextFontStyle}" />
+                            <Setter Property="FontSize" Value="{Binding TextFontSize}" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
+                        </Style>
 
-                            <Style TargetType="Label" x:Key="lbNameStyle"
-                                    BasedOn="{StaticResource ItemLabelStyle}">
-                                <Setter Property="Foreground"
-                                        Value="{Binding TextNormalColor,Converter={StaticResource ColorToBrush}}" />
-                            </Style>
-                            <Style TargetType="Label" x:Key="lbValueStyle"
-                                    BasedOn="{StaticResource ItemLabelStyle}">
-                                <Setter Property="Foreground"
-                                        Value="{Binding TextHighlightColor,Converter={StaticResource ColorToBrush}}" />
-                            </Style>
-                        </Grid.Resources>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="13*" />
-                            <ColumnDefinition Width="85*" />
-                            <ColumnDefinition Width="98*" />
-                        </Grid.ColumnDefinitions>
-                        <Label Margin="6,0,6,0" Style="{DynamicResource lbNameStyle}"
-                                Grid.Column="0" Grid.ColumnSpan="2">原粹树脂</Label>
-                        <Label Margin="6,0,6,0" Style="{DynamicResource lbNameStyle}"
-                                Grid.Column="2" HorizontalAlignment="Right">128/160</Label>
-                        <Label Margin="6,0,6,0" Style="{DynamicResource lbValueStyle}"
-                                Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">预计恢复时间</Label>
-                        <Label Margin="6,0,6,0" Style="{DynamicResource lbValueStyle}"
-                                Grid.Column="2" Grid.Row="1" HorizontalAlignment="Right">明天19时45分</Label>
-                    </Grid>
-                </GroupBox>
+                        <Style TargetType="Label" x:Key="lbNameStyle"
+                                BasedOn="{StaticResource ItemLabelStyle}">
+                            <Setter Property="Foreground"
+                                    Value="{Binding TextNormalColor,Converter={StaticResource ColorToBrush}}" />
+                        </Style>
+                        <Style TargetType="Label" x:Key="lbValueStyle"
+                                BasedOn="{StaticResource ItemLabelStyle}">
+                            <Setter Property="Foreground"
+                                    Value="{Binding TextHighlightColor,Converter={StaticResource ColorToBrush}}" />
+                        </Style>
+                    </Grid.Resources>
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="13*" />
+                        <ColumnDefinition Width="85*" />
+                        <ColumnDefinition Width="98*" />
+                    </Grid.ColumnDefinitions>
+                    <Label Margin="6,0,6,0" Style="{DynamicResource lbNameStyle}" Grid.Column="0"
+                            Grid.ColumnSpan="2">原粹树脂</Label>
+                    <Label Margin="6,0,6,0" Style="{DynamicResource lbNameStyle}" Grid.Column="2"
+                            HorizontalAlignment="Right">128/160</Label>
+                    <Label Margin="6,0,6,0" Style="{DynamicResource lbValueStyle}" Grid.Column="0"
+                            Grid.Row="1" Grid.ColumnSpan="2">预计恢复时间</Label>
+                    <Label Margin="6,0,6,0" Style="{DynamicResource lbValueStyle}" Grid.Column="2"
+                            Grid.Row="1" HorizontalAlignment="Right">明天19时45分</Label>
+                </Grid>
+            </GroupBox>
 
-                <Label Grid.Column="0" Grid.Row="1" FontSize="14" FontWeight="Bold">预设颜色主题</Label>
-                <ComboBox x:Name="cbThemeStyles" Margin="0,3,0,3" Grid.Column="2" Grid.Row="1"
-                        Loaded="CbThemeStyles_Loaded" DropDownClosed="CbThemeStyles_DropDownClosed"
-                        ItemsSource="{Binding ThemeStyles}" SelectedIndex="{Binding ThemeIndex}">
+            <Label Grid.Column="0" Grid.Row="1" FontSize="14" FontWeight="Bold">预设颜色主题</Label>
+            <ComboBox x:Name="cbThemeStyles" Margin="0,3,0,3" Grid.Column="2" Grid.Row="1"
+                    Loaded="CbThemeStyles_Loaded" DropDownClosed="CbThemeStyles_DropDownClosed"
+                    ItemsSource="{Binding ThemeStyles}" SelectedIndex="{Binding ThemeIndex}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <StackPanel.Resources>
+                                <Style x:Key="ThemeItemBlock" TargetType="Border">
+                                    <Setter Property="BorderThickness" Value="1" />
+                                    <Setter Property="BorderBrush" Value="Black" />
+                                    <Setter Property="Width" Value="20" />
+                                    <Setter Property="Height" Value="20" />
+                                </Style>
+                            </StackPanel.Resources>
+                            <Border Style="{StaticResource ThemeItemBlock}"
+                                    Background="{Binding Background, Converter={StaticResource ColorToBrush}}"
+                                    Margin="2" />
+                            <Border Style="{StaticResource ThemeItemBlock}"
+                                    Background="{Binding TextNormal, Converter={StaticResource ColorToBrush}}"
+                                    Margin="2" />
+                            <Border Style="{StaticResource ThemeItemBlock}"
+                                    Background="{Binding TextHighlight, Converter={StaticResource ColorToBrush}}"
+                                    Margin="2" />
+                            <TextBlock Margin="2" Text="{Binding Name}" MinWidth="60"
+                                    VerticalAlignment="Center" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Label Grid.Column="0" Grid.Row="2">背景颜色</Label>
+            <Border BorderBrush="DarkGray" BorderThickness="1" Grid.Column="2" Grid.Row="2"
+                    Margin="0,3,0,3">
+                <DockPanel LastChildFill="True" MouseLeftButtonUp="BtnBackground_Click">
+                    <Image DockPanel.Dock="Right" Width="22" Height="22" Margin="3,0,3,0">
+                        <Image.Style>
+                            <Style TargetType="Image">
+                                <Setter Property="Source" Value="/Assets/color_picker_black.png" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Source"
+                                                Value="/Assets/color_picker_blue.png" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Image.Style>
+                    </Image>
+                    <Label Margin="3" VerticalContentAlignment="Center" VerticalAlignment="Stretch"
+                            HorizontalAlignment="Stretch" x:Name="btnBackground"
+                            Content="{Binding BackgroundColor}"
+                            Foreground="{Binding BackgroundColorOpposite,Converter={StaticResource ColorToBrush}}"
+                            Background="{Binding BackgroundColor,Converter={StaticResource ColorToBrush}}" />
+                </DockPanel>
+            </Border>
+
+            <Label Grid.Column="0" Grid.Row="3">字体颜色（普通）</Label>
+            <cui:ColorComboBox Margin="0,3,0,3" VerticalAlignment="Center" x:Name="cbTextNormal"
+                    Grid.Column="2" Grid.Row="3" SelectedIndex="0"
+                    ExtraColors="{Binding AppendTextNColors}"
+                    SelectedColorChanged="CbTextNormal_SelectedColorChanged" />
+
+            <Label Grid.Column="0" Grid.Row="4">字体颜色（高亮）</Label>
+            <cui:ColorComboBox Margin="0,3,0,3" VerticalAlignment="Center" x:Name="cbTextHightlight"
+                    Grid.Column="2" Grid.Row="4" SelectedIndex="0"
+                    ExtraColors="{Binding AppendTextHColors}"
+                    SelectedColorChanged="CbTextHightlight_SelectedColorChanged" />
+
+            <Label Grid.Column="0" Grid.Row="5">选择字体</Label>
+            <cfont:FontComboBox VerticalContentAlignment="Center" Margin="0,3,0,3"
+                    VerticalAlignment="Center" x:Name="cbFontFamily" Grid.Column="2" Grid.Row="5"
+                    FontChanged="CbFontFamily_FontChanged"
+                    SelectedFont="{Binding TextFontExtraInfo}" />
+
+            <Label Grid.Column="0" Grid.Row="6">字体大小</Label>
+            <StackPanel Margin="0,3,0,3" Grid.Column="2" Grid.Row="6" Orientation="Horizontal"
+                    VerticalAlignment="Center">
+                <ComboBox x:Name="cbFontSize" Width="160" Margin="0,0,6,0"
+                        ItemsSource="{Binding FontSizeRange}" SelectedItem="{Binding TextFontSize}"
+                        DropDownClosed="CbFontSize_DropDownClosed">
                     <ComboBox.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <StackPanel.Resources>
-                                    <Style x:Key="ThemeItemBlock" TargetType="Border">
-                                        <Setter Property="BorderThickness" Value="1" />
-                                        <Setter Property="BorderBrush" Value="Black" />
-                                        <Setter Property="Width" Value="20" />
-                                        <Setter Property="Height" Value="20" />
-                                    </Style>
-                                </StackPanel.Resources>
-                                <Border Style="{StaticResource ThemeItemBlock}"
-                                        Background="{Binding Background, Converter={StaticResource ColorToBrush}}"
-                                        Margin="2" />
-                                <Border Style="{StaticResource ThemeItemBlock}"
-                                        Background="{Binding TextNormal, Converter={StaticResource ColorToBrush}}"
-                                        Margin="2" />
-                                <Border Style="{StaticResource ThemeItemBlock}"
-                                        Background="{Binding TextHighlight, Converter={StaticResource ColorToBrush}}"
-                                        Margin="2" />
-                                <TextBlock Margin="2" Text="{Binding Name}" MinWidth="60"
-                                        VerticalAlignment="Center" />
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
+                                    Height="20">
+                                <TextBlock Text="{Binding}" MinWidth="60" VerticalAlignment="Center" />
                             </StackPanel>
                         </DataTemplate>
                     </ComboBox.ItemTemplate>
                 </ComboBox>
-                <Label Grid.Column="0" Grid.Row="2">背景颜色</Label>
-                <Label Grid.Column="2" Grid.Row="2" Margin="0,3,0,3"
-                        VerticalContentAlignment="Center" VerticalAlignment="Stretch"
-                        HorizontalAlignment="Stretch" x:Name="btnBackground"
-                        Content="{Binding BackgroundColor}"
-                        Foreground="{Binding BackgroundColorOpposite,Converter={StaticResource ColorToBrush}}"
-                        Background="{Binding BackgroundColor,Converter={StaticResource ColorToBrush}}"
-                        MouseLeftButtonUp="BtnBackground_Click" />
+                <CheckBox VerticalAlignment="Stretch" VerticalContentAlignment="Center" Margin="6"
+                        x:Name="chkFontBold" Content="粗体" Checked="ChkFontBold_Changed"
+                        Unchecked="ChkFontBold_Changed" IsChecked="{Binding TextFontBold}" />
+                <CheckBox VerticalAlignment="Stretch" VerticalContentAlignment="Center" Margin="6"
+                        x:Name="chkFontItalic" Content="斜体" Click="ChkFontItalic_Changed"
+                        Unchecked="ChkFontItalic_Changed" IsChecked="{Binding TextFontItalic}" />
+            </StackPanel>
 
-                <Label Grid.Column="0" Grid.Row="3">字体颜色（普通）</Label>
-                <cui:ColorComboBox Margin="0,3,0,3" VerticalAlignment="Center" x:Name="cbTextNormal"
-                        Grid.Column="2" Grid.Row="3" SelectedIndex="0"
-                        ExtraColors="{Binding AppendTextNColors}"
-                        SelectedColorChanged="CbTextNormal_SelectedColorChanged" />
+            <DockPanel Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="3" VerticalAlignment="Top"
+                    Margin="0,20,0,0">
 
-                <Label Grid.Column="0" Grid.Row="4">字体颜色（高亮）</Label>
-                <cui:ColorComboBox Margin="0,3,0,3" VerticalAlignment="Center"
-                        x:Name="cbTextHightlight" Grid.Column="2" Grid.Row="4" SelectedIndex="0"
-                        ExtraColors="{Binding AppendTextHColors}"
-                        SelectedColorChanged="CbTextHightlight_SelectedColorChanged" />
+                <Button DockPanel.Dock="Left" Grid.Column="0" HorizontalAlignment="Left"
+                        x:Name="btnReset" Click="BtnReset_Click" MinWidth="100" Padding="6">恢复默认</Button>
+                <Button DockPanel.Dock="Right" Grid.Column="1" HorizontalAlignment="Right"
+                        x:Name="btnCancel" Click="BtnCancel_Click" MinWidth="100" Padding="6"
+                        IsDefault="True" IsCancel="True" Margin="6,0,0,0">关闭</Button>
+                <Button DockPanel.Dock="Right" Grid.Column="1" HorizontalAlignment="Right"
+                        x:Name="btnSave" Click="BtnSave_Click" MinWidth="100" Padding="6">保存</Button>
 
-                <Label Grid.Column="0" Grid.Row="5">选择字体</Label>
-                <cfont:FontComboBox VerticalContentAlignment="Center" Margin="0,3,0,3"
-                        VerticalAlignment="Center" x:Name="cbFontFamily" Grid.Column="2"
-                        Grid.Row="5" FontChanged="CbFontFamily_FontChanged"
-                        SelectedFont="{Binding TextFontExtraInfo}" />
+            </DockPanel>
 
-                <Label Grid.Column="0" Grid.Row="6">字体大小</Label>
-                <StackPanel Margin="0,3,0,3" Grid.Column="2" Grid.Row="6" Orientation="Horizontal"
-                        VerticalAlignment="Center">
-                    <ComboBox x:Name="cbFontSize" Width="160" Margin="0,0,6,0"
-                            ItemsSource="{Binding FontSizeRange}"
-                            SelectedItem="{Binding TextFontSize}"
-                            DropDownClosed="CbFontSize_DropDownClosed">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center"
-                                        Height="20">
-                                    <TextBlock Text="{Binding}" MinWidth="60"
-                                            VerticalAlignment="Center" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
-                    <CheckBox VerticalAlignment="Stretch" VerticalContentAlignment="Center"
-                            Margin="6" x:Name="chkFontBold" Content="粗体"
-                            Checked="ChkFontBold_Changed" Unchecked="ChkFontBold_Changed"
-                            IsChecked="{Binding TextFontBold}" />
-                    <CheckBox VerticalAlignment="Stretch" VerticalContentAlignment="Center"
-                            Margin="6" x:Name="chkFontItalic" Content="斜体"
-                            Click="ChkFontItalic_Changed" Unchecked="ChkFontItalic_Changed"
-                            IsChecked="{Binding TextFontItalic}" />
-                </StackPanel>
-
-                <DockPanel Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="3" VerticalAlignment="Top"
-                        Margin="0,20,0,0">
-
-                    <Button DockPanel.Dock="Left" Grid.Column="0" HorizontalAlignment="Left"
-                            x:Name="btnReset" Click="BtnReset_Click" MinWidth="100" Padding="6">恢复默认</Button>
-                    <Button DockPanel.Dock="Right" Grid.Column="1" HorizontalAlignment="Right"
-                            x:Name="btnCancel" Click="BtnCancel_Click" MinWidth="100" Padding="6"
-                            IsDefault="True" IsCancel="True" Margin="6,0,0,0">关闭</Button>
-                    <Button DockPanel.Dock="Right" Grid.Column="1" HorizontalAlignment="Right"
-                            x:Name="btnSave" Click="BtnSave_Click" MinWidth="100" Padding="6">保存</Button>
-
-                </DockPanel>
-
-            </Grid>
-        </StackPanel>
-    </Border>
+        </Grid>
+    </StackPanel>
 </Window>
