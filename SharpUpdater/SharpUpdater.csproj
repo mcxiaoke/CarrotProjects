@@ -11,6 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Assets\icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="CommandLineParser">
       <Version>2.9.1</Version>
     </PackageReference>
@@ -64,6 +68,7 @@
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
     <RunAnalyzersDuringLiveAnalysis>False</RunAnalyzersDuringLiveAnalysis>
     <AnalysisLevel>latest-minimum</AnalysisLevel>
+    <ApplicationIcon>Assets\icon.ico</ApplicationIcon>
   </PropertyGroup>
 
 </Project>
