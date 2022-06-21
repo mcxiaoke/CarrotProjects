@@ -4,12 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Carrot.UI.Controls" mc:Ignorable="d" Title="MessageDialog"
-        MinHeight="180" Width="320" ResizeMode="CanResize" SizeToContent="Height"
+        MinHeight="180" Width="320" ResizeMode="NoResize" SizeToContent="Height"
         WindowStartupLocation="Manual" WindowStyle="ThreeDBorderWindow">
-    <WindowChrome.WindowChrome>
-        <!-- http://yuezhizizhang.github.io/wpf/2017/09/27/drop-shadow-on-chromeless-wpf-window.html -->
-        <WindowChrome ResizeBorderThickness="0" CaptionHeight="0" />
-    </WindowChrome.WindowChrome>
     <DockPanel LastChildFill="True" Margin="12">
         <StackPanel Margin="0,12,0,0" DockPanel.Dock="Bottom" Orientation="Horizontal"
                 HorizontalAlignment="Right">

@@ -283,15 +283,15 @@ namespace GenshinNotifier {
         private void UpdateUIControls(UserGameRole user, DailyNote note) {
             // https://levelup.gitconnected.com/5-ways-to-clone-an-object-in-c-d1374ec28efa
 #if DEBUG
-            user = (UserGameRole)user.Clone();
-            user.GameUid = "100000001";
-            user.Level = 60;
-            user.Nickname = "大白猫";
-            note = (DailyNote)note.Clone();
-            note.FinishedTaskNum = 0;
-            note.CurrentHomeCoin = note.MaxHomeCoin;
-            note.RemainResinDiscountNum = 3;
-            note.IsExtraTaskRewardReceived = false;
+            //user = (UserGameRole)user.Clone();
+            //user.GameUid = "100000001";
+            //user.Level = 60;
+            //user.Nickname = "大白猫";
+            //note = (DailyNote)note.Clone();
+            //note.FinishedTaskNum = 0;
+            //note.CurrentHomeCoin = note.MaxHomeCoin;
+            //note.RemainResinDiscountNum = 3;
+            //note.IsExtraTaskRewardReceived = false;
 #endif
 
             lbHeader.Style = styleHeader;
