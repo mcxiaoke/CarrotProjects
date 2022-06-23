@@ -79,6 +79,10 @@ namespace GenshinNotifier.Widget {
             CommandAction = () => AutoUpdater.ShowUpdater()
         };
 
+        public ICommand SignRewardCommand => new SimpleCommand {
+            CommandAction = async () => await SchedulerController.Default.ManualSignReward()
+        };
+
         public ICommand OptionWindowCommand => new SimpleCommand {
             CommandAction = () => MiscUtils.ShowSettingsDialog(Application.Current.MainWindow)
         };

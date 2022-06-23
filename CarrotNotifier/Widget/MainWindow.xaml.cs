@@ -429,6 +429,7 @@ namespace GenshinNotifier {
         }
 
         private void CxmItemRestart_Click(object sender, RoutedEventArgs e) {
+            Logger.Debug($"CxmItemRestart_Click");
             Process.Start(AppInfo.ExecutablePath);
             Application.Current.Shutdown();
         }
@@ -475,6 +476,7 @@ namespace GenshinNotifier {
         }
 
         private void CxmItemAccount_Click(object sender, RoutedEventArgs e) {
+            Logger.Debug($"CxmItemAccount_Click");
             ShowCookieDialog();
         }
 
@@ -487,7 +489,13 @@ namespace GenshinNotifier {
         }
 
         private void CxmItemCheckUpdate_Click(object sender, RoutedEventArgs e) {
+            Logger.Debug($"CxmItemCheckUpdate_Click");
             AutoUpdater.ShowUpdater();
+        }
+
+        private async void CxmItemSignReward_Click(object sender, RoutedEventArgs e) {
+            Logger.Debug($"CxmItemSignReward_Click");
+            await SchedulerController.Default.ManualSignReward();
         }
     }
 }

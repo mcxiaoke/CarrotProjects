@@ -73,6 +73,11 @@
                             <MenuItem Header="通用设置" x:Name="cxmItemSettings"
                                     Click="CxmItemSettings_Click" />
                             <Separator />
+                            <MenuItem Header="手动签到" Name="cxmItemSignReward"
+                                    Click="CxmItemSignReward_Click" />
+                            <MenuItem Header="检查更新" Name="cxmItemCheckUpdate"
+                                    Click="CxmItemCheckUpdate_Click" />
+                            <Separator />
                             <MenuItem Header="主题样式" x:Name="cxmItemOption"
                                     Click="CxmItemOption_Click" />
                         </ContextMenu>

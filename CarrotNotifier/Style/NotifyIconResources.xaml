@@ -12,6 +12,7 @@
         <MenuItem Header="隐藏小组件" Command="{Binding HideWindowCommand}" />
         <Separator />
         <!--<MenuItem Header="通用设置" Command="{Binding OptionWindowCommand}" />-->
+        <MenuItem Header="手动签到" Command="{Binding SignRewardCommand}" />
         <MenuItem Header="检查更新" Command="{Binding CheckUpdateCommand}" />
         <Separator />
         <!--<MenuItem Header="重启" Command="{Binding RestartApplicationCommand}" />-->

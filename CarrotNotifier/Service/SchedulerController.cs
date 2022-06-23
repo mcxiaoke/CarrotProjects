@@ -366,6 +366,10 @@ namespace GenshinNotifier {
                 var (code, result, error) = await DataController.Default.PostSignReward();
                 Logger.Info($"DoSignReward code={code} result={result} error={error?.Message}");
                 dynamic? obj = JsonConvert.DeserializeObject(result ?? error?.Message ?? string.Empty);
+                if (manual) {
+                    //for manual, reset notify flag
+                    TodaySignOKShown = null;
+                }
                 if (code == 0 || code == -5003) {
                     var title = (code == 0) ?
                         $"本月已连续签到 {obj?.data?.total_sign_day ?? 0} 天" : "旅行者，你今天已经签到过了";
