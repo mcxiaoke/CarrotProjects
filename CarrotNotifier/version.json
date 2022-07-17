@@ -1,16 +1,16 @@
 ﻿{
   "has_update": true,
   "release": false,
-  "id": 20220621,
+  "id": 20220717,
   "name": "CarrotNotifier",
   "program": "CarrotNotifier.exe",
-  "version": "1.0.1",
-  "changelog": "重大更新，增加桌面常驻小组件，支持多彩主题样式，支持自定义字体和界面。",
-  "sha256sum": "fee26075ecb41c91da51d53f4a338aa2f326eeeaefa92531d6450c4d2ff5a317",
-  "created_at": "2022-06-21T16:38:11",
+  "version": "1.0.3",
+  "changelog": "桌面小组件菜单增加：刷新数据和隐藏小组件。",
+  "sha256sum": "4290cc6230d0c49e8ca0aabc3a6496c451c678d22614419c2cf5dae2b66898ae",
+  "created_at": "2022-07-17T09:58:48",
   "new_url": "https://gitee.com/osap/CarrotProjects/raw/master/CarrotNotifier/version.json",
   "project_url": "https://gitee.com/osap/CarrotProjects/tree/master/CarrotNotifier",
   "updater_url": "https://gitee.com/osap/CarrotProjects/raw/master/SharpUpdater/version.json",
-  "download_size": 4743996,
-  "download_url": "https://gitee.com/osap/CarrotProjects/attach_files/1102654/download/CarrotNotifier-1.0.1.zip"
+  "download_size": 4744345,
+  "download_url": "https://gitee.com/osap/CarrotProjects/attach_files/1128997/download/CarrotNotifier-1.0.3.zip"
 }
