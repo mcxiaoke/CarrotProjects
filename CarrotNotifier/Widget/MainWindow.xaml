@@ -72,7 +72,10 @@
                                     Click="CxmItemAccount_Click" />
                             <MenuItem Header="通用设置" x:Name="cxmItemSettings"
                                     Click="CxmItemSettings_Click" />
+                            <MenuItem Header="隐藏小组件" x:Name="CxmItemHide" Click="CxmItemHide_Click" />
                             <Separator />
+                            <MenuItem Header="刷新数据" Name="CxmItemRefresh"
+                                    Click="CxmItemRefresh_Click" />
                             <MenuItem Header="手动签到" Name="cxmItemSignReward"
                                     Click="CxmItemSignReward_Click" />
                             <MenuItem Header="检查更新" Name="cxmItemCheckUpdate"
