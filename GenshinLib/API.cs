@@ -158,7 +158,7 @@ namespace GenshinLib {
             Logger.Info($"[API][{rid}][Req] {method} {url} ({UID})");
             var response = await client.SendAsync(request);
             var json = await response.Content.ReadAsStringAsync();
-            Logger.Debug($"[API][{rid}][Res] {response.StatusCode} @{json.SafeSubstring(0, 128)}@");
+            Logger.Debug($"[API][{rid}][Res] {response.StatusCode} @{json.SafeSubstring(0, 256)}@");
             if ((int)response.StatusCode >= 500) {
                 throw new ServerException($"Server Error {response.StatusCode}");
             } else if (response.IsSuccessStatusCode) {
@@ -188,8 +188,8 @@ namespace GenshinLib {
             return await SendRequestAsync(HttpMethod.Post, url, queryDict, bodyObj, newDS);
         }
 
-        public async Task<(string?, Exception?)> PostSignReward() {
-            string? data = null;
+        public async Task<(Response<SignInResult>?, Exception?)> PostSignReward() {
+            Response<SignInResult>? res = null;
             Exception? error = null;
             if (User is UserGameRole u) {
                 try {
@@ -201,16 +201,17 @@ namespace GenshinLib {
                 {"region",u.Region},
                 {"uid",u.GameUid}
                 };
-                    data = await PostAsync(url, null, body, false);
+                    var data = await PostAsync(url, null, body, false);
+                    res = JsonConvert.DeserializeObject<Response<SignInResult>>(data);
                 } catch (Exception ex) {
                     error = ex;
                 }
             }
-            return (data, error);
+            return (res, error);
         }
 
-        public async Task<(string?, Exception?)> GetSignReward() {
-            string? data = null;
+        public async Task<(Response<SignInInfo>?, Exception?)> GetSignReward() {
+            Response<SignInInfo>? res = null;
             Exception? error = null;
             if (User is UserGameRole u) {
                 try {
@@ -222,13 +223,14 @@ namespace GenshinLib {
                 {"uid",u.GameUid},
                 { "act_id","e202009291139501"}
             };
-                    data = await GetAsync(url, query);
+                    var data = await GetAsync(url, query);
+                    res = JsonConvert.DeserializeObject<Response<SignInInfo>>(data);
                 } catch (Exception ex) {
                     error = ex;
                 }
             }
 
-            return (data, error);
+            return (res, error);
         }
 
         public async Task<(string?, Exception?)> GetMonthInfo() {

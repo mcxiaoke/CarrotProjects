@@ -9,14 +9,14 @@
         // 2.27.2 dailyNote worked version must>2.11.0
         public const string MHY_SALT_NEW = "xV8v4Qu54lUKrEYFZkJhB8cuOh9Asafs";//new
 
-        public const string MHY_VER_NEW = "2.34.1";
+        public const string MHY_VER_NEW = "2.35.2";
         public const string MHY_SIGN_ACT_ID = "e202009291139501";
 
         // another salt 4a8knnbk5pbjqsrudp3dq484m9axoc5g // old
         // another salt h8w582wxwgqvahcdkpvdhbh2w9casgfl // mweb old
         //new salt for sign worked for simple ds, sign api
-        public const string MHY_SALT_OLD = "9nQiU3AV0rJSIBWgdynfoGMGKaklfbM7"; // mweb
+        public const string MHY_SALT_OLD = "N50pqm7FSy2AkFz2B3TqtuZMJ5TOl3Ep"; // mweb
 
-        public const string MHY_VER_OLD = "2.34.1";
+        public const string MHY_VER_OLD = "2.35.2";
     };
 }

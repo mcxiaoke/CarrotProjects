@@ -201,24 +201,38 @@ namespace GenshinNotifier {
             }
         }
 
-        public async Task<(int, string?, Exception?)> PostSignReward() {
+        private async Task<(bool, string)> PostSignRewardReal() {
             if (string.IsNullOrEmpty(Cookie)) {
-                return default;
+                return (false, "未登录或Cookie失效");
             }
-            var (result, error) = await Api.PostSignReward();
-            Logger.Debug($"DataController.PostSignReward sign={result} error={error?.Message}");
-            dynamic? obj = JsonConvert.DeserializeObject(result ?? string.Empty);
-            // retcode == 0 success sign
-            // retcode == -5003 already sign
-            if (obj?.retcode == 0 || obj?.retcode == -5003) {
-                (result, error) = await Api.GetSignReward();
-                Logger.Debug($"DataController.PostSignReward reward={result} error={error?.Message}");
-                dynamic? robj = JsonConvert.DeserializeObject(result ?? string.Empty);
-                if (robj?.retcode == 0) {
-                    return (obj?.retcode, result, error);
+            var (resp, error) = await Api.PostSignReward();
+            Logger.Debug($"DataController.PostSignReward sign={resp} error={error?.Message}");
+            if (resp == null || error != null) {
+                return (false, $"{error}");
+            }
+            if (resp.Data == null) {
+                return resp.ReturnCode switch {
+                    0 => (true, "签到成功"),
+                    -5003 => (true, resp.Message!),
+                    _ => (false, resp.Message!),
+                };
+            } else {
+                if (resp.Data.RiskCode == 0 && resp.Data.Success == 0) {
+                    return (true, "签到成功");
+                } else {
+                    return (false, $"[RiskCode: {resp.Data.RiskCode} | Success: {resp.Data.Success}] 帐号受到风控，请稍后重试");
                 }
             }
-            return (obj?.retcode, result, error);
+        }
+
+        public async Task<(bool, string, Response<SignInInfo>?)> PostSignReward() {
+            var (extra, _) = await Api.GetSignReward();
+            if (extra?.Data?.IsSign == true) {
+                // already signed today
+                return (true, "已经签到过了哦", extra);
+            }
+            var (success, message) = await PostSignRewardReal();
+            return (success, message, extra);
         }
 
         public static async Task<UserGameRole?> ValidateCookie(string tempCookie) {

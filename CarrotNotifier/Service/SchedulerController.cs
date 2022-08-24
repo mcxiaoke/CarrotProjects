@@ -363,29 +363,29 @@ namespace GenshinNotifier {
             Status.LastSignAt = DateTime.Now;
             var todayStr = DateTime.Now.ToString("yyyy-MM-dd");
             try {
-                var (code, result, error) = await DataController.Default.PostSignReward();
-                Logger.Info($"DoSignReward code={code} result={result} error={error?.Message}");
-                dynamic? obj = JsonConvert.DeserializeObject(result ?? error?.Message ?? string.Empty);
+                var (success, message, extra) = await DataController.Default.PostSignReward();
+                Logger.Info($"DoSignReward success={success} message={message}");
                 if (manual) {
                     //for manual, reset notify flag
                     TodaySignOKShown = null;
                 }
-                if (code == 0 || code == -5003) {
-                    var title = (code == 0) ?
-                        $"本月已连续签到 {obj?.data?.total_sign_day ?? 0} 天" : "旅行者，你今天已经签到过了";
-                    var text = $"今天是 {DateTime.Now.ToLongDateString()}\n记得到游戏里领取邮件奖励哦！";
+                if (success) {
+                    var text = $"今天是 {DateTime.Now.ToString(todayStr)}，{message} 记得领取邮件奖励！";
+                    if (extra?.Data is SignInInfo info) {
+                        text = $"今天是 {info.Today}，已连续签到 {info.TotalSignDay} 天！ 记得领取邮件奖励！";
+                    }
                     TodaySigned = todayStr;
-                    ShowSignOKNotification(title, text);
+                    ShowSignOKNotification(text);
                 } else {
-                    ShowSignErrorNotification($"遇到错误 {obj?.message}", result ?? error?.Message ?? string.Empty);
+                    ShowSignErrorNotification($"签到失败，遇到错误！", message);
                 }
             } catch (Exception ex) {
                 Logger.Debug($"DoSignReward error={ex}");
-                ShowSignErrorNotification($"遇到错误 {ex.GetType()}", ex.Message);
+                ShowSignErrorNotification($"签到失败，遇到错误！", ex.Message);
             }
         }
 
-        private void ShowSignOKNotification(string title, string text) {
+        private void ShowSignOKNotification(string text) {
             if (!Settings.Default.OptionEnableNotifications) { return; }
             if (IsMutedToday) { return; }
             var todayNotiStr = DateTime.Now.ToString("yyyy-MM-dd");
@@ -399,9 +399,7 @@ namespace GenshinNotifier {
                 var toast = new ToastContentBuilder()
                     .SetToastScenario(ToastScenario.Default)
                     .AddHeader($"1002", $"{user.Nickname}，米游社原神签到成功", "action=signopen&id=1002")
-                    .AddText(title)
                     .AddText(text)
-                    .AddAttributionText(DateTime.Now.ToString("F"))
                     .AddAppLogoOverride(new Uri(image), ToastGenericAppLogoCrop.Circle);
                 toast.Show(t => {
                     t.Group = Application.ProductName;
@@ -427,7 +425,6 @@ namespace GenshinNotifier {
                     .AddHeader($"1003", $"{user.Nickname}，米游社原神签到失败", "action=signopen&id=1003")
                     .AddText(title)
                     .AddText(text)
-                    .AddAttributionText(DateTime.Now.ToString("F"))
                     .AddAppLogoOverride(new Uri(image), ToastGenericAppLogoCrop.Circle);
                 toast.Show(t => {
                     t.Group = Application.ProductName;
