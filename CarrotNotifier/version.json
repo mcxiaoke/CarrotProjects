@@ -4,13 +4,13 @@
   "id": 20220805,
   "name": "CarrotNotifier",
   "program": "CarrotNotifier.exe",
-  "version": "1.0.4",
-  "changelog": "米游社接口变动，更新代码修复签到失败问题。",
-  "sha256sum": "c1fa477575473ee1861a6286911cf25f41c43f6c907c34d9ecab38295669a38f",
-  "created_at": "2022-08-05T16:06:15",
+  "version": "1.0.5",
+  "changelog": "米游社接口变动，修复签到失败问题，优化签到通知。",
+  "sha256sum": "371f7859264da916933f8631b1b7e517e066af770c7b765925f77bf8ef53b855",
+  "created_at": "2022-08-24T19:05:59",
   "new_url": "https://gitee.com/osap/CarrotProjects/raw/master/CarrotNotifier/version.json",
   "project_url": "https://gitee.com/osap/CarrotProjects/tree/master/CarrotNotifier",
   "updater_url": "https://gitee.com/osap/CarrotProjects/raw/master/SharpUpdater/version.json",
-  "download_size": 4744324,
-  "download_url": "https://gitee.com/osap/CarrotProjects/attach_files/1148404/download/CarrotNotifier-1.0.4.zip"
+  "download_size": 4785168,
+  "download_url": "https://gitee.com/osap/CarrotProjects/releases/download/CarrotNotifier-1.0.5/CarrotNotifier-1.0.5.zip"
 }
