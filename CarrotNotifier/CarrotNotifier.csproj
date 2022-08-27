@@ -109,7 +109,7 @@
     <RepositoryUrl>https://github.com/mcxiaoke/CarrotProjects</RepositoryUrl>
     <NeutralLanguage>zh-CN</NeutralLanguage>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
-    <FileVersion>1.0.5</FileVersion>
+    <FileVersion>1.0.6</FileVersion>
     <ApplicationIcon>Assets\carrot_512.ico</ApplicationIcon>
     <Description>Desktop Carrot Notifier for Genshin Impact</Description>
     <PackageIcon>carrot_512.png</PackageIcon>
@@ -118,7 +118,7 @@
     <PackageTags>genshin;carrot;notifier;widget</PackageTags>
     <PackageReleaseNotes>Desktop Carrot Notifier for Genshin Impact</PackageReleaseNotes>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
-    <Version>1.0.5</Version>
+    <Version>1.0.6</Version>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <StartupObject>GenshinNotifier.App</StartupObject>
   </PropertyGroup>

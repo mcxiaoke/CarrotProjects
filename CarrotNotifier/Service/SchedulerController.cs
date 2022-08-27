@@ -368,6 +368,7 @@ namespace GenshinNotifier {
                 if (manual) {
                     //for manual, reset notify flag
                     TodaySignOKShown = null;
+                    TodaySignErrorShown = null;
                 }
                 if (success) {
                     var text = $"今天是 {DateTime.Now.ToString(todayStr)}，{message} 记得领取邮件奖励！";
@@ -375,17 +376,17 @@ namespace GenshinNotifier {
                         text = $"今天是 {info.Today}，已连续签到 {info.TotalSignDay} 天！ 记得领取邮件奖励！";
                     }
                     TodaySigned = todayStr;
-                    ShowSignOKNotification(text);
+                    ShowSignOKNotification(text, manual);
                 } else {
-                    ShowSignErrorNotification($"签到失败，遇到错误！", message);
+                    ShowSignErrorNotification($"签到失败，遇到错误！", message, manual);
                 }
             } catch (Exception ex) {
                 Logger.Debug($"DoSignReward error={ex}");
-                ShowSignErrorNotification($"签到失败，遇到错误！", ex.Message);
+                ShowSignErrorNotification($"签到失败，遇到错误！", ex.Message, manual);
             }
         }
 
-        private void ShowSignOKNotification(string text) {
+        private void ShowSignOKNotification(string text, bool manual = false) {
             if (!Settings.Default.OptionEnableNotifications) { return; }
             if (IsMutedToday) { return; }
             var todayNotiStr = DateTime.Now.ToString("yyyy-MM-dd");
@@ -409,7 +410,7 @@ namespace GenshinNotifier {
             }
         }
 
-        private void ShowSignErrorNotification(string title, string text) {
+        private void ShowSignErrorNotification(string title, string text, bool manual = false) {
             if (!Settings.Default.OptionEnableNotifications) { return; }
             if (IsMutedToday) { return; }
             var todayNotiStr = DateTime.Now.ToString("yyyy-MM-dd");
