@@ -32,7 +32,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DesktopWidgets", "DesktopWi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CMDPanel", "CMDPanel\CMDPanel.csproj", "{7DAA27AE-9552-4547-BED8-AC05C6996F30}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Camonit", "Camonit\Camonit.csproj", "{9C149B15-D9A0-4BF4-99DC-17F515482749}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Camonit", "Camonit\Camonit.csproj", "{9C149B15-D9A0-4BF4-99DC-17F515482749}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Carrot.Shutdown", "Carrot.Shutdown\Carrot.Shutdown.csproj", "{018C4FF5-1449-46C9-9B1C-3E3E5723AE1D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -200,6 +202,18 @@ Global
 		{9C149B15-D9A0-4BF4-99DC-17F515482749}.Release|x64.Build.0 = Release|Any CPU
 		{9C149B15-D9A0-4BF4-99DC-17F515482749}.Release|x86.ActiveCfg = Release|Any CPU
 		{9C149B15-D9A0-4BF4-99DC-17F515482749}.Release|x86.Build.0 = Release|Any CPU
+		{018C4FF5-1449-46C9-9B1C-3E3E5723AE1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{018C4FF5-1449-46C9-9B1C-3E3E5723AE1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{018C4FF5-1449-46C9-9B1C-3E3E5723AE1D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{018C4FF5-1449-46C9-9B1C-3E3E5723AE1D}.Debug|x64.Build.0 = Debug|Any CPU
+		{018C4FF5-1449-46C9-9B1C-3E3E5723AE1D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{018C4FF5-1449-46C9-9B1C-3E3E5723AE1D}.Debug|x86.Build.0 = Debug|Any CPU
+		{018C4FF5-1449-46C9-9B1C-3E3E5723AE1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{018C4FF5-1449-46C9-9B1C-3E3E5723AE1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{018C4FF5-1449-46C9-9B1C-3E3E5723AE1D}.Release|x64.ActiveCfg = Release|Any CPU
+		{018C4FF5-1449-46C9-9B1C-3E3E5723AE1D}.Release|x64.Build.0 = Release|Any CPU
+		{018C4FF5-1449-46C9-9B1C-3E3E5723AE1D}.Release|x86.ActiveCfg = Release|Any CPU
+		{018C4FF5-1449-46C9-9B1C-3E3E5723AE1D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
