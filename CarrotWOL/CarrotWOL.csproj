@@ -1,0 +1,42 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFrameworks>net472;netstandard2.0;net6.0</TargetFrameworks>
+    <AutoGenerateBindingRedirects>True</AutoGenerateBindingRedirects>
+    <RootNamespace>CarrotWOL</RootNamespace>
+    <AssemblyName>CarrotWOL</AssemblyName>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Costura.Fody">
+      <Version>5.7.0</Version>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Fody">
+      <Version>6.6.2</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Windows.Compatibility">
+      <Version>6.0.0</Version>
+    </PackageReference>
+  </ItemGroup>
+
+  <PropertyGroup />
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Company>CatCastle</Company>
+    <Authors>CatCastle</Authors>
+    <Copyright>Copyright © CatCastle 2022</Copyright>
+    <PackageProjectUrl>https://github.com/mcxiaoke/CarrotProjects</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/mcxiaoke/CarrotProjects</RepositoryUrl>
+    <NeutralLanguage>zh-CN</NeutralLanguage>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.2</FileVersion>
+    <Version>1.0.0</Version>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
+</Project>
