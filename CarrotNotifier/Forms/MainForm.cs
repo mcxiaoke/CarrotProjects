@@ -11,6 +11,7 @@ using Carrot.Common;
 using GenshinLib;
 using GenshinNotifier.Properties;
 using Microsoft.Toolkit.Uwp.Notifications;
+using static Microsoft.Toolkit.Uwp.Notifications.ToastNotificationActivatedEventArgsCompat;
 
 namespace GenshinNotifier {
 

@@ -18,7 +18,7 @@ namespace CarrotVSNumber {
 
         [Option('f', "file", Required = false,
             HelpText = "AssemblyInfo.cs file to change version number")]
-        public string Target { get; set; }
+        public string? Target { get; set; }
 
         [Option('b', "backup", Required = false, HelpText = "bakup old AssemblyInfo.cs file")]
         public bool Backup { get; set; }

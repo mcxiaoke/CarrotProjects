@@ -17,7 +17,6 @@ using System.Reflection;
 using Carrot.Common;
 using Newtonsoft.Json.Linq;
 using Microsoft.Toolkit.Uwp.Notifications;
-using Windows.System;
 using System.Configuration;
 using Carrot.UI.Controls.Dialog;
 using System.Diagnostics.CodeAnalysis;

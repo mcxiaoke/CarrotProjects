@@ -10,13 +10,15 @@ namespace CarrotVSNumber {
             var name = "AssemblyInfo.cs";
             var input = File.ReadAllText(name);
             //Console.WriteLine(source);
-            string pv = @"(\d+\.\d+\.\d+(\.\d+)?)";
-            string pattern = $@"(^.+AssemblyFileVersion\(""){pv}(""\)\])";
-            var match = Regex.Match(input, pattern, RegexOptions.Multiline);
+            var pv = @"(\d+\.\d+\.\d+(\.\d+)?)";
+            var re = new Regex($@"(^.+AssemblyFileVersion\(""){pv}(""\)\])",  RegexOptions.Multiline);
+            var match = re.Match(input);
             Console.WriteLine("Match={0}", match.Value);
             if (match.Success && match.Groups.Count > 4) {
-                foreach (Group g in match.Groups) {
-                    Console.WriteLine("[{0}] {1}", g.Name, g.Value);
+                foreach (var gn in re.GetGroupNames())
+                {
+                    var g = match.Groups[gn];
+                    Console.WriteLine("[{0}] {1}", gn, g.Value);
                 }
                 var prefix = match.Groups[1].Value;
                 var version = match.Groups[2].Value;

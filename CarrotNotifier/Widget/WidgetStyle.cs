@@ -18,7 +18,6 @@ using System.Windows.Input;
 using Carrot.UI.Controls;
 using System.Text;
 using System.Collections.ObjectModel;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
 
 namespace GenshinNotifier {
 

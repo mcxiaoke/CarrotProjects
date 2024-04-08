@@ -9,6 +9,7 @@ using Carrot.Common;
 using Carrot.ProCom.Common;
 using Microsoft.Toolkit.Uwp.Notifications;
 using H.NotifyIcon;
+using static Microsoft.Toolkit.Uwp.Notifications.ToastNotificationActivatedEventArgsCompat;
 
 namespace GenshinNotifier {
 
