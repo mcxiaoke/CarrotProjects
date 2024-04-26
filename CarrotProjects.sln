@@ -42,6 +42,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CommandRunner", "CommandRun
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Carrot.AutoLock", "Carrot.AutoLock\Carrot.AutoLock.csproj", "{E7E7BC55-18D9-4D72-9B55-5C486776861E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BluetoothDemo", "BluetoothDemo\BluetoothDemo.csproj", "{1A4CBCD8-219B-4218-B913-C4C23874F0CF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -256,6 +258,18 @@ Global
 		{E7E7BC55-18D9-4D72-9B55-5C486776861E}.Release|x64.Build.0 = Release|Any CPU
 		{E7E7BC55-18D9-4D72-9B55-5C486776861E}.Release|x86.ActiveCfg = Release|Any CPU
 		{E7E7BC55-18D9-4D72-9B55-5C486776861E}.Release|x86.Build.0 = Release|Any CPU
+		{1A4CBCD8-219B-4218-B913-C4C23874F0CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A4CBCD8-219B-4218-B913-C4C23874F0CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A4CBCD8-219B-4218-B913-C4C23874F0CF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1A4CBCD8-219B-4218-B913-C4C23874F0CF}.Debug|x64.Build.0 = Debug|Any CPU
+		{1A4CBCD8-219B-4218-B913-C4C23874F0CF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1A4CBCD8-219B-4218-B913-C4C23874F0CF}.Debug|x86.Build.0 = Debug|Any CPU
+		{1A4CBCD8-219B-4218-B913-C4C23874F0CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A4CBCD8-219B-4218-B913-C4C23874F0CF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A4CBCD8-219B-4218-B913-C4C23874F0CF}.Release|x64.ActiveCfg = Release|Any CPU
+		{1A4CBCD8-219B-4218-B913-C4C23874F0CF}.Release|x64.Build.0 = Release|Any CPU
+		{1A4CBCD8-219B-4218-B913-C4C23874F0CF}.Release|x86.ActiveCfg = Release|Any CPU
+		{1A4CBCD8-219B-4218-B913-C4C23874F0CF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
