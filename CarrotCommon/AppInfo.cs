@@ -111,7 +111,9 @@ namespace Carrot.Common {
 
             Assembly entryAssembly = Assembly.GetEntryAssembly()!;
             var mainType = entryAssembly.EntryPoint?.ReflectedType;
-            ExecutablePath = entryAssembly.Location;
+            //ExecutablePath = entryAssembly.Location;
+            // https://stackoverflow.com/questions/64581054
+            ExecutablePath = Process.GetCurrentProcess().MainModule?.FileName!;
             AssemblyName = entryAssembly.GetName()?.Name ?? ModuleName;
             ParseAssembly(entryAssembly);
             Description = FileInfo.FileDescription ?? string.Empty;
