@@ -52,6 +52,7 @@ namespace Carrot.AutoLock {
             textIPAddress.Text = ActiveChecker.DEFAULT_IP;
             deviceIP = ActiveChecker.DEFAULT_IP;
             UpdateUI();
+            CheckIt();
         }
 
         private void MainForm_Resize(object sender, EventArgs e) {
@@ -120,6 +121,10 @@ namespace Carrot.AutoLock {
 
         private void BtnStart_Click(object sender, EventArgs e) {
             Console.WriteLine("BtnStart_Click");
+            CheckIt();
+        }
+
+        private void CheckIt() {
             if (mChecker.IsRunning()) {
                 mChecker.Stop();
                 mChecker.callback = null;

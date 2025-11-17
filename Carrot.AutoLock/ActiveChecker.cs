@@ -20,7 +20,7 @@ namespace Carrot.AutoLock {
         public delegate void StatusCallback(string result);
 
         // 要监视的设备的 IP 地址
-        public static readonly string DEFAULT_IP = "192.168.1.106";
+        public static readonly string DEFAULT_IP = "192.168.1.40";
         // 设备离线检测次数阈值
         public static readonly int MAX_OFFLINE_COUNT = 6;
         // 键盘鼠标活跃时间阈值

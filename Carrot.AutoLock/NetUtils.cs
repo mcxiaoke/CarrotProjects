@@ -8,6 +8,15 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
+// todo 
+
+//给自动锁定添加
+
+//锁定后降低亮度
+//解锁后提高亮度
+
+//按照时间自动亮度功能
+
 namespace Carrot.AutoLock {
 
     public class Device {
@@ -124,7 +133,7 @@ namespace Carrot.AutoLock {
         }
 
         public static bool IsValidIPv4(string ipAddress) {
-            IPAddress address;
+            IPAddress? address;
             return IPAddress.TryParse(ipAddress, out address) && address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork;
         }
     }
