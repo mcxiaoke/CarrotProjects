@@ -1,49 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 
-namespace Carrot.Common.Extensions {
-    public static class StringExtensions {
-        public static string AsString(this object obj) => string.Join("\n",
-    obj.GetType().GetProperties().Select(prop => $"{prop.Name}: {prop.GetValue(obj, null)}"));
+namespace Carrot.Common.Extensions;
 
-        public static string ToHumanReadableString(this TimeSpan timeSpan) {
-            if (timeSpan.TotalSeconds >= 0 && timeSpan.TotalSeconds < 30) {
-                return "刚刚";
-            }
-            var components = new List<Tuple<int, string>>
-            {
-            Tuple.Create(Math.Abs((int) timeSpan.TotalDays), "天"),
-            Tuple.Create(Math.Abs(timeSpan.Hours), "小时"),
-            Tuple.Create(Math.Abs(timeSpan.Minutes), "分"),
-            Tuple.Create(Math.Abs(timeSpan.Seconds), "秒"),
-        };
-            components.RemoveAll(i => i.Item1 == 0);
-            var timeStr = string.Concat(components.Select(t => $"{t.Item1}{t.Item2}"));
-            string extra = timeSpan.TotalSeconds >= 0 ? "后" : "前";
-            return $"{timeStr}{extra}";
-        }
+/// <summary>
+/// Provides extension methods for strings.
+/// 提供字符串的扩展方法。
+/// </summary>
+public static class StringExtensions {
 
-        public static string SafeSubstring(this string value, int startIndex, int length) {
-            return new string((value ?? string.Empty).Skip(startIndex).Take(length).ToArray());
-        }
+    /// <summary>
+    /// Safely retrieves a substring from this instance.
+    /// 从此实例安全地检索子字符串。
+    /// </summary>
+    /// <param name="value">The string to retrieve the substring from. 要检索子字符串的字符串。</param>
+    /// <param name="startIndex">The zero-based starting character position of a substring as an integer. 子字符串的从零开始的起始字符位置。</param>
+    /// <param name="length">The number of characters in the substring. 子字符串中的字符数。</param>
+    /// <returns>A string that is equivalent to the substring of length length that begins at startIndex in this instance, or Empty if startIndex is out of range. 相当于从此实例中的 startIndex 处开始的长度为 length 的子字符串的字符串，如果 startIndex 超出范围，则为空。</returns>
+    public static string SafeSubstring(this string? value, int startIndex, int length) {
+        if (string.IsNullOrEmpty(value)) return string.Empty;
+        if (startIndex < 0) startIndex = 0;
+        if (length < 0) return string.Empty;
 
-        public static StringBuilder AppendIf<T>(this StringBuilder @this, Func<T, bool> predicate, params T[] values) {
-            foreach (var value in values) {
-                if (predicate(value)) {
-                    @this.Append(value);
-                }
-            }
-
-            return @this;
-        }
-
-        public static StringBuilder AppendIf(this StringBuilder @this, bool condition, string value) {
-            if (condition)
-                @this.Append(value);
-            return @this;
-        }
+        // Optimization: Use Span for better performance
+        // return value.AsSpan().Slice(start, length).ToString();
+        // But need bounds checking logic from Linq Skip/Take
+        
+        return new string(value.Skip(startIndex).Take(length).ToArray());
     }
 }
