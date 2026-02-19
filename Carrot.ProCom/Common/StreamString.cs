@@ -18,7 +18,7 @@ namespace Carrot.ProCom.Common {
         public string ReadString() {
             int length = streamEncoding.GetByteCount(MAGIC);
             byte[] result = new byte[length];
-            ioStream.Read(result, 0, result.Length);
+            ioStream.ReadExactly(result, 0, result.Length);
             string rMagic = streamEncoding.GetString(result);
             //Debug.WriteLine($"ReadString magic={rMagic}");
             if (rMagic != MAGIC) {
@@ -33,7 +33,7 @@ namespace Carrot.ProCom.Common {
                 throw new IOException($"Invalid Stream Length {len}");
             }
             byte[] inBuffer = new byte[len];
-            ioStream.Read(inBuffer, 0, len);
+            ioStream.ReadExactly(inBuffer, 0, len);
 
             return streamEncoding.GetString(inBuffer);
         }

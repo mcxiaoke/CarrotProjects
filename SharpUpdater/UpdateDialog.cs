@@ -153,7 +153,7 @@ namespace SharpUpdater {
                     info.LocalName = localFile.ProductName!;
                     info.LocalVersion = localFile.ProductVersion!;
 
-                    bool hasNew = info.HasUpdate && localVer < remoteVer;
+                    bool hasNew = info.HasUpdate && localVer.ComparePrecedenceTo(remoteVer) < 0;
 
                     Logger.Debug($"CheckUpdate end {DateTime.Now}");
                     currentUpdateStatus = hasNew ? UpdateStatus.READY : UpdateStatus.QUIT;
@@ -232,7 +232,7 @@ namespace SharpUpdater {
                     if (found == null) {
                         throw new NullReferenceException($"升级包损坏或错误：可执行文件 [{program}] 不存在");
                     }
-                    bool strip = found.Contains("/") && found.Contains(program);
+                    bool strip = found.Contains('/') && found.Contains(program);
                     string stripPrefix = found.Replace(program, "");
                     SharpUtils.UnzipFile(zipPath, destPath, true, strip, stripPrefix);
                     //File.Delete(zipPath);

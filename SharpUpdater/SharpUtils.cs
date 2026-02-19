@@ -65,13 +65,13 @@ namespace SharpUpdater {
                 var entries = archive.Entries;
                 string prefix = string.Empty;
                 if (stripPrefix) {
-                    if (prefixStr != null && prefixStr.EndsWith("/")) {
+                    if (prefixStr != null && prefixStr.EndsWith('/')) {
                         prefix = prefixStr;
                     } else {
                         var fileNames = entries.Select(e => e.FullName);
                         //Logger.Debug(string.Join("\n", fileNames.ToArray()));
                         var prefixFound = GetCommonStringPrefix(fileNames);
-                        if (prefixFound != null && prefixFound.EndsWith("/")) {
+                        if (prefixFound != null && prefixFound.EndsWith('/')) {
                             prefix = prefixFound;
                         }
                     }
@@ -130,12 +130,14 @@ namespace SharpUpdater {
             Logger.Debug($"UnzipFile done.");
         }
 
+        private static readonly string[] SizeUnits = new[] { "B", "KB", "MB", "GB", "TB" };
+
         public static string FormatFileSize(long lSize) {
             double size = lSize;
             int index = 0;
             for (; size > 1024; index++)
                 size /= 1024;
-            return size.ToString("0.00 " + new[] { "B", "KB", "MB", "GB", "TB" }[index]);
+            return size.ToString("0.00 " + SizeUnits[index]);
         }
 
         // slow

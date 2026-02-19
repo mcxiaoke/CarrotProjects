@@ -5,15 +5,14 @@ using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 using Carrot.Common;
-using IWshRuntimeLibrary;
 
 namespace GenshinNotifier {
 
     internal static class ShortcutHelper {
 
         private static string StartupPath => Environment.GetFolderPath(Environment.SpecialFolder.Startup);
-        private static string ProgramPath => AppInfo.ExecutablePath;
-        private static string ProgramName => Application.ProductName;
+        private static string ProgramPath => AppInfo.ExecutablePath ?? "";
+        private static string ProgramName => Application.ProductName ?? "";
         private static string DesktopPath => Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory);
 
         public static void EnableAutoStart(bool enable = true) {
@@ -59,8 +58,13 @@ namespace GenshinNotifier {
                 if (!Directory.Exists(directory))
                     Directory.CreateDirectory(directory);
                 string shortcutPath = Path.Combine(directory, $"{shortcutName}.lnk");
-                WshShell shell = new WshShell();
-                IWshShortcut shortcut = (IWshShortcut)shell.CreateShortcut(shortcutPath);
+                
+                Type? type = Type.GetTypeFromProgID("WScript.Shell");
+                if (type == null) return false;
+                dynamic? shell = Activator.CreateInstance(type);
+                if (shell == null) return false;
+                dynamic shortcut = shell.CreateShortcut(shortcutPath);
+
                 shortcut.TargetPath = targetPath;
                 shortcut.Arguments = arguments;
                 shortcut.WorkingDirectory = Path.GetDirectoryName(targetPath);
@@ -85,9 +89,14 @@ namespace GenshinNotifier {
         public static string GetShortcutTargetPath(string shortcutPath) {
             Logger.Verbose($"GetShortcutTargetPath for {shortcutPath}");
             if (System.IO.File.Exists(shortcutPath)) {
-                WshShell shell = new WshShell();
-                IWshShortcut shortct = (IWshShortcut)shell.CreateShortcut(shortcutPath);
-                return shortct.TargetPath;
+                try {
+                    Type? type = Type.GetTypeFromProgID("WScript.Shell");
+                    if (type == null) return "";
+                    dynamic? shell = Activator.CreateInstance(type);
+                    if (shell == null) return "";
+                    dynamic shortcut = shell.CreateShortcut(shortcutPath);
+                    return shortcut.TargetPath;
+                } catch { return ""; }
             } else {
                 return "";
             }
