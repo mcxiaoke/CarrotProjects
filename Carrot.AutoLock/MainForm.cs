@@ -1,235 +1,266 @@
 using System;
 using System.Drawing;
-using System.Windows.Forms;
 using System.Text.RegularExpressions;
-using System.Reflection;
-using GenshinNotifier;
+using System.Windows.Forms;
 using Carrot.Common;
 
+namespace Carrot.AutoLock;
 
-namespace Carrot.AutoLock {
+/// <summary>
+/// Main application form. Controls tray icon and menu logic.
+/// 主窗体类。控制托盘图标和菜单逻辑。
+/// </summary>
+public partial class MainForm : Form {
+
+    private const string NAME = "CarrotLock";
+    private static readonly Regex ReIp = new(@"^\d+\.\d+\.\d+\.\d+$", RegexOptions.Compiled);
+
+    private readonly NotifyIcon _notifyIcon;
+    private readonly ContextMenuStrip _contextMenuStrip;
+    private string _deviceIP = "";
+    private readonly ActiveChecker _checker;
+
     /// <summary>
-    /// 主窗口类，包含托盘图标逻辑和配置界面
+    /// Initializes the main form and tray icon.
+    /// 初始化窗体和托盘图标。
     /// </summary>
-    public partial class MainForm : Form {
+    public MainForm() {
+        InitializeComponent();
+        _checker = new ActiveChecker();
 
-        private static readonly string NAME = "CarrotLock";
-        private static readonly string RE_IP = @"^\d+\.\d+\.\d+\.\d+$";
+        // Initialize NotifyIcon
+        _notifyIcon = new NotifyIcon {
+            Icon = Properties.Resources.carrot_512,
+            Text = NAME
+        };
 
-        private readonly NotifyIcon notifyIcon;
-        private readonly ContextMenuStrip contextMenuStrip;
+        // Initialize ContextMenuStrip
+        _contextMenuStrip = new ContextMenuStrip();
+        
+        // Show Window menu item
+        var showMenuItem = new ToolStripMenuItem("显示窗口", null, ShowWindowMenuItem_Click);
+        _contextMenuStrip.Items.Add(showMenuItem);
+        
+        // Add separator
+        _contextMenuStrip.Items.Add(new ToolStripSeparator());
+        
+        // Exit menu item
+        var exitMenuItem = new ToolStripMenuItem("退出应用", null, ExitMenuItem_Click);
+        _contextMenuStrip.Items.Add(exitMenuItem);
 
-        private string deviceIP = "";
+        // Bind ContextMenuStrip to NotifyIcon
+        _notifyIcon.ContextMenuStrip = _contextMenuStrip;
+        _notifyIcon.Click += NotifyIcon_Click;
+    }
 
-        private readonly ActiveChecker mChecker;
+    private void MainForm_Load(object sender, EventArgs e) {
+        Console.WriteLine(@"MainForm_Load");
+        LoadConfig();
+        textIPAddress.Text = _deviceIP;
+        
+        // Initialize AutoStart Checkbox
+        cbAutoStart.Checked = IsAutoStartEnabled(Application.ProductName);
 
-        /// <summary>
-        /// 构造函数，初始化组件、状态检测器和托盘菜单
-        /// </summary>
-        public MainForm() {
-            InitializeComponent();
-            mChecker = new ActiveChecker();
-            // 初始化NotifyIcon
-            notifyIcon = new NotifyIcon {
-                Icon = Properties.Resources.carrot_512,
-                Text = NAME
-            };
+        UpdateUI();
+        ToggleCheck();
+    }
 
-            // 初始化ContextMenuStrip
-            contextMenuStrip = new ContextMenuStrip();
-            // 添加菜单项 - 显示窗口
-            ToolStripMenuItem showMenuItem = new("显示窗口", null, ShowWindowMenuItem_Click);
-            contextMenuStrip.Items.Add(showMenuItem);
-            // 添加分隔线
-            contextMenuStrip.Items.Add(new ToolStripSeparator());
-            // 添加菜单项 - 退出应用
-            ToolStripMenuItem exitMenuItem = new("退出应用", null, ExitMenuItem_Click);
-            contextMenuStrip.Items.Add(exitMenuItem);
-
-            // 为NotifyIcon绑定ContextMenuStrip
-            notifyIcon.ContextMenuStrip = contextMenuStrip;
-
-            notifyIcon.Click += NotifyIcon_Click;
-        }
-
-        private void MainForm_Load(object sender, EventArgs e) {
-            Console.WriteLine("MainForm_Load");
-            LoadConfig();
-            textIPAddress.Text = deviceIP;
-            UpdateUI();
-            CheckIt();
-        }
-
-        /// <summary>
-        /// 从本地文件加载配置 (目标 IP)
-        /// </summary>
-        private void LoadConfig() {
-            try {
-                // AppInfo.LocalAppDataPath already includes Company/Product folders
-                string path = Path.Combine(AppInfo.LocalAppDataPath, "config.txt");
-                if (File.Exists(path)) {
-                    deviceIP = File.ReadAllText(path).Trim();
-                }
-            } catch (Exception ex) {
-                Logger.Error("LoadConfig", ex);
+    /// <summary>
+    /// Loads the configuration (target IP) from file.
+    /// 从配置文件加载配置 (目标 IP)。
+    /// </summary>
+    private void LoadConfig() {
+        try {
+            // AppInfo.LocalAppDataPath already includes Company/Product folders
+            string path = Path.Combine(AppInfo.LocalAppDataPath, "config.txt");
+            if (File.Exists(path)) {
+                _deviceIP = File.ReadAllText(path).Trim();
             }
-            if (string.IsNullOrWhiteSpace(deviceIP)) {
-                deviceIP = ActiveChecker.DEFAULT_IP;
-            }
+        } catch (Exception ex) {
+            Logger.Error("LoadConfig", ex);
         }
-
-        /// <summary>
-        /// 保存配置 (目标 IP) 到本地文件
-        /// </summary>
-        private void SaveConfig() {
-            try {
-                string path = Path.Combine(AppInfo.LocalAppDataPath, "config.txt");
-                File.WriteAllText(path, deviceIP);
-            } catch (Exception ex) {
-                Logger.Error("SaveConfig", ex);
-            }
+        if (string.IsNullOrWhiteSpace(_deviceIP)) {
+            _deviceIP = ActiveChecker.DEFAULT_IP;
         }
+    }
 
-        private void MainForm_Resize(object sender, EventArgs e) {
-            Console.WriteLine($"MainForm_Resize ${this.WindowState}");
-            // 判断窗口是否被最小化
-            if (this.WindowState == FormWindowState.Minimized) {
-                // 隐藏窗体
-                this.Hide();
-                // 显示状态栏图标
-                notifyIcon.Visible = true;
-                // 显示状态栏提示
-                //notifyIcon.ShowBalloonTip(1000, NAME, "最小化到状态栏", ToolTipIcon.Info);
-            } else {
-                ShowWindow();
-            }
+    /// <summary>
+    /// Saves the configuration (target IP) to file.
+    /// 保存配置 (目标 IP) 到文件。
+    /// </summary>
+    private void SaveConfig() {
+        try {
+            string path = Path.Combine(AppInfo.LocalAppDataPath, "config.txt");
+            File.WriteAllText(path, _deviceIP);
+        } catch (Exception ex) {
+            Logger.Error("SaveConfig", ex);
         }
+    }
 
-        private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
-            Console.WriteLine("MainForm_FormClosing Reason:" + e.CloseReason);
-            // You can use the CloseReason property to find out why the event is called.
-            // When the user clicks on the close button on the window,
-            // e.CloseReason is UserClosing,
-            // otherwise it is ApplicationExitCall
-            if (e.CloseReason == CloseReason.UserClosing) {
-                // 取消关闭动作
-                e.Cancel = true;
-                // 隐藏窗体
-                this.WindowState = FormWindowState.Minimized;
-                // 显示状态栏图标
-                notifyIcon.Visible = true;
-                // 显示状态栏提示
-                // notifyIcon.ShowBalloonTip(1000, NAME, "最小化到状态栏", ToolTipIcon.Info);
-            }
-
-        }
-
-
-        private void NotifyIcon_Click(object sender, EventArgs e) {
-            // 检查鼠标按钮的状态
-            if (((MouseEventArgs)e).Button == MouseButtons.Left) {
-                ShowWindow();
-            } else if (((MouseEventArgs)e).Button == MouseButtons.Right) {
-                // 显示ContextMenu
-                contextMenuStrip.Show(Cursor.Position);
-            }
-        }
-
-        private void ShowWindowMenuItem_Click(object sender, EventArgs e) {
+    private void MainForm_Resize(object sender, EventArgs e) {
+        Console.WriteLine($@"MainForm_Resize {this.WindowState}");
+        // Check if window is minimized
+        if (this.WindowState == FormWindowState.Minimized) {
+            // Hide window
+            this.Hide();
+            // Show tray icon
+            _notifyIcon.Visible = true;
+            // notifyIcon.ShowBalloonTip(1000, NAME, "Minimizing to tray...", ToolTipIcon.Info);
+        } else {
             ShowWindow();
         }
+    }
 
-        private void ExitMenuItem_Click(object sender, EventArgs e) {
-            Console.WriteLine("ExitMenuItem_Click");
-            // 退出应用
-            mChecker.Stop();
-            Application.Exit();
+    private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
+        Console.WriteLine($@"MainForm_FormClosing Reason:{e.CloseReason}");
+        // If user creates closing event, minimize to tray
+        if (e.CloseReason == CloseReason.UserClosing) {
+            e.Cancel = true;
+            this.WindowState = FormWindowState.Minimized;
+            _notifyIcon.Visible = true;
         }
+    }
 
-        private void BtnExit_Click(object sender, EventArgs e) {
-            Console.WriteLine("BtnExit_Click");
-            mChecker.Stop();
-            mChecker.callback = null;
-            Application.Exit();
-
+    private void NotifyIcon_Click(object? sender, EventArgs e) {
+        // Only handle left click, right click is context menu
+        if (e is MouseEventArgs { Button: MouseButtons.Left }) {
+            ShowWindow();
+        } else if (e is MouseEventArgs { Button: MouseButtons.Right }) {
+             _contextMenuStrip.Show(Cursor.Position);
         }
+    }
 
-        private void BtnStart_Click(object sender, EventArgs e) {
-            Console.WriteLine("BtnStart_Click");
-            CheckIt();
-        }
+    private void ShowWindowMenuItem_Click(object? sender, EventArgs e) {
+        ShowWindow();
+    }
 
-        /// <summary>
-        /// 切换检测状态 (开始/停止)
-        /// </summary>
-        private void CheckIt() {
-            if (mChecker.IsRunning()) {
-                mChecker.Stop();
-                mChecker.callback = null;
-            } else {
-                if (!Regex.IsMatch(deviceIP, RE_IP)) {
-                    MessageBox.Show("IP地址格式不正确");
-                    return;
-                }
-                SaveConfig();
-                mChecker.SetTargetIP(deviceIP);
-                mChecker.callback = OnStatusChanged;
-                mChecker.Start();
+    private void ExitMenuItem_Click(object? sender, EventArgs e) {
+        Console.WriteLine(@"ExitMenuItem_Click");
+        _checker.Stop();
+        Application.Exit();
+    }
+
+    private void BtnExit_Click(object sender, EventArgs e) {
+        Console.WriteLine(@"BtnExit_Click");
+        _checker.Stop();
+        _checker.Callback = null;
+        Application.Exit();
+    }
+
+    private void BtnStart_Click(object sender, EventArgs e) {
+        Console.WriteLine(@"BtnStart_Click");
+        ToggleCheck();
+    }
+
+    /// <summary>
+    /// Toggles the checker status (Start/Stop).
+    /// 切换检测器状态 (开始/停止)。
+    /// </summary>
+    private void ToggleCheck() {
+        if (_checker.IsRunning()) {
+            _checker.Stop();
+            _checker.Callback = null;
+        } else {
+            // Update device IP from text box
+            _deviceIP = textIPAddress.Text.Trim();
+            
+            if (!ReIp.IsMatch(_deviceIP)) {
+                MessageBox.Show(@"IP address format is incorrect", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
+            SaveConfig();
+            _checker.SetTargetIP(_deviceIP);
+            _checker.Callback = OnStatusChanged;
+            _checker.Start();
         }
+        UpdateUI();
+    }
 
-        /// <summary>
-        /// 状态变更回调，用于更新 UI
-        /// </summary>
-        public void OnStatusChanged(string result) {
-            Logger.Info("OnStatusChanged");
-            if (InvokeRequired) {
-                Invoke(new System.Windows.Forms.MethodInvoker(UpdateUI));
-            } else {
-                UpdateUI();
-            }
-        }
-
-        /// <summary>
-        /// 更新界面显示 (按钮状态、信息文本)
-        /// </summary>
-        private void UpdateUI() {
-            var running = mChecker.IsRunning();
-            textIPAddress.Enabled = !running;
-            btnStart.Text = running ? "STOP" : "START";
-            var textLines = new List<string> {
-                running ? "Status:    Running" : "Status:    Stopped",
-            };
-            if (running) {
-                textLines.Add(mChecker.IsDeviceOnline() ? "Device:    Online" : "Device:    Offline");
-                textLines.Add($"InActive:    {(int)mChecker.GetInactiveSeconds()}s");
-            }
-            InfoText.Text = String.Join(Environment.NewLine, textLines);
-
-        }
-
-        /// <summary>
-        /// 显示主窗口并激活
-        /// </summary>
-        private void ShowWindow() {
-            // 显示窗口
-            notifyIcon.Visible = false;
-            this.Show();
-            this.Activate();
+    /// <summary>
+    /// Callback for status updates, invokes UI update.
+    /// 状态更新回调函数，调用 UI 更新。
+    /// </summary>
+    public void OnStatusChanged(string result) {
+        Logger.Info("OnStatusChanged");
+        if (InvokeRequired) {
+            Invoke(new MethodInvoker(UpdateUI));
+        } else {
             UpdateUI();
         }
+    }
 
-        private void CbAutoStart_CheckedChanged(object sender, EventArgs e) {
-            var cb = sender as CheckBox;
-            Console.WriteLine("CbAutoStart_CheckedChanged " + cb!.Checked);
-            ShortcutHelper.EnableAutoStart(cb!.Checked);
+    /// <summary>
+    /// Updates the UI based on checker status.
+    /// 根据检测器状态更新 UI。
+    /// </summary>
+    private void UpdateUI() {
+        var running = _checker.IsRunning();
+        textIPAddress.Enabled = !running;
+        btnStart.Text = running ? "STOP" : "START";
+        
+        var textLines = new List<string> {
+            $"Running: {running}",
+            $"Device Online: {_checker.IsDeviceOnline()}"
+        };
+        
+        // Use InfoText (TextBox) instead of labelStatus
+        InfoText.Text = string.Join("\r\n", textLines);
+        
+        if (running) {
+             _notifyIcon.Text = $"{NAME} - Running\n{_deviceIP}";
+        } else {
+             _notifyIcon.Text = $"{NAME} - Stopped";
         }
+    }
 
-        private void TextIPAddress_TextChanged(object sender, EventArgs e) {
-            var textBox = sender as TextBox;
-            deviceIP = textBox!.Text;
-            Console.WriteLine("TextIPAddress_TextChanged " + deviceIP);
+    /// <summary>
+    /// Checks if auto-start is enabled.
+    /// 检查开机启动是否已启用。
+    /// </summary>
+    private bool IsAutoStartEnabled(string appName) {
+        try {
+            using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", false);
+            return key?.GetValue(appName) != null;
+        } catch {
+            return false;
         }
+    }
 
+    private void TextIPAddress_TextChanged(object? sender, EventArgs e) {
+        // Optional: Validate input dynamically or enable/disable buttons
+    }
+
+    private void CbAutoStart_CheckedChanged(object? sender, EventArgs e) {
+        SetAutoStart(cbAutoStart.Checked, Application.ProductName, Application.ExecutablePath);
+    }
+
+    /// <summary>
+    /// Sets the auto-start registry key.
+    /// 设置开机启动注册表项。
+    /// </summary>
+    private void SetAutoStart(bool enable, string appName, string appPath) {
+        try {
+            using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
+            if (key == null) return;
+
+            if (enable) {
+                key.SetValue(appName, appPath);
+            } else {
+                key.DeleteValue(appName, false);
+            }
+        } catch (Exception ex) {
+            MessageBox.Show($@"Failed to set auto-start: {ex.Message}", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+    }
+
+    /// <summary>
+    /// Shows the window and hides the tray icon.
+    /// 显示窗口并隐藏托盘图标。
+    /// </summary>
+    public void ShowWindow() {
+        this.Show();
+        this.WindowState = FormWindowState.Normal;
+        this.Activate();
+        _notifyIcon.Visible = false;
     }
 }
