@@ -8,6 +8,9 @@ using Carrot.Common;
 
 
 namespace Carrot.AutoLock {
+    /// <summary>
+    /// 主窗口类，包含托盘图标逻辑和配置界面
+    /// </summary>
     public partial class MainForm : Form {
 
         private static readonly string NAME = "CarrotLock";
@@ -20,7 +23,9 @@ namespace Carrot.AutoLock {
 
         private readonly ActiveChecker mChecker;
 
-
+        /// <summary>
+        /// 构造函数，初始化组件、状态检测器和托盘菜单
+        /// </summary>
         public MainForm() {
             InitializeComponent();
             mChecker = new ActiveChecker();
@@ -49,10 +54,40 @@ namespace Carrot.AutoLock {
 
         private void MainForm_Load(object sender, EventArgs e) {
             Console.WriteLine("MainForm_Load");
-            textIPAddress.Text = ActiveChecker.DEFAULT_IP;
-            deviceIP = ActiveChecker.DEFAULT_IP;
+            LoadConfig();
+            textIPAddress.Text = deviceIP;
             UpdateUI();
             CheckIt();
+        }
+
+        /// <summary>
+        /// 从本地文件加载配置 (目标 IP)
+        /// </summary>
+        private void LoadConfig() {
+            try {
+                // AppInfo.LocalAppDataPath already includes Company/Product folders
+                string path = Path.Combine(AppInfo.LocalAppDataPath, "config.txt");
+                if (File.Exists(path)) {
+                    deviceIP = File.ReadAllText(path).Trim();
+                }
+            } catch (Exception ex) {
+                Logger.Error("LoadConfig", ex);
+            }
+            if (string.IsNullOrWhiteSpace(deviceIP)) {
+                deviceIP = ActiveChecker.DEFAULT_IP;
+            }
+        }
+
+        /// <summary>
+        /// 保存配置 (目标 IP) 到本地文件
+        /// </summary>
+        private void SaveConfig() {
+            try {
+                string path = Path.Combine(AppInfo.LocalAppDataPath, "config.txt");
+                File.WriteAllText(path, deviceIP);
+            } catch (Exception ex) {
+                Logger.Error("SaveConfig", ex);
+            }
         }
 
         private void MainForm_Resize(object sender, EventArgs e) {
@@ -124,20 +159,28 @@ namespace Carrot.AutoLock {
             CheckIt();
         }
 
+        /// <summary>
+        /// 切换检测状态 (开始/停止)
+        /// </summary>
         private void CheckIt() {
             if (mChecker.IsRunning()) {
                 mChecker.Stop();
                 mChecker.callback = null;
             } else {
-                if (!Regex.IsMatch(deviceIP, RE_IP) || !deviceIP.StartsWith("192.168.")) {
+                if (!Regex.IsMatch(deviceIP, RE_IP)) {
                     MessageBox.Show("IP地址格式不正确");
                     return;
                 }
+                SaveConfig();
+                mChecker.SetTargetIP(deviceIP);
                 mChecker.callback = OnStatusChanged;
                 mChecker.Start();
             }
         }
 
+        /// <summary>
+        /// 状态变更回调，用于更新 UI
+        /// </summary>
         public void OnStatusChanged(string result) {
             Logger.Info("OnStatusChanged");
             if (InvokeRequired) {
@@ -147,6 +190,9 @@ namespace Carrot.AutoLock {
             }
         }
 
+        /// <summary>
+        /// 更新界面显示 (按钮状态、信息文本)
+        /// </summary>
         private void UpdateUI() {
             var running = mChecker.IsRunning();
             textIPAddress.Enabled = !running;
@@ -162,6 +208,9 @@ namespace Carrot.AutoLock {
 
         }
 
+        /// <summary>
+        /// 显示主窗口并激活
+        /// </summary>
         private void ShowWindow() {
             // 显示窗口
             notifyIcon.Visible = false;
