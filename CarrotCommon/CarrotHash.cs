@@ -8,7 +8,7 @@ namespace Carrot.Common {
     public static class CarrotHash {
 
         public static string ToHexString(byte[] array, bool toUpper = false, bool grouping = false) {
-            var sb = new StringBuilder();
+             var sb = new StringBuilder();
             for (int i = 0; i < array.Length; i++) {
                 sb.AppendFormat("{0:x2}", array[i]);
                 if ((i % 4) == 3 && grouping) {

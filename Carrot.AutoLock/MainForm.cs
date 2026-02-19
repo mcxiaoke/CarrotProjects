@@ -141,7 +141,7 @@ namespace Carrot.AutoLock {
         public void OnStatusChanged(string result) {
             Logger.Info("OnStatusChanged");
             if (InvokeRequired) {
-                Invoke(new MethodInvoker(UpdateUI));
+                Invoke(new System.Windows.Forms.MethodInvoker(UpdateUI));
             } else {
                 UpdateUI();
             }
