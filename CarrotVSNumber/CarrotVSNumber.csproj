@@ -14,12 +14,12 @@
       <Version>2.9.1</Version>
     </PackageReference>
     <PackageReference Include="Costura.Fody">
-      <Version>5.7.0</Version>
+      <Version>6.0.0</Version>
       <PrivateAssets>all</PrivateAssets>
       <TreatAsUsed>true</TreatAsUsed>
     </PackageReference>
     <PackageReference Include="Fody">
-      <Version>6.8.0</Version>
+      <Version>6.9.3</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
