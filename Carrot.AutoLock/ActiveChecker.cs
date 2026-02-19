@@ -1,9 +1,9 @@
-﻿using System;
-using System.Diagnostics;
-using System.Net.NetworkInformation;
-using Carrot.Common;
+﻿using Carrot.Common;
 using Gma.System.MouseKeyHook;
 using Microsoft.Win32;
+using System;
+using System.Diagnostics;
+using System.Net.NetworkInformation;
 
 namespace Carrot.AutoLock;
 
@@ -24,7 +24,7 @@ public class ActiveChecker {
     /// Default target IP.
     /// 默认要监视的设备的 IP 地址。
     /// </summary>
-    public const string DEFAULT_IP = "192.168.1.40";
+    public const string DEFAULT_IP = "192.168.1.100";
 
     /// <summary>
     /// Max offline count threshold before locking.
@@ -44,9 +44,8 @@ public class ActiveChecker {
     private int _offlineCount;
     private string _targetIP = DEFAULT_IP;
     private DateTime _lastActive = DateTime.Now;
-    
+
     private IKeyboardMouseEvents? _globalHook;
-    private MonitorManager? _monitorManager;
 
     /// <summary>
     /// Status update callback.
@@ -90,22 +89,11 @@ public class ActiveChecker {
         Logger.Info("Start");
         _lastActive = DateTime.Now;
 
-        _monitorManager = new MonitorManager();
-        try {
-            _monitorManager.Initialize();
-            // Apply initial brightness if not locked
-            if (!_isScreenLocked) {
-                _monitorManager.SetAllBrightness(GetTargetBrightness());
-            }
-        } catch (Exception ex) {
-            Logger.Error("MonitorManager init failed", ex);
-        }
-
         _checkerRunning = true;
         SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
-        
+
         Task.Run(CheckDeviceStatusLoop);
-        
+
         Subscribe();
         Callback?.Invoke("");
     }
@@ -119,8 +107,6 @@ public class ActiveChecker {
         Unsubscribe();
         _checkerRunning = false;
         SystemEvents.SessionSwitch -= SystemEvents_SessionSwitch;
-        _monitorManager?.Dispose();
-        _monitorManager = null;
         Callback?.Invoke("");
     }
 
@@ -132,70 +118,47 @@ public class ActiveChecker {
                 await Task.Delay(3000);
                 continue;
             }
-
             // Check device status
             bool isOnline = await CheckDeviceStatusAsync();
+            bool statusChanged = isOnline != _deviceOnline;
             _deviceOnline = isOnline;
-            Logger.Info($"Online: {isOnline}, OffCount: {_offlineCount}, Inactive: {GetInactiveSeconds():F1}s");
-
-            // Only consider auto-lock if user is inactive
-            if (ShouldCheckStatus()) {
-                if (isOnline) {
-                    Logger.Info($"{_targetIP} online, reset counter");
-                    _offlineCount = 0;
-                } else {
-                    Logger.Info($"{_targetIP} offline, increase counter");
-                    _offlineCount++;
+            Logger.Info($"Online: {isOnline}, OffCount: {_offlineCount}, " +
+                $"Inactive: {GetInactiveSeconds():F1}s");
+            if (isOnline) {
+                _offlineCount = 0;
+            } else {
+                _offlineCount++;
+                if (ShouldCheckStatus()) {
                     if (_offlineCount >= MAX_OFFLINE_COUNT) {
                         LockWorkStation();
                     }
                 }
             }
-
-            // Sync brightness
-            if (!_isScreenLocked) {
-                SyncBrightness();
+            // Only trigger callback if status changed to reduce unnecessary UI updates.
+            if (statusChanged) {
+                Callback?.Invoke("");
             }
-
-            Callback?.Invoke("");
             await Task.Delay(3000);
         }
     }
 
-    private void SyncBrightness() {
-        // Sync roughly once per minute (first 5 seconds) to avoid overhead
-        if (DateTime.Now.Second < 5) {
-            uint target = GetTargetBrightness();
-            _monitorManager?.SetAllBrightness(target);
-        }
-    }
-
-    private uint GetTargetBrightness() {
-        int hour = DateTime.Now.Hour;
-        // Day (8:00 - 18:00): 80%
-        if (hour >= 8 && hour < 18) {
-            return 80;
-        }
-        // Night: 30%
-        return 30;
-    }
 
     private async Task<bool> CheckDeviceStatusAsync() {
         try {
             using var ping = new Ping();
             var reply = await ping.SendPingAsync(_targetIP, 1000);
-            Logger.Info($"Ping result: {reply.Status} {_targetIP}");
+            Logger.Debug($"Ping result: {reply.Status} {_targetIP}");
             if (reply.Status == IPStatus.Success) {
                 return true;
             }
         } catch (PingException e) {
-            Logger.Info($"Ping error: {e.Message} {_targetIP}");
+            Logger.Debug($"Ping error: {e.Message} {_targetIP}");
         }
 
         // Fallback to ARP table check using new ArpHelper
         // 如果 Ping 失败，检查 ARP 表中是否有该设备。
         // Originally NetUtils.GetOnlineDevices(), now ArpHelper.GetOnlineDevices()
-        var onlineDevices = ArpHelper.GetOnlineDevices(); 
+        var onlineDevices = ArpHelper.GetOnlineDevices();
         // We use string match. ArpHelper.GetOnlineDevices returns List<string>.
         return onlineDevices.Contains(_targetIP);
     }
@@ -219,13 +182,11 @@ public class ActiveChecker {
             _isScreenLocked = false;
             _offlineCount = 0;
             _lastActive = DateTime.Now;
-            _monitorManager?.SetAllBrightness(GetTargetBrightness());
         } else if (e.Reason == SessionSwitchReason.SessionLock) {
             Logger.Info("SessionLock: stop timer");
             _isScreenLocked = true;
             _offlineCount = 0;
             _lastActive = DateTime.Now;
-            _monitorManager?.SetAllBrightness(0);
         }
         Callback?.Invoke("");
     }
@@ -234,7 +195,7 @@ public class ActiveChecker {
         Logger.Info("Subscribe");
         // Ensure to dispose previous hook if any?
         Unsubscribe();
-        
+
         _globalHook = Hook.GlobalEvents();
         _globalHook.MouseDownExt += GlobalHookUserActivity;
         _globalHook.MouseMoveExt += GlobalHookUserActivity;

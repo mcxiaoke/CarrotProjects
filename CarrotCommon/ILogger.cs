@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using Serilog;
 using Serilog.Events;
 
@@ -95,35 +96,44 @@ public static class Logger {
     private static readonly ILogger Default = new ReleaseLogger();
 #endif
 
+    private static string F(string? m, string member, string file, int line) {
+        return $"[{Path.GetFileNameWithoutExtension(file)}.{member}:{line}] {m ?? string.Empty}";
+    }
+
     /// <summary>
     /// Logs a verbose message.
     /// 记录详细消息。
     /// </summary>
-    public static void Verbose(string? m) => Default.Log(LogEventLevel.Verbose, m ?? string.Empty);
+    public static void Verbose(string? m, [CallerMemberName] string member = "", [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
+        => Default.Log(LogEventLevel.Verbose, F(m, member, file, line));
 
     /// <summary>
     /// Logs a debug message.
     /// 记录调试消息。
     /// </summary>
-    public static void Debug(string? m) => Default.Log(LogEventLevel.Debug, m ?? string.Empty);
+    public static void Debug(string? m, [CallerMemberName] string member = "", [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
+        => Default.Log(LogEventLevel.Debug, F(m, member, file, line));
 
     /// <summary>
     /// Logs an information message.
     /// 记录信息消息。
     /// </summary>
-    public static void Info(string? m) => Default.Log(LogEventLevel.Information, m ?? string.Empty);
+    public static void Info(string? m, [CallerMemberName] string member = "", [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
+        => Default.Log(LogEventLevel.Information, F(m, member, file, line));
 
     /// <summary>
     /// Logs a warning message.
     /// 记录警告消息。
     /// </summary>
-    public static void Warning(string? m) => Default.Log(LogEventLevel.Warning, m ?? string.Empty);
+    public static void Warning(string? m, [CallerMemberName] string member = "", [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
+        => Default.Log(LogEventLevel.Warning, F(m, member, file, line));
 
     /// <summary>
     /// Logs an error message with an exception.
     /// 记录带有异常的错误消息。
     /// </summary>
-    public static void Error(string? m, Exception e) => Default.Error(m ?? string.Empty, e);
+    public static void Error(string? m, Exception e, [CallerMemberName] string member = "", [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
+        => Default.Error(F(m, member, file, line), e);
 
     /// <summary>
     /// Closes and flushes the logger.

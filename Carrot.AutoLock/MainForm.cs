@@ -1,8 +1,8 @@
+using Carrot.Common;
 using System;
 using System.Drawing;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using Carrot.Common;
 
 namespace Carrot.AutoLock;
 
@@ -25,7 +25,7 @@ public partial class MainForm : Form {
     /// 初始化窗体和托盘图标。
     /// </summary>
     public MainForm() {
-        Console.WriteLine(@"MainForm()");
+        Logger.Info(@"MainForm()");
         _checker = new ActiveChecker();
         // Initialize NotifyIcon
         _notifyIcon = new NotifyIcon {
@@ -35,14 +35,14 @@ public partial class MainForm : Form {
 
         // Initialize ContextMenuStrip
         _contextMenuStrip = new ContextMenuStrip();
-        
+
         // Show Window menu item
         var showMenuItem = new ToolStripMenuItem("显示窗口", null, ShowWindowMenuItem_Click);
         _contextMenuStrip.Items.Add(showMenuItem);
-        
+
         // Add separator
         _contextMenuStrip.Items.Add(new ToolStripSeparator());
-        
+
         // Exit menu item
         var exitMenuItem = new ToolStripMenuItem("退出应用", null, ExitMenuItem_Click);
         _contextMenuStrip.Items.Add(exitMenuItem);
@@ -55,12 +55,12 @@ public partial class MainForm : Form {
     }
 
     private void MainForm_Load(object sender, EventArgs e) {
-        Console.WriteLine(@"MainForm_Load");
+        Logger.Info(@"MainForm_Load");
         LoadConfig();
         textIPAddress.Text = _deviceIP;
-        
+
         // Initialize AutoStart Checkbox
-        cbAutoStart.Checked = IsAutoStartEnabled(Application.ProductName??NAME);
+        cbAutoStart.Checked = IsAutoStartEnabled(Application.ProductName ?? NAME);
 
         UpdateUI();
         ToggleCheck();
@@ -99,7 +99,7 @@ public partial class MainForm : Form {
     }
 
     private void MainForm_Resize(object sender, EventArgs e) {
-        Console.WriteLine($@"MainForm_Resize {this.WindowState}");
+        Logger.Info($@"MainForm_Resize {this.WindowState}");
         // Check if window is minimized
         if (this.WindowState == FormWindowState.Minimized) {
             // Hide window
@@ -113,7 +113,7 @@ public partial class MainForm : Form {
     }
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
-        Console.WriteLine($@"MainForm_FormClosing Reason:{e.CloseReason}");
+        Logger.Info($@"MainForm_FormClosing Reason:{e.CloseReason}");
         // If user creates closing event, minimize to tray
         if (e.CloseReason == CloseReason.UserClosing) {
             e.Cancel = true;
@@ -127,7 +127,7 @@ public partial class MainForm : Form {
         if (e is MouseEventArgs { Button: MouseButtons.Left }) {
             ShowWindow();
         } else if (e is MouseEventArgs { Button: MouseButtons.Right }) {
-             _contextMenuStrip.Show(Cursor.Position);
+            _contextMenuStrip.Show(Cursor.Position);
         }
     }
 
@@ -136,20 +136,20 @@ public partial class MainForm : Form {
     }
 
     private void ExitMenuItem_Click(object? sender, EventArgs e) {
-        Console.WriteLine(@"ExitMenuItem_Click");
+        Logger.Info(@"ExitMenuItem_Click");
         _checker.Stop();
         Application.Exit();
     }
 
     private void BtnExit_Click(object sender, EventArgs e) {
-        Console.WriteLine(@"BtnExit_Click");
+        Logger.Info(@"BtnExit_Click");
         _checker.Stop();
         _checker.Callback = null;
         Application.Exit();
     }
 
     private void BtnStart_Click(object sender, EventArgs e) {
-        Console.WriteLine(@"BtnStart_Click");
+        Logger.Info(@"BtnStart_Click");
         ToggleCheck();
     }
 
@@ -164,7 +164,7 @@ public partial class MainForm : Form {
         } else {
             // Update device IP from text box
             _deviceIP = textIPAddress.Text.Trim();
-            
+
             if (!ReIp.IsMatch(_deviceIP)) {
                 MessageBox.Show(@"IP address format is incorrect", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -200,19 +200,19 @@ public partial class MainForm : Form {
         var running = _checker.IsRunning();
         textIPAddress.Enabled = !running;
         btnStart.Text = running ? "STOP" : "START";
-        
+
         var textLines = new List<string> {
             $"Running: {running}",
             $"Device Online: {_checker.IsDeviceOnline()}"
         };
-        
+
         // Use InfoText (TextBox) instead of labelStatus
         InfoText.Text = string.Join("\r\n", textLines);
-        
+
         if (running) {
-             _notifyIcon.Text = $"{NAME} - Running\n{_deviceIP}";
+            _notifyIcon.Text = $"{NAME} - Running\n{_deviceIP}";
         } else {
-             _notifyIcon.Text = $"{NAME} - Stopped";
+            _notifyIcon.Text = $"{NAME} - Stopped";
         }
     }
 
@@ -242,6 +242,7 @@ public partial class MainForm : Form {
     /// 设置开机启动注册表项。
     /// </summary>
     private void SetAutoStart(bool enable, string appName, string appPath) {
+        Logger.Debug($@"SetAutoStart Enable:{enable} AppPath:{appPath}");
         try {
             using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
             if (key == null) return;
@@ -252,6 +253,7 @@ public partial class MainForm : Form {
                 key.DeleteValue(appName, false);
             }
         } catch (Exception ex) {
+            Logger.Error("SetAutoStart", ex);
             MessageBox.Show($@"Failed to set auto-start: {ex.Message}", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
     }

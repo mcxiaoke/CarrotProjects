@@ -1,9 +1,9 @@
+using Carrot.Common;
+using Carrot.Common.Native;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using Carrot.Common;
-using Carrot.Common.Native;
 
 namespace Carrot.AutoLock;
 
@@ -31,7 +31,7 @@ public class LogicalMonitor {
 /// 封装了 DDC/CI 协议相关的 Windows API，用于控制显示器硬件功能 (如亮度、电源)
 /// </summary>
 public class MonitorManager : IDisposable {
-    
+
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
     private struct PHYSICAL_MONITOR {
         public IntPtr hPhysicalMonitor;
@@ -109,11 +109,11 @@ public class MonitorManager : IDisposable {
         foreach (var m in _monitors) {
             if (m.PhysicalMonitors.Count > 0) {
                 // Reconstruct the array to destroy handles
-                var pms = m.PhysicalMonitors.Select(pm => new PHYSICAL_MONITOR { 
-                    hPhysicalMonitor = pm.Handle, 
-                    szPhysicalMonitorDescription = pm.DeviceName 
+                var pms = m.PhysicalMonitors.Select(pm => new PHYSICAL_MONITOR {
+                    hPhysicalMonitor = pm.Handle,
+                    szPhysicalMonitorDescription = pm.DeviceName
                 }).ToArray();
-                
+
                 DestroyPhysicalMonitors((uint)pms.Length, pms);
             }
         }
