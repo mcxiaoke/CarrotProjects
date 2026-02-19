@@ -5,155 +5,155 @@ namespace Carrot.Device {
 
     /// <summary>
     /// \class MemoryBankInfo
-    /// Captures the main properties of a MemoryBankInfo structure.
-    /// It uses a subset of the properties defined in the WMI class: Win32_PhysicalMemory
-    /// For more information, <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-physicalmemory">Win32_PhysicalMemory class</see>
+    /// 捕获 MemoryBankInfo 结构的主要属性。
+    /// 它使用 WMI 类 Win32_PhysicalMemory 中定义的属性子集。
+    /// 更多信息，请参阅 <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-physicalmemory">Win32_PhysicalMemory 类</see>
     /// </summary>
     public class MemoryBankInfo {
 
         /// <summary>
-        /// Default constructor
+        /// 默认构造函数
         /// </summary>
         public MemoryBankInfo() {
         }
 
         /// <summary>
-        /// The memory bank info identifier
+        /// 内存条信息标识符
         /// </summary>
         public string Id { get; set; }
 
         /// <summary>
-        /// Physically labeled bank where the memory is located.
+        /// 内存所在的物理标记插槽。
         /// </summary>
         public string BankLabel { get; set; }
 
         /// <summary>
-        /// Data width of the physical memory—in bits.
+        /// 物理内存的数据宽度（位）。
         /// </summary>
         public int DataWidth { get; set; }
 
         /// <summary>
-        /// Description of an object.
+        /// 对象描述。
         /// </summary>
         public string Description { get; set; }
 
         /// <summary>
-        /// Label of the socket or circuit board that holds the memory.
+        /// 容纳内存的插座或电路板的标签。
         /// </summary>
         public string DeviceLocator { get; set; }
 
         /// <summary>
-        /// Name of the organization responsible for producing the physical element.
+        /// 负责生产物理元件的组织名称。
         /// </summary>
         public string Manufacturer { get; set; }
 
         /// <summary>
-        /// Manufacturer-allocated number to identify the physical element.
+        /// 制造商分配的用于识别物理元件的编号。
         /// </summary>
         public string SerialNumber { get; set; }
 
         /// <summary>
-        /// Stock keeping unit number for the physical element.
+        /// 物理元件的库存单位编号。
         /// </summary>
         public string SKU { get; set; }
 
         /// <summary>
-        /// The raw SMBIOS memory type.
+        /// 原始 SMBIOS 内存类型。
         /// </summary>
         public int SMBIOSMemoryType { get; set; }
 
         /// <summary>
-        /// Speed of the physical memory—in nanoseconds.
+        /// 物理内存的速度（纳秒）。
         /// </summary>
         public int Speed { get; set; }
 
         /// <summary>
-        /// Current status of the object.
+        /// 对象的当前状态。
         /// </summary>
         public string Status { get; set; }
 
         /// <summary>
-        /// Name for the physical element.
+        /// 物理元件的名称。
         /// </summary>
         public string Model { get; set; }
 
         /// <summary>
-        /// Additional data, beyond asset tag information, that can be used to identify a physical element.
+        /// 除资产标签信息外，可用于识别物理元件的其他数据。
         /// </summary>
         public string OtherIdentifyingInfo { get; set; }
 
         /// <summary>
-        /// Part number assigned by the organization responsible for producing or manufacturing the physical element.
+        /// 负责生产或制造物理元件的组织分配的部件号。
         /// </summary>
         public string PartNumber { get; set; }
 
         /// <summary>
-        /// Unique identifier for the physical memory device that is represented by an instance of Win32_PhysicalMemory.
+        /// Win32_PhysicalMemory 实例所表示的物理内存设备的唯一标识符。
         /// </summary>
         public string Tag { get; set; }
 
         /// <summary>
-        /// Total width, in bits, of the physical memory, including check or error correction bits.
+        /// 物理内存的总宽度（位），包括校验位或纠错位。
         /// </summary>
         public int TotalWidth { get; set; }
 
         /// <summary>
-        /// Type of physical memory represented.
+        /// 表示的物理内存类型。
         /// </summary>
         public int TypeDetail { get; set; }
 
         /// <summary>
-        /// Version of the physical element.
+        /// 物理元件的版本。
         /// </summary>
         public string Version { get; set; }
 
         /// <summary>
-        /// Position of the physical memory in a row.
+        /// 物理内存所在行的位置。
         /// </summary>
         public int PositionInRow { get; set; }
 
         /// <summary>
-        /// Implementation form factor for the chip.
+        /// 芯片的实现外形尺寸。
         /// </summary>
         public MEM_BANK_FORM_FACTOR FormFactor { get; set; }
 
         /// <summary>
-        /// Total capacity of the physical memory—in bytes.
+        /// 物理内存的总容量（字节）。
         /// </summary>
         public long Capacity { get; set; }
 
         /// <summary>
-        /// This function parses the management object structure to extract the memory bank info fields.
+        /// 此函数解析管理对象结构以提取内存条信息字段。
         /// </summary>
-        /// <param name="mgtObject">Management object containing the different memory bank info fields</param>
-        /// <returns>returns 0 if success, -1 if an exception occured</returns>
+        /// <param name="mgtObject">包含不同内存条信息字段的管理对象</param>
+        /// <returns>如果成功则返回 0，如果发生异常则返回 -1</returns>
         public int GetMemInfo(ManagementObject mgtObject) {
             try {
-                Capacity = long.Parse(mgtObject["Capacity"].ToString());
+                Capacity = long.Parse(mgtObject["Capacity"]?.ToString() ?? "0");
 
-                Id = (mgtObject["Name"] == null) ? "" : mgtObject["Name"].ToString();
-                BankLabel = (mgtObject["BankLabel"] == null) ? "" : mgtObject["BankLabel"].ToString();
-                Description = (mgtObject["Description"] == null) ? "" : mgtObject["Description"].ToString();
-                DeviceLocator = (mgtObject["DeviceLocator"] == null) ? "" : mgtObject["DeviceLocator"].ToString();
-                Manufacturer = (mgtObject["Manufacturer"] == null) ? "" : mgtObject["Manufacturer"].ToString();
+                Id = mgtObject["Name"]?.ToString() ?? "";
+                BankLabel = mgtObject["BankLabel"]?.ToString() ?? "";
+                Description = mgtObject["Description"]?.ToString() ?? "";
+                DeviceLocator = mgtObject["DeviceLocator"]?.ToString() ?? "";
+                Manufacturer = mgtObject["Manufacturer"]?.ToString() ?? "";
 
-                SerialNumber = mgtObject["SerialNumber"].ToString();
-                SKU = (mgtObject["SKU"] == null) ? "" : mgtObject["SKU"].ToString();
-                Status = (mgtObject["Status"] == null) ? "" : mgtObject["Status"].ToString();
-                Model = (mgtObject["Model"] == null) ? "" : mgtObject["Model"].ToString();
-                OtherIdentifyingInfo = (mgtObject["OtherIdentifyingInfo"] == null) ? "" : mgtObject["OtherIdentifyingInfo"].ToString();
-                PartNumber = (mgtObject["PartNumber"] == null) ? "" : mgtObject["PartNumber"].ToString();
+                SerialNumber = mgtObject["SerialNumber"]?.ToString() ?? "";
+                SKU = mgtObject["SKU"]?.ToString() ?? "";
+                Status = mgtObject["Status"]?.ToString() ?? "";
+                Model = mgtObject["Model"]?.ToString() ?? "";
+                OtherIdentifyingInfo = mgtObject["OtherIdentifyingInfo"]?.ToString() ?? "";
+                PartNumber = mgtObject["PartNumber"]?.ToString() ?? "";
 
-                DataWidth = int.Parse(mgtObject["DataWidth"].ToString());
-                Speed = int.Parse(mgtObject["Speed"].ToString());
-                SMBIOSMemoryType = int.Parse(mgtObject["SMBIOSMemoryType"].ToString());
+                DataWidth = int.Parse(mgtObject["DataWidth"]?.ToString() ?? "0");
+                Speed = int.Parse(mgtObject["Speed"]?.ToString() ?? "0");
+                SMBIOSMemoryType = int.Parse(mgtObject["SMBIOSMemoryType"]?.ToString() ?? "0");
 
-                Tag = (mgtObject["Tag"] == null) ? "" : mgtObject["Tag"].ToString();
-                Version = (mgtObject["Version"] == null) ? "" : mgtObject["Version"].ToString();
-                TotalWidth = int.Parse(mgtObject["TotalWidth"].ToString());
-                TypeDetail = int.Parse(mgtObject["TypeDetail"].ToString());
-                PositionInRow = (mgtObject["PositionInRow"] == null) ? -1 : int.Parse(mgtObject["PositionInRow"].ToString());
-                FormFactor = GetMemBankFormFactor(int.Parse(mgtObject["FormFactor"].ToString()));
+                Tag = mgtObject["Tag"]?.ToString() ?? "";
+                Version = mgtObject["Version"]?.ToString() ?? "";
+                TotalWidth = int.Parse(mgtObject["TotalWidth"]?.ToString() ?? "0");
+                TypeDetail = int.Parse(mgtObject["TypeDetail"]?.ToString() ?? "0");
+                PositionInRow = int.Parse(mgtObject["PositionInRow"]?.ToString() ?? "-1");
+                FormFactor = GetMemBankFormFactor(int.Parse(mgtObject["FormFactor"]?.ToString() ?? "0"));
 
                 return 0;
             } catch (Exception ex) {
@@ -165,10 +165,10 @@ namespace Carrot.Device {
         }
 
         /// <summary>
-        /// This functions converts the memory bank form factor from enumeration to string
+        /// 此函数将内存条外形尺寸从枚举转换为字符串
         /// </summary>
-        /// <param name="formfactor">the memory bank form factor (int)</param>
-        /// <returns>the memory bank form factor (string)</returns>
+        /// <param name="formfactor">内存条外形尺寸 (int)</param>
+        /// <returns>内存条外形尺寸 (string)</returns>
         protected MEM_BANK_FORM_FACTOR GetMemBankFormFactor(int formfactor) {
             return (MEM_BANK_FORM_FACTOR)formfactor;
         }

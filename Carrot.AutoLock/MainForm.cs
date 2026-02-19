@@ -25,9 +25,8 @@ public partial class MainForm : Form {
     /// 初始化窗体和托盘图标。
     /// </summary>
     public MainForm() {
-        InitializeComponent();
+        Console.WriteLine(@"MainForm()");
         _checker = new ActiveChecker();
-
         // Initialize NotifyIcon
         _notifyIcon = new NotifyIcon {
             Icon = Properties.Resources.carrot_512,
@@ -51,6 +50,8 @@ public partial class MainForm : Form {
         // Bind ContextMenuStrip to NotifyIcon
         _notifyIcon.ContextMenuStrip = _contextMenuStrip;
         _notifyIcon.Click += NotifyIcon_Click;
+
+        InitializeComponent();
     }
 
     private void MainForm_Load(object sender, EventArgs e) {
@@ -59,7 +60,7 @@ public partial class MainForm : Form {
         textIPAddress.Text = _deviceIP;
         
         // Initialize AutoStart Checkbox
-        cbAutoStart.Checked = IsAutoStartEnabled(Application.ProductName);
+        cbAutoStart.Checked = IsAutoStartEnabled(Application.ProductName??NAME);
 
         UpdateUI();
         ToggleCheck();
@@ -194,6 +195,8 @@ public partial class MainForm : Form {
     /// 根据检测器状态更新 UI。
     /// </summary>
     private void UpdateUI() {
+        if (_checker == null || _notifyIcon == null) return;
+
         var running = _checker.IsRunning();
         textIPAddress.Enabled = !running;
         btnStart.Text = running ? "STOP" : "START";
@@ -231,7 +234,7 @@ public partial class MainForm : Form {
     }
 
     private void CbAutoStart_CheckedChanged(object? sender, EventArgs e) {
-        SetAutoStart(cbAutoStart.Checked, Application.ProductName, Application.ExecutablePath);
+        SetAutoStart(cbAutoStart.Checked, Application.ProductName ?? NAME, Application.ExecutablePath ?? string.Empty);
     }
 
     /// <summary>

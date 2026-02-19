@@ -6,50 +6,52 @@ namespace Carrot.Device {
 
     /// <summary>
     /// \class MemoryInfo
-    /// Provides an overview about the overall memory installed on the computer.
+    /// 提供计算机上安装的总体内存的概述。
     /// <seealso cref="MemoryBankInfo">
     /// </summary>
     public class MemoryInfo {
 
         /// <summary>
-        /// Default constructors
+        /// 默认构造函数
         /// </summary>
         public MemoryInfo() {
         }
 
         /// <summary>
-        /// Number of computer memory banks
+        /// 计算机内存条数量
         /// </summary>
         public int NoOfMemoryBanks { get; set; }
 
         /// <summary>
-        /// The data width of the memory banks
+        /// 内存条数据宽度
         /// </summary>
         public int DataWidth { get; set; }
 
         /// <summary>
-        /// The total memory size in bytes
+        /// 内存总大小（字节）
         /// </summary>
         public long TotalSize { get; set; }
 
         /// <summary>
-        /// The total memory size in mega-bytes
+        /// 内存总大小（兆字节）
         /// </summary>
         public long TotalSizeMegaBytes { get; set; }
 
         /// <summary>
-        /// It uses the information provided in a list of MemoryBankInfo instances in order to set the properties
-        /// of the MemoryInfo class
+        /// 使用 MemoryBankInfo 实例列表提供的信息来设置 MemoryInfo 类的属性
         /// </summary>
-        /// <param name="banks">List of memory bank info instances (List<MemoryBankInfo>)</param>
-        /// <returns>0 if success, -1 if exception and -2 if input is null</returns>
+        /// <param name="banks">内存条信息实例列表 (List<MemoryBankInfo>)</param>
+        /// <returns>成功返回 0，异常返回 -1，输入为 null 返回 -2</returns>
         public int GetMemoryInfo(List<MemoryBankInfo> banks) {
             try {
                 if (banks == null)
                     return -2;
 
                 this.NoOfMemoryBanks = banks.Count;
-                this.DataWidth = banks[0].DataWidth;
+                if (banks.Count > 0)
+                {
+                    this.DataWidth = banks[0].DataWidth;
+                }
 
                 long size = 0;
                 foreach (var item in banks) {
@@ -72,16 +74,16 @@ namespace Carrot.Device {
         }
 
         /// <summary>
-        /// Stringifies the properties of the MemoryInfo class.
+        /// 将 MemoryInfo 类的属性转换为字符串。
         /// </summary>
         /// <returns>string</returns>
         public override string ToString() {
-            StringBuilder str = new StringBuilder();
+            var str = new StringBuilder();
 
-            str.Append($"Number of Memory Banks: {NoOfMemoryBanks}\n");
-            str.Append($"Memory Data Width: {DataWidth}\n");
-            str.Append($"Memory Total Size (Bytes): {TotalSize}\n");
-            str.Append($"Memory Total Size (MegaBytes): {TotalSizeMegaBytes}\n");
+            str.AppendLine($"Number of Memory Banks: {NoOfMemoryBanks}");
+            str.AppendLine($"Memory Data Width: {DataWidth}");
+            str.AppendLine($"Memory Total Size (Bytes): {TotalSize}");
+            str.AppendLine($"Memory Total Size (MegaBytes): {TotalSizeMegaBytes}");
 
             return str.ToString();
         }

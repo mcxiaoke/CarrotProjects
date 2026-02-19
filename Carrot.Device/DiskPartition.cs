@@ -6,124 +6,118 @@ namespace Carrot.Device {
 
     /// <summary>
     /// \class DiskPartition
-    /// Captures the properties of the disk partitions installed on the computer.
-    /// It uses a subset of the properties defined in the WMI class: Win32_DiskPartition
-    /// For more information, <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-diskpartition">Win32_DiskPartition</see>
+    /// 捕获计算机上安装的磁盘分区的属性。
+    /// 它使用 WMI 类 Win32_DiskPartition 中定义的属性子集
+    /// 更多信息，请参阅 <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-diskpartition">Win32_DiskPartition</see>
     /// </summary>
     public class DiskPartition {
 
         /// <summary>
-        /// Default constructor
+        /// 默认构造函数
         /// </summary>
         public DiskPartition() {
         }
 
         /// <summary>
-        /// The disk partition identifier
+        /// 磁盘分区标识符
         /// </summary>
         public string Id { get; set; }
 
         /// <summary>
-        /// Unique identifier of the disk drive and partition, from the rest of the system.
+        /// 磁盘驱动器和分区的唯一标识符 (区别于系统其他部分)。
         /// </summary>
         public string DeviceID { get; set; }
 
         /// <summary>
-        /// Total size of the partition.
+        /// 分区的总大小。
         /// </summary>
         public long Size { get; set; }
 
         /// <summary>
-        /// Total number of consecutive blocks, each block the size of the value contained
-        /// in the BlockSize property, which form this storage extent.
+        /// 连续块的总数，每个块的大小由 BlockSize 属性值决定，这些块构成了此存储范围。
         /// </summary>
         public long NumberOfBlocks { get; set; }
 
         /// <summary>
-        /// Current status of the object.
+        /// 对象的当前状态。
         /// </summary>
         public string Status { get; set; }
 
         /// <summary>
-        /// State of the logical device.
+        /// 逻辑设备的状态。
         /// </summary>
         public string StatusInfo { get; set; }
 
         /// <summary>
-        /// Creation class name of the scoping system.
+        /// 范围系统的创建类名称。
         /// </summary>
         public string SystemCreationClassName { get; set; }
 
         /// <summary>
-        /// Name of the scoping system.
+        /// 范围系统的名称。
         /// </summary>
         public string SystemName { get; set; }
 
         /// <summary>
-        /// Type of the partition.
+        /// 分区类型。
         /// </summary>
         public string Type { get; set; }
 
         /// <summary>
-        /// Indicates whether the computer can be booted from this partition.
+        /// 指示计算机是否可以从此分区引导。
         /// </summary>
         public bool Bootable { get; set; }
 
         /// <summary>
-        /// Partition is the active partition. The operating system uses the active
-        /// partition when booting from a hard disk.
+        /// 分区是否为活动分区。从硬盘引导时，操作系统使用活动分区。
         /// </summary>
         public bool BootPartition { get; set; }
 
         /// <summary>
-        /// If True, this is the primary partition.
+        /// 如果为真，则这是主分区。
         /// </summary>
         public bool PrimaryPartition { get; set; }
 
         /// <summary>
-        /// If True, the partition information has changed.
+        /// 如果为真，则分区信息已更改。
         /// </summary>
         public bool RewritePartition { get; set; }
 
         /// <summary>
-        /// This function parses the management object structure to extract the disk partition fields.
+        /// 此函数解析管理对象结构以提取磁盘分区字段。
         /// </summary>
-        /// <param name="mgtObject">Management object containing the different disk partition fields</param>
-        /// <returns>returns 0 if success, -1 if an exception occured</returns>
+        /// <param name="mgtObject">包含不同磁盘分区字段的管理对象</param>
+        /// <returns>成功返回 0，异常返回 -1</returns>
         public int GetDiskPartitionInfo(ManagementObject mgtObject) {
             try {
-                Id = mgtObject["Name"].ToString();
-                DeviceID = mgtObject["DeviceID"].ToString();
+                Id = mgtObject["Name"]?.ToString() ?? "";
+                DeviceID = mgtObject["DeviceID"]?.ToString() ?? "";
 
-                Size = (mgtObject["Size"] == null) ? -1 : long.Parse(mgtObject["Size"].ToString());
-                NumberOfBlocks = (mgtObject["NumberOfBlocks"] == null) ? -1 : long.Parse(mgtObject["NumberOfBlocks"].ToString());
+                Size = long.Parse(mgtObject["Size"]?.ToString() ?? "-1");
+                NumberOfBlocks = long.Parse(mgtObject["NumberOfBlocks"]?.ToString() ?? "-1");
 
-                Status = (mgtObject["Status"] == null) ? "" : mgtObject["Status"].ToString();
-                SystemCreationClassName = mgtObject["SystemCreationClassName"].ToString();
-                SystemName = mgtObject["SystemName"].ToString();
-                SystemName = mgtObject["Type"].ToString();
+                Status = mgtObject["Status"]?.ToString() ?? "";
+                SystemCreationClassName = mgtObject["SystemCreationClassName"]?.ToString() ?? "";
+                SystemName = mgtObject["SystemName"]?.ToString() ?? "";
+                Type = mgtObject["Type"]?.ToString() ?? "";
 
                 if (mgtObject["Bootable"] != null) {
-                    bool temp;
-                    Boolean.TryParse(mgtObject["Bootable"].ToString(), out temp);
+                    bool.TryParse(mgtObject["Bootable"].ToString(), out bool temp);
                     Bootable = temp;
                 }
 
                 if (mgtObject["BootPartition"] != null) {
-                    bool temp;
-                    Boolean.TryParse(mgtObject["BootPartition"].ToString(), out temp);
+                    bool.TryParse(mgtObject["BootPartition"].ToString(), out bool temp);
                     BootPartition = temp;
                 }
 
                 if (mgtObject["PrimaryPartition"] != null) {
-                    bool temp;
-                    Boolean.TryParse(mgtObject["PrimaryPartition"].ToString(), out temp);
+                    bool.TryParse(mgtObject["PrimaryPartition"].ToString(), out bool temp);
                     PrimaryPartition = temp;
                 }
 
                 if (mgtObject["RewritePartition"] != null) {
-                    bool temp;
-                    Boolean.TryParse(mgtObject["RewritePartition"].ToString(), out temp);
+                    bool.TryParse(mgtObject["RewritePartition"].ToString(), out bool temp);
                     RewritePartition = temp;
                 }
 
@@ -137,20 +131,20 @@ namespace Carrot.Device {
         }
 
         /// <summary>
-        /// Stringifies the properties of the DiskPartition class.
+        /// 将 DiskPartition 类的属性转换为字符串。
         /// </summary>
         /// <returns>string</returns>
         public override string ToString() {
-            StringBuilder str = new StringBuilder();
+            var str = new StringBuilder();
 
-            str.Append($"Name: {Id}\n");
-            str.Append($"Size (Bytes): {Size}\n");
-            str.Append($"Number Of Blocks: {NumberOfBlocks}\n");
+            str.AppendLine($"Name: {Id}");
+            str.AppendLine($"Size (Bytes): {Size}");
+            str.AppendLine($"Number Of Blocks: {NumberOfBlocks}");
 
-            if (Status != String.Empty)
-                str.Append($"Partition Status: {Status}\n");
+            if (!string.IsNullOrEmpty(Status))
+                str.AppendLine($"Partition Status: {Status}");
 
-            str.Append($"Primary Partition: {PrimaryPartition}\n");
+            str.AppendLine($"Primary Partition: {PrimaryPartition}");
 
             return str.ToString();
         }

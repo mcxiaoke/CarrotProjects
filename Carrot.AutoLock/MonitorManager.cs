@@ -95,7 +95,8 @@ public class MonitorManager : IDisposable {
         brightness = Math.Min(brightness, 100);
         foreach (var m in _monitors) {
             foreach (var pm in m.PhysicalMonitors) {
-                SetVCPFeature(pm.Handle, VCP_BRIGHTNESS, brightness);
+                // 暂时禁用亮度调整
+                //SetVCPFeature(pm.Handle, VCP_BRIGHTNESS, brightness);
             }
         }
     }

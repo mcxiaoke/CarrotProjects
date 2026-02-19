@@ -7,203 +7,199 @@ namespace Carrot.Device {
 
     /// <summary>
     /// \class CPUInfo
-    /// Captures the properties of the CPUs installed on the computer.
-    /// It uses a subset of the properties defined in the WMI class: Win32_Processor
-    /// For more information, <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor">Win32_Processor</see>
+    /// 捕获计算机上安装的 CPU 的属性。
+    /// 它使用 WMI 类 Win32_Processor 中定义的属性子集
+    /// 更多信息，请参阅 <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor">Win32_Processor</see>
     /// </summary>
     public class CPUInfo {
 
         /// <summary>
-        /// Default constructor
+        /// 默认构造函数
         /// </summary>
         public CPUInfo() {
         }
 
         /// <summary>
-        /// CPU identifier
+        /// CPU 标识符
         /// </summary>
         public string Id { get; set; }
 
         /// <summary>
-        /// On a 32-bit operating system, the value is 32 and on a 64-bit operating system it is 64.
+        /// 在 32 位操作系统上，值为 32；在 64 位操作系统上，值为 64。
         /// </summary>
         public int AddressWidth { get; set; }
 
         /// <summary>
-        /// Processor architecture used by the platform.
+        /// 平台使用的处理器架构。
         /// </summary>
         public CPU_ARCHITECTURE Architecture { get; set; }
 
         /// <summary>
-        /// Current status of the processor. Status changes indicate processor usage,
-        /// but not the physical condition of the processor.
+        /// 处理器的当前状态。状态变化指示处理器使用情况，
+        /// 而不是处理器的物理状况。
         /// </summary>
         public CPU_STATUS CpuStatus { get; set; }
 
         /// <summary>
-        /// On a 32-bit processor, the value is 32 and on a 64-bit processor it is 64.
+        /// 在 32 位处理器上，值为 32；在 64 位处理器上，值为 64。
         /// </summary>
         public int DataWidth { get; set; }
 
         /// <summary>
-        /// Unique identifier of a processor on the system.
+        /// 系统上处理器的唯一标识符。
         /// </summary>
         public string DeviceID { get; set; }
 
         /// <summary>
-        /// Processor family type.
+        /// 处理器系列类型。
         /// </summary>
         public CPU_FAMILY Family { get; set; }
 
         /// <summary>
-        /// Name of the processor manufacturer.
+        /// 处理器制造商名称。
         /// </summary>
         public string Manufacturer { get; set; }
 
         /// <summary>
-        /// Maximum speed of the processor, in MHz.
+        /// 处理器最大速度，单位 MHz。
         /// </summary>
         public int MaxClockSpeed { get; set; }
 
         /// <summary>
-        /// The part number of this processor as set by the manufacturer.
+        /// 制造商设置的此处理器部件号。
         /// </summary>
         public string PartNumber { get; set; }
 
         /// <summary>
-        /// The serial number of this processor This value is set by the manufacturer and normally not changeable.
+        /// 此处理器的序列号。此值由制造商设置，通常不可更改。
         /// </summary>
         public string SerialNumber { get; set; }
 
         /// <summary>
-        /// Globally unique identifier for the processor. This identifier may only be unique within a processor family.
+        /// 处理器的全局唯一标识符。此标识符可能仅在处理器系列中唯一。
         /// </summary>
         public string UniqueId { get; set; }
 
         /// <summary>
-        /// Primary function of the processor.
+        /// 处理器主要功能。
         /// </summary>
         public int ProcessorType { get; set; }
 
         /// <summary>
-        /// Processor information that describes the processor features.
+        /// 描述处理器功能的处理器信息。
         /// </summary>
         public string ProcessorId { get; set; }
 
         /// <summary>
-        /// Load capacity of each processor, averaged to the last second.
-        /// Processor loading refers to the total computing burden for each
-        /// processor at one time.
+        /// 每个处理器的负载容量，平均到最后一秒。
+        /// 处理器负载是指每个处理器在某一时刻的总计算负担。
         /// </summary>
         public int LoadPercentage { get; set; }
 
         /// <summary>
-        /// Current speed of the processor, in MHz.
+        /// 处理器当前速度，单位 MHz。
         /// </summary>
         public int CurrentClockSpeed { get; set; }
 
         /// <summary>
-        /// Voltage of the processor.
+        /// 处理器电压。
         /// </summary>
         public CPU_VOLTAGE CurrentVoltage { get; set; }
 
         /// <summary>
-        /// Number of cores for the current instance of the processor.
-        /// A core is a physical processor on the integrated circuit.
+        /// 当前处理器实例的核心数。
+        /// 核心是集成电路上的物理处理器。
         /// </summary>
         public int NumberOfCores { get; set; }
 
         /// <summary>
-        /// The number of enabled cores per processor socket.
+        /// 每个处理器插槽启用的核心数。
         /// </summary>
         public int NumberOfEnabledCore { get; set; }
 
         /// <summary>
-        /// Number of logical processors for the current instance of the processor.
-        /// For processors capable of hyperthreading, this value includes only the
-        /// processors which have hyperthreading enabled.
+        /// 当前处理器实例的逻辑处理器数。
+        /// 对于支持超线程的处理器，此值仅包括
+        /// 启用了超线程的处理器。
         /// </summary>
         public int NumberOfLogicalProcessors { get; set; }
 
         /// <summary>
-        /// System revision level that depends on the architecture.
+        /// 依赖于架构的系统修订级别。
         /// </summary>
         public int Level { get; set; }
 
         /// <summary>
-        /// Size of the Level 2 processor cache. A Level 2 cache is an external
-        /// memory area that has a faster access time than the main RAM memory.
+        ///二级处理器缓存大小。二级缓存是比主 RAM 内存访问速度更快的外部
+        /// 内存区域。
         /// </summary>
         public int L2CacheSize { get; set; }
 
         /// <summary>
-        /// Clock speed of the Level 2 processor cache. A Level 2 cache is an external
-        /// memory area that has a faster access time than the main RAM memory.
+        /// 二级处理器缓存时钟速度。
         /// </summary>
         public int L2CacheSpeed { get; set; }
 
         /// <summary>
-        /// Size of the Level 3 processor cache. A Level 3 cache is an external
-        /// memory area that has a faster access time than the main RAM memory.
+        /// 三级处理器缓存大小。
         /// </summary>
         public int L3CacheSize { get; set; }
 
         /// <summary>
-        /// Clockspeed of the Level 3 property cache. A Level 3 cache is an external
-        /// memory area that has a faster access time than the main RAM memory.
+        /// 三级处理器缓存时钟速度。
         /// </summary>
         public int L3CacheSpeed { get; set; }
 
         /// <summary>
-        /// The number of threads per processor socket.
+        /// 每个处理器插槽的线程数。
         /// </summary>
         public int ThreadCount { get; set; }
 
         /// <summary>
-        /// If True, the Firmware has enabled virtualization extensions.
+        /// 如果为真，固件已启用虚拟化扩展。
         /// </summary>
         public string VirtualizationFirmwareEnabled { get; set; }
 
         /// <summary>
-        /// This function parses the management object structure to extract the CPU info fields.
+        /// 此函数解析管理对象结构以提取 CPU 信息字段。
         /// </summary>
-        /// <param name="mgtObject">Management object containing the different CPU info fields</param>
-        /// <returns>returns 0 if success, -1 if an exception occured</returns>
+        /// <param name="mgtObject">包含不同 CPU 信息字段的管理对象</param>
+        /// <returns>成功返回 0，异常返回 -1</returns>
         public int GetCpuInfo(ManagementObject mgtObject) {
             try {
-                Id = (mgtObject["Name"] == null) ? "" : Regex.Replace(mgtObject["Name"].ToString(), @"\s+", " ");
-                AddressWidth = int.Parse(mgtObject["AddressWidth"].ToString());
-                CpuStatus = GetCpuStatus(int.Parse(mgtObject["CpuStatus"].ToString()));
-                DataWidth = int.Parse(mgtObject["DataWidth"].ToString());
-                DeviceID = mgtObject["DeviceID"].ToString();
-                Family = GetCpuFamily(int.Parse(mgtObject["Family"].ToString()));
-                Manufacturer = mgtObject["Manufacturer"].ToString();
-                MaxClockSpeed = int.Parse(mgtObject["MaxClockSpeed"].ToString());
-                CurrentClockSpeed = int.Parse(mgtObject["CurrentClockSpeed"].ToString());
-                PartNumber = mgtObject["PartNumber"].ToString();
-                SerialNumber = mgtObject["SerialNumber"].ToString().Trim();
-                UniqueId = mgtObject["UniqueId"] == null ? "" : mgtObject["UniqueId"].ToString();
-                ProcessorType = int.Parse(mgtObject["ProcessorType"].ToString());
-                ProcessorId = mgtObject["ProcessorId"].ToString();
-                LoadPercentage = int.Parse(mgtObject["LoadPercentage"].ToString());
-                Architecture = GetCpuArchitecture(int.Parse(mgtObject["Architecture"].ToString()));
+                // Using null-conditional operator and null-coalescing operator for safer and cleaner code
+                Id = mgtObject["Name"] != null ? Regex.Replace(mgtObject["Name"].ToString(), @"\s+", " ") : "";
+                AddressWidth = int.Parse(mgtObject["AddressWidth"]?.ToString() ?? "0");
+                CpuStatus = GetCpuStatus(int.Parse(mgtObject["CpuStatus"]?.ToString() ?? "0"));
+                DataWidth = int.Parse(mgtObject["DataWidth"]?.ToString() ?? "0");
+                DeviceID = mgtObject["DeviceID"]?.ToString() ?? "";
+                Family = GetCpuFamily(int.Parse(mgtObject["Family"]?.ToString() ?? "0"));
+                Manufacturer = mgtObject["Manufacturer"]?.ToString() ?? "";
+                MaxClockSpeed = int.Parse(mgtObject["MaxClockSpeed"]?.ToString() ?? "0");
+                CurrentClockSpeed = int.Parse(mgtObject["CurrentClockSpeed"]?.ToString() ?? "0");
+                PartNumber = mgtObject["PartNumber"]?.ToString() ?? "";
+                SerialNumber = mgtObject["SerialNumber"]?.ToString().Trim() ?? "";
+                UniqueId = mgtObject["UniqueId"]?.ToString() ?? "";
+                ProcessorType = int.Parse(mgtObject["ProcessorType"]?.ToString() ?? "0");
+                ProcessorId = mgtObject["ProcessorId"]?.ToString() ?? "";
+                LoadPercentage = int.Parse(mgtObject["LoadPercentage"]?.ToString() ?? "0");
+                Architecture = GetCpuArchitecture(int.Parse(mgtObject["Architecture"]?.ToString() ?? "-1"));
 
-                CurrentVoltage = (mgtObject["CurrentVoltage"] == null) ? CPU_VOLTAGE.UNKNOWN : GetCpuCurrentVoltage(int.Parse(mgtObject["CurrentVoltage"].ToString()));
-                NumberOfLogicalProcessors = int.Parse(mgtObject["NumberOfLogicalProcessors"].ToString());
-                NumberOfCores = int.Parse(mgtObject["NumberOfCores"].ToString());
-                NumberOfEnabledCore = int.Parse(mgtObject["NumberOfEnabledCore"].ToString());
+                CurrentVoltage = mgtObject["CurrentVoltage"] == null ? CPU_VOLTAGE.UNKNOWN : GetCpuCurrentVoltage(int.Parse(mgtObject["CurrentVoltage"].ToString()));
+                NumberOfLogicalProcessors = int.Parse(mgtObject["NumberOfLogicalProcessors"]?.ToString() ?? "0");
+                NumberOfCores = int.Parse(mgtObject["NumberOfCores"]?.ToString() ?? "0");
+                NumberOfEnabledCore = int.Parse(mgtObject["NumberOfEnabledCore"]?.ToString() ?? "0");
 
-                Level = int.Parse(mgtObject["Level"].ToString());
-                L2CacheSize = (mgtObject["L2CacheSize"] == null) ? -1 : int.Parse(mgtObject["L2CacheSize"].ToString());
-                L2CacheSpeed = (mgtObject["L2CacheSpeed"] == null) ? -1 : int.Parse(mgtObject["L2CacheSpeed"].ToString());
-                L3CacheSize = (mgtObject["L3CacheSize"] == null) ? -1 : int.Parse(mgtObject["L3CacheSize"].ToString());
-                L3CacheSpeed = (mgtObject["L3CacheSpeed"] == null) ? -1 : int.Parse(mgtObject["L3CacheSpeed"].ToString());
+                Level = int.Parse(mgtObject["Level"]?.ToString() ?? "0");
+                L2CacheSize = int.Parse(mgtObject["L2CacheSize"]?.ToString() ?? "-1");
+                L2CacheSpeed = int.Parse(mgtObject["L2CacheSpeed"]?.ToString() ?? "-1");
+                L3CacheSize = int.Parse(mgtObject["L3CacheSize"]?.ToString() ?? "-1");
+                L3CacheSpeed = int.Parse(mgtObject["L3CacheSpeed"]?.ToString() ?? "-1");
 
-                ThreadCount = (mgtObject["ThreadCount"] == null) ? -1 : int.Parse(mgtObject["ThreadCount"].ToString());
+                ThreadCount = int.Parse(mgtObject["ThreadCount"]?.ToString() ?? "-1");
 
-                bool virtualFlag = false;
-                Boolean.TryParse(mgtObject["VirtualizationFirmwareEnabled"].ToString(), out virtualFlag);
-                VirtualizationFirmwareEnabled = ((bool)virtualFlag) ? "ENABLED" : "DISABLED";
+                bool.TryParse(mgtObject["VirtualizationFirmwareEnabled"]?.ToString(), out bool virtualFlag);
+                VirtualizationFirmwareEnabled = virtualFlag ? "ENABLED" : "DISABLED";
 
                 return 0;
             } catch (Exception ex) {
@@ -215,108 +211,59 @@ namespace Carrot.Device {
         }
 
         /// <summary>
-        /// Stringifies the properties of the CPUInfo class.
+        /// 将 CPUInfo 类的属性转换为字符串。
         /// </summary>
         /// <returns>string</returns>
         public override string ToString() {
-            StringBuilder str = new StringBuilder();
+            var str = new StringBuilder();
 
-            str.Append("Device ID: ").Append(DeviceID).Append('\n');
-            str.Append("Name: ").Append(Id).Append('\n');
-            str.Append("Current Clock Speed (MHz): ").Append(CurrentClockSpeed).Append(", Max. Clock Speed (MHz): ").Append(MaxClockSpeed).Append('\n');
-            str.Append("Architecture: ").Append(Architecture).Append('\n');
+            str.AppendLine($"Device ID: {DeviceID}");
+            str.AppendLine($"Name: {Id}");
+            str.AppendLine($"Current Clock Speed (MHz): {CurrentClockSpeed}, Max. Clock Speed (MHz): {MaxClockSpeed}");
+            str.AppendLine($"Architecture: {Architecture}");
 
-            if (Manufacturer != String.Empty)
-                str.Append("Manufacturer: ").Append(Manufacturer).Append('\n');
+            if (!string.IsNullOrEmpty(Manufacturer))
+                str.AppendLine($"Manufacturer: {Manufacturer}");
 
-            str.Append("NumberOfCores: ").Append(NumberOfCores).Append('\n');
-            str.Append("Number Of Logical Processors: ").Append(NumberOfLogicalProcessors).Append('\n');
-            str.Append("Number Of Enabled Core: ").Append(NumberOfEnabledCore).Append('\n');
+            str.AppendLine($"NumberOfCores: {NumberOfCores}");
+            str.AppendLine($"Number Of Logical Processors: {NumberOfLogicalProcessors}");
+            str.AppendLine($"Number Of Enabled Core: {NumberOfEnabledCore}");
 
             return str.ToString();
         }
 
         /// <summary>
-        /// This functions converts the CPU architecture from enumeration to string
+        /// 此函数将 CPU 架构从枚举转换为字符串
         /// </summary>
-        /// <param name="architecture">the CPU architecture (int)</param>
-        /// <returns>the CPU architecture (string)</returns>
+        /// <param name="architecture">CPU 架构 (int)</param>
+        /// <returns>CPU 架构 (string)</returns>
         protected CPU_ARCHITECTURE GetCpuArchitecture(int architecture) {
-            switch (architecture) {
-                case 0:
-                    return CPU_ARCHITECTURE.X86;
-
-                case 1:
-                    return CPU_ARCHITECTURE.MIPS;
-
-                case 2:
-                    return CPU_ARCHITECTURE.ALPHA;
-
-                case 3:
-                    return CPU_ARCHITECTURE.POWERPC;
-
-                case 5:
-                    return CPU_ARCHITECTURE.ARM;
-
-                case 6:
-                    return CPU_ARCHITECTURE.IA64;
-
-                case 9:
-                    return CPU_ARCHITECTURE.X64;
-
-                default:
-                    return CPU_ARCHITECTURE.NONE;
-            }
+            return Enum.IsDefined(typeof(CPU_ARCHITECTURE), architecture) ? (CPU_ARCHITECTURE)architecture : CPU_ARCHITECTURE.NONE;
         }
 
         /// <summary>
-        /// This functions converts the CPU status from enumeration to string
+        /// 此函数将 CPU 状态从枚举转换为字符串
         /// </summary>
-        /// <param name="status">the CPU status (int)</param>
-        /// <returns>the CPU status (string)</returns>
+        /// <param name="status">CPU 状态 (int)</param>
+        /// <returns>CPU 状态 (string)</returns>
         protected CPU_STATUS GetCpuStatus(int status) {
-            switch (status) {
-                case 0:
-                    return CPU_STATUS.UNKNOWN;
-
-                case 1:
-                    return CPU_STATUS.ENABLED;
-
-                case 2:
-                    return CPU_STATUS.DISABLED_USER;
-
-                case 3:
-                    return CPU_STATUS.DISABLED_BIOS;
-
-                case 4:
-                    return CPU_STATUS.IDLE;
-
-                case 5:
-                case 6:
-                    return CPU_STATUS.RESERVED;
-
-                case 7:
-                    return CPU_STATUS.OTHER;
-
-                default:
-                    return CPU_STATUS.NONE;
-            }
+            return Enum.IsDefined(typeof(CPU_STATUS), status) ? (CPU_STATUS)status : CPU_STATUS.NONE;
         }
 
         /// <summary>
-        /// This functions converts the CPU family from enumeration to string
+        /// 此函数将 CPU 系列从枚举转换为字符串
         /// </summary>
-        /// <param name="family">the CPU family (int)</param>
-        /// <returns>the CPU family (string)</returns>
+        /// <param name="family">CPU 系列 (int)</param>
+        /// <returns>CPU 系列 (string)</returns>
         protected CPU_FAMILY GetCpuFamily(int family) {
             return (CPU_FAMILY)family;
         }
 
         /// <summary>
-        /// This functions converts the CPU current voltage from enumeration to string
+        /// 此函数将 CPU 电压从枚举转换为字符串
         /// </summary>
-        /// <param name="voltage">the CPU current voltage (int)</param>
-        /// <returns>the CPU current voltage (string)</returns>
+        /// <param name="voltage">CPU 电压 (int)</param>
+        /// <returns>CPU 电压 (string)</returns>
         protected CPU_VOLTAGE GetCpuCurrentVoltage(int voltage) {
             return (CPU_VOLTAGE)voltage;
         }

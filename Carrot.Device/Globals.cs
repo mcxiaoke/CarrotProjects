@@ -1,22 +1,22 @@
 ﻿namespace Carrot.Device {
 
-    #region Enumerations
+    #region 枚举
 
     /// <summary>
     /// \enumeration CPU_ARCHITECTURE
-    /// An enumeration of CPU architectures as detailed in <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor"/>
+    /// CPU 架构枚举，详情请参阅 <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor"/>
     /// </summary>
     public enum CPU_ARCHITECTURE { X86 = 0, MIPS = 1, ALPHA = 2, POWERPC = 3, ARM = 5, IA64 = 6, X64 = 9, NONE = -1 }
 
     /// <summary>
     /// \enumeration CPU_STATUS
-    /// An enumeration of CPU statuses as detailed in <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor"/>
+    /// CPU 状态枚举，详情请参阅 <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor"/>
     /// </summary>
     public enum CPU_STATUS { UNKNOWN = 0, ENABLED = 1, DISABLED_USER = 2, DISABLED_BIOS = 3, IDLE = 4, RESERVED = 5, OTHER = 7, NONE = -1 }
 
     /// <summary>
     /// \enumeration CPU_FAMILY
-    /// An enumeration of CPU families as detailed in <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor"/>
+    /// CPU 系列枚举，详情请参阅 <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor"/>
     /// </summary>
     public enum CPU_FAMILY {
         Other = 1, Unknown = 2, _8086 = 3, _80286 = 4, Intel_80386 = 5, Intel_80486 = 6, _8087 = 7, _80287 = 8, _80387 = 9,
@@ -39,19 +39,19 @@
 
     /// <summary>
     /// \enumeration CPU_TYPE
-    /// An enumeration of CPU types as detailed in <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor"/>
+    /// CPU 类型枚举，详情请参阅 <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor"/>
     /// </summary>
     public enum CPU_TYPE { OTHER = 1, UNKNOWN = 2, CENTRAL_PROCESSOR = 3, MATH_PROCESSOR = 4, DSP_PROCESSOR = 5, VIDEO_PROCESSOR = 6, NONE = -1 }
 
     /// <summary>
     /// \enumeration CPU_VOLTAGE
-    /// An enumeration of CPU voltages as detailed in <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor"/>
+    /// CPU 电压枚举，详情请参阅 <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-processor"/>
     /// </summary>
     public enum CPU_VOLTAGE { UNKNOWN = 0, _5V = 1, _3_3V = 2, _2_9V = 4, NONE = -1 }
 
     /// <summary>
     /// \enumeration MEM_BANK_FORM_FACTOR
-    /// An enumeration of memory bank form factors as detailed in <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-physicalmemory"/>
+    /// 内存插槽外形枚举，详情请参阅 <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-physicalmemory"/>
     /// </summary>
     public enum MEM_BANK_FORM_FACTOR {
         UNKNOWN = 0, OTHER = 1, SIP = 2, DIP = 3, ZIP = 4, SOJ = 5, PROPRIETARY = 6, SIMM = 7, DIMM = 8, TSOP = 9,
@@ -61,7 +61,7 @@
 
     /// <summary>
     /// \enumeration VIDEO_ARCHITECTURE
-    /// An enumeration of video controller architectures as detailed in <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-videocontroller"/>
+    /// 显卡架构枚举，详情请参阅 <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-videocontroller"/>
     /// </summary>
     public enum VIDEO_ARCHITECTURE {
         OTHER = 1, UNKNOWN = 2, CGA = 3, EGA = 4, VGA = 5, SVGA = 6, MDA = 7, HGC = 8,
@@ -70,7 +70,7 @@
 
     /// <summary>
     /// \enumeration VIDEO_MEMORY_TYPE
-    /// An enumeration of video memory types as detailed in <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-videocontroller"/>
+    /// 显存类型枚举，详情请参阅 <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-videocontroller"/>
     /// </summary>
     public enum VIDEO_MEMORY_TYPE {
         OTHER = 1, UKNOWN = 2, VRAM = 3, DRAM = 4, SRAM = 5, WRAM = 6, EDO_RAM = 7,
@@ -78,21 +78,21 @@
         SDRAM = 12, SGRAM = 13
     }
 
-    #endregion Enumerations
+    #endregion 枚举
 
     /// <summary>
     /// \Globals
-    /// A static class that holds all common global variables
+    /// 包含所有常见全局变量的静态类
     /// </summary>
     public static class Globals {
 
         /// <summary>
-        /// Default output filename
+        /// 默认输出文件名
         /// </summary>
         public static string Output_Filename = "devices.txt";
 
         /// <summary>
-        /// A flag indicating if the logging to an output filename is enabled
+        /// 标志是否启用输出到文件的日志记录
         /// </summary>
         public static bool Enable_File_Output = false;
     }

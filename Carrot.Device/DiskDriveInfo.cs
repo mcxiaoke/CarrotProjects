@@ -6,136 +6,135 @@ namespace Carrot.Device {
 
     /// <summary>
     /// \class DiskDriveInfo
-    /// Captures the properties of the disk drives installed on the computer.
-    /// It uses a subset of the properties defined in the WMI class: Win32_DiskDrive
-    /// For more information, <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-diskdrive">Win32_DiskDrive</see>
+    /// 捕获计算机上安装的磁盘驱动器的属性。
+    /// 它使用 WMI 类 Win32_DiskDrive 中定义的属性子集
+    /// 更多信息，请参阅 <see href="https://docs.microsoft.com/en-us/windows/win32/cimwin32prov/win32-diskdrive">Win32_DiskDrive</see>
     /// </summary>
     public class DiskDriveInfo {
 
         /// <summary>
-        /// Default constructor
+        /// 默认构造函数
         /// </summary>
         public DiskDriveInfo() {
         }
 
         /// <summary>
-        /// Disk drive identifier
+        /// 磁盘驱动器标识符
         /// </summary>
         public string Id { get; set; }
 
         /// <summary>
-        /// Unique identifier of the disk drive with other devices on the system.
+        /// 与系统上其他设备一起的磁盘驱动器的唯一标识符。
         /// </summary>
         public string DeviceID { get; set; }
 
         /// <summary>
-        /// Manufacturer's model number of the disk drive.
+        /// 制造商的磁盘驱动器型号。
         /// </summary>
         public string Model { get; set; }
 
         /// <summary>
-        /// Number allocated by the manufacturer to identify the physical media.
+        /// 制造商分配的用于识别物理介质的编号。
         /// </summary>
         public string SerialNumber { get; set; }
 
         /// <summary>
-        /// Number allocated by the manufacturer to identify the physical media.
+        /// 制造商分配的用于识别物理介质的编号。
         /// </summary>
         public string Manufacturer { get; set; }
 
         /// <summary>
-        /// Disk identification. This property can be used to identify a shared resource.
+        /// 磁盘标识。此属性可用于标识共享资源。
         /// </summary>
         public int Signature { get; set; }
 
         /// <summary>
-        /// Current status of the object.
+        /// 对象的当前状态。
         /// </summary>
         public string Status { get; set; }
 
         /// <summary>
-        /// State of the logical device.
+        /// 逻辑设备的状态。
         /// </summary>
         public string StatusInfo { get; set; }
 
         /// <summary>
-        /// Value of the scoping computer's CreationClassName property.
+        /// 范围计算机的 CreationClassName 属性的值。
         /// </summary>
         public string SystemCreationClassName { get; set; }
 
         /// <summary>
-        /// Name of the scoping system.
+        /// 范围系统的名称。
         /// </summary>
         public string SystemName { get; set; }
 
         /// <summary>
-        /// Total number of cylinders on the physical disk drive.
+        /// 物理磁盘驱动器上的柱面总数。
         /// </summary>
         public long TotalCylinders { get; set; }
 
         /// <summary>
-        /// Total number of heads on the disk drive.
+        /// 磁盘驱动器上的磁头总数。
         /// </summary>
         public long TotalHeads { get; set; }
 
         /// <summary>
-        /// Total number of sectors on the physical disk drive.
+        /// 物理磁盘驱动器上的扇区总数。
         /// </summary>
         public long TotalSectors { get; set; }
 
         /// <summary>
-        /// Total number of tracks on the physical disk drive.
+        /// 物理磁盘驱动器上的磁道总数。
         /// </summary>
         public long TotalTracks { get; set; }
 
         /// <summary>
-        /// Size of the disk drive.
+        /// 磁盘驱动器的大小。
         /// </summary>
         public long Size { get; set; }
 
         /// <summary>
-        /// Maximum number of media which can be supported or inserted.
+        /// 支持或插入的最大介质数。
         /// </summary>
         public int NumberOfMediaSupported { get; set; }
 
         /// <summary>
-        /// Number of partitions on this physical disk drive that are
-        /// recognized by the operating system.
+        /// 此物理磁盘驱动器上被操作系统识别的分区数。
         /// </summary>
         public int Partitions { get; set; }
 
         /// <summary>
-        /// Number of tracks in each cylinder on the physical disk drive.
+        /// 物理磁盘驱动器上每个柱面的磁道数。
         /// </summary>
         public int TracksPerCylinder { get; set; }
 
         /// <summary>
-        /// This function parses the management object structure to extract the disk drive info fields.
+        /// 此函数解析管理对象结构以提取磁盘驱动器信息字段。
         /// </summary>
-        /// <param name="mgtObject">Management object containing the different disk drive info fields</param>
-        /// <returns>returns 0 if success, -1 if an exception occured</returns>
+        /// <param name="mgtObject">包含不同磁盘驱动器信息字段的管理对象</param>
+        /// <returns>成功返回 0，异常返回 -1</returns>
         public int GetDiskDriveInfo(ManagementObject mgtObject) {
             try {
-                Id = mgtObject["Name"].ToString();
-                DeviceID = mgtObject["DeviceID"].ToString();
-                Model = mgtObject["Model"].ToString();
-                Manufacturer = mgtObject["Manufacturer"].ToString();
+                Id = mgtObject["Name"]?.ToString() ?? "";
+                DeviceID = mgtObject["DeviceID"]?.ToString() ?? "";
+                Model = mgtObject["Model"]?.ToString() ?? "";
+                Manufacturer = mgtObject["Manufacturer"]?.ToString() ?? "";
 
-                SerialNumber = mgtObject["SerialNumber"].ToString().Trim();
-                Status = mgtObject["Status"].ToString();
-                SystemCreationClassName = mgtObject["SystemCreationClassName"].ToString();
-                SystemName = mgtObject["SystemName"].ToString();
+                SerialNumber = mgtObject["SerialNumber"]?.ToString().Trim() ?? "";
+                Status = mgtObject["Status"]?.ToString() ?? "";
+                SystemCreationClassName = mgtObject["SystemCreationClassName"]?.ToString() ?? "";
+                SystemName = mgtObject["SystemName"]?.ToString() ?? "";
 
-                TotalCylinders = (mgtObject["TotalCylinders"] == null) ? -1 : long.Parse(mgtObject["TotalCylinders"].ToString());
-                TotalHeads = (mgtObject["TotalHeads"] == null) ? -1 : long.Parse(mgtObject["TotalHeads"].ToString());
-                TotalSectors = (mgtObject["TotalSectors"] == null) ? -1 : long.Parse(mgtObject["TotalSectors"].ToString());
-                TotalTracks = (mgtObject["TotalTracks"] == null) ? -1 : long.Parse(mgtObject["TotalTracks"].ToString());
-                Size = (mgtObject["Size"] == null) ? -1 : long.Parse(mgtObject["Size"].ToString());
+                TotalCylinders = long.Parse(mgtObject["TotalCylinders"]?.ToString() ?? "-1");
+                TotalHeads = long.Parse(mgtObject["TotalHeads"]?.ToString() ?? "-1");
+                TotalSectors = long.Parse(mgtObject["TotalSectors"]?.ToString() ?? "-1");
+                TotalTracks = long.Parse(mgtObject["TotalTracks"]?.ToString() ?? "-1");
+                Size = long.Parse(mgtObject["Size"]?.ToString() ?? "-1");
 
-                NumberOfMediaSupported = (mgtObject["NumberOfMediaSupported"] == null) ? -1 : int.Parse(mgtObject["NumberOfMediaSupported"].ToString());
-                Partitions = (mgtObject["Partitions"] == null) ? -1 : int.Parse(mgtObject["Partitions"].ToString());
-                StatusInfo = GetStatusInfo((mgtObject["StatusInfo"] == null) ? -1 : int.Parse(mgtObject["StatusInfo"].ToString()));
-                TracksPerCylinder = (mgtObject["TracksPerCylinder"] == null) ? -1 : int.Parse(mgtObject["TracksPerCylinder"].ToString());
+                NumberOfMediaSupported = int.Parse(mgtObject["NumberOfMediaSupported"]?.ToString() ?? "-1");
+                Partitions = int.Parse(mgtObject["Partitions"]?.ToString() ?? "-1");
+                StatusInfo = GetStatusInfo(int.Parse(mgtObject["StatusInfo"]?.ToString() ?? "-1"));
+                TracksPerCylinder = int.Parse(mgtObject["TracksPerCylinder"]?.ToString() ?? "-1");
                 //Signature = (mgtObject["Signature"] == null) ? -1 : int.Parse(mgtObject["Signature"].ToString());
 
                 return 0;
@@ -148,57 +147,46 @@ namespace Carrot.Device {
         }
 
         /// <summary>
-        /// This functions converts the disk drive status from enumeration to string
+        /// 此函数将磁盘驱动器状态从枚举转换为字符串
         /// </summary>
-        /// <param name="status">the disk drive status (int)</param>
-        /// <returns>the disk drive status (string)</returns>
+        /// <param name="status">磁盘驱动器状态 (int)</param>
+        /// <returns>磁盘驱动器状态 (string)</returns>
         protected string GetStatusInfo(int status) {
-            switch (status) {
-                case 1:
-                    return "OTHER";
-
-                case 2:
-                    return "UNKNWON";
-
-                case 3:
-                    return "ENABLED";
-
-                case 4:
-                    return "DISABLED";
-
-                case 5:
-                    return "NOT APPLICABLE";
-
-                default:
-                    return "";
-            }
+            return status switch {
+                1 => "OTHER",
+                2 => "UNKNOWN",
+                3 => "ENABLED",
+                4 => "DISABLED",
+                5 => "NOT APPLICABLE",
+                _ => "",
+            };
         }
 
         /// <summary>
-        /// Stringifies the properties of the CPUInfo class.
+        /// 将 DiskDriveInfo 类的属性转换为字符串。
         /// </summary>
         /// <returns>string</returns>
         public override string ToString() {
-            StringBuilder str = new StringBuilder();
+            var str = new StringBuilder();
 
-            str.Append($"Name: {Id}\n");
+            str.AppendLine($"Name: {Id}");
 
-            if (Manufacturer != String.Empty)
-                str.Append($"Manufacturer: {Manufacturer}\n");
+            if (!string.IsNullOrEmpty(Manufacturer))
+                str.AppendLine($"Manufacturer: {Manufacturer}");
 
-            if (SerialNumber != String.Empty)
-                str.Append($"SerialNumber: {SerialNumber}\n");
+            if (!string.IsNullOrEmpty(SerialNumber))
+                str.AppendLine($"SerialNumber: {SerialNumber}");
 
-            if (Model != String.Empty)
-                str.Append($"Model: {Model}\n");
+            if (!string.IsNullOrEmpty(Model))
+                str.AppendLine($"Model: {Model}");
 
             if (Size >= 0)
-                str.Append($"Size (Bytes): {Size}\n");
+                str.AppendLine($"Size (Bytes): {Size}");
 
-            str.Append($"Partitions: {Partitions}\n");
+            str.AppendLine($"Partitions: {Partitions}");
 
-            if (Status != String.Empty)
-                str.Append($"Status: {Status}\n");
+            if (!string.IsNullOrEmpty(Status))
+                str.AppendLine($"Status: {Status}");
 
             return str.ToString();
         }

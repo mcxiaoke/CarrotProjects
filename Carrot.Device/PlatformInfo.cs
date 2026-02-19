@@ -6,70 +6,70 @@ namespace Carrot.Device {
 
     /// <summary>
     /// \class PlatformInfo
-    /// Captures the properties of the computer's platform.
+    /// 捕获计算机平台的属性。
     /// </summary>
     public class PlatformInfo {
 
         /// <summary>
-        /// Default constructor
+        /// 默认构造函数
         /// </summary>
         public PlatformInfo() {
         }
 
         /// <summary>
-        /// A flag indicating the operating system is 64-bit
+        /// 指示操作系统是否为 64 位的标志
         /// </summary>
-        public bool is64BitOperatingSystem;
+        public bool Is64BitOperatingSystem { get; set; }
 
         /// <summary>
-        /// The current machine name
+        /// 当前机器名
         /// </summary>
-        public string machineName;
+        public string MachineName { get; set; }
 
         /// <summary>
-        /// The operating system name
+        /// 操作系统名称
         /// </summary>
-        public OperatingSystem os;
+        public OperatingSystem OS { get; set; }
 
         /// <summary>
-        /// The platform identifier
+        /// 平台标识符
         /// </summary>
-        public PlatformID platform;
+        public PlatformID Platform { get; set; }
 
         /// <summary>
-        /// The unstalled service pack
+        /// 已安装的服务包
         /// </summary>
-        public string servicePack;
+        public string ServicePack { get; set; }
 
         /// <summary>
-        /// The operating system version
+        /// 操作系统版本
         /// </summary>
-        public string version;
+        public string VersionString { get; set; }
 
         /// <summary>
-        /// The number of computer processors
+        /// 计算机处理器数量
         /// </summary>
-        public int processorCount;
+        public int ProcessorCount { get; set; }
 
         /// <summary>
-        /// The list of logical drives
+        /// 逻辑驱动器列表
         /// </summary>
-        public string[] logicalDrives;
+        public string[] LogicalDrives { get; set; }
 
         /// <summary>
-        /// A dictionary containing the list of enviroment variables
+        /// 包含环境变量列表的字典
         /// </summary>
-        public IDictionary envVars;
+        public IDictionary EnvVars { get; set; }
 
         /// <summary>
-        /// CLR version
+        /// CLR 版本
         /// </summary>
-        public Version clrVersion;
+        public Version ClrVersion { get; set; }
 
         /// <summary>
-        /// Gets the system information (including OS, logical drives, env. variables, etc.)
+        /// 获取系统信息（包括操作系统、逻辑驱动器、环境变量等）
         /// </summary>
-        /// <returns>0 if success, -1 if an exception had occured</returns>
+        /// <returns>成功返回 0，发生异常返回 -1</returns>
         public int GetSystemInfo() {
             try {
 #if DEBUG
@@ -80,108 +80,108 @@ namespace Carrot.Device {
                     Tools.SaveData(Globals.Output_Filename, $"********** Platform General Information **********\n", true);
                 }
 
-                // returns true on my PC as it is a 64-bit OS
-                is64BitOperatingSystem = Environment.Is64BitOperatingSystem;
+                // 在我的电脑上返回 true，因为它是 64 位操作系统
+                Is64BitOperatingSystem = Environment.Is64BitOperatingSystem;
 
 #if DEBUG
-                Console.WriteLine("is64BitOperatingSystem: " + is64BitOperatingSystem);
+                Console.WriteLine("is64BitOperatingSystem: " + Is64BitOperatingSystem);
 #endif
                 if (Globals.Enable_File_Output) {
-                    Tools.SaveData(Globals.Output_Filename, $"is64BitOperatingSystem: {is64BitOperatingSystem}\n", true);
+                    Tools.SaveData(Globals.Output_Filename, $"is64BitOperatingSystem: {Is64BitOperatingSystem}\n", true);
                 }
 
-                // returns the machine name
-                machineName = Environment.MachineName;
+                // 返回机器名
+                MachineName = Environment.MachineName;
 #if DEBUG
-                Console.WriteLine("machineName: " + machineName);
+                Console.WriteLine("machineName: " + MachineName);
 #endif
                 if (Globals.Enable_File_Output) {
-                    Tools.SaveData(Globals.Output_Filename, $"machineName: {machineName}\n", true);
+                    Tools.SaveData(Globals.Output_Filename, $"machineName: {MachineName}\n", true);
                 }
 
-                // returns information about the operating system version, build, major, minor etc.
-                os = Environment.OSVersion;
+                // 返回有关操作系统版本、内部版本、主要、次要等的信息。
+                OS = Environment.OSVersion;
 
 #if DEBUG
-                Console.WriteLine("OS: " + os);
+                Console.WriteLine("OS: " + OS);
 #endif
                 if (Globals.Enable_File_Output) {
-                    Tools.SaveData(Globals.Output_Filename, $"OS: {os}\n", true);
+                    Tools.SaveData(Globals.Output_Filename, $"OS: {OS}\n", true);
                 }
 
-                // returns the platform id as an enumeration
-                platform = os.Platform;
+                // 以枚举形式返回平台 ID
+                Platform = OS.Platform;
 
 #if DEBUG
-                Console.WriteLine("Platform: " + os.Platform);
+                Console.WriteLine("Platform: " + OS.Platform);
 #endif
                 if (Globals.Enable_File_Output) {
-                    Tools.SaveData(Globals.Output_Filename, $"Platform: {os.Platform}\n", true);
+                    Tools.SaveData(Globals.Output_Filename, $"Platform: {OS.Platform}\n", true);
                 }
 
-                // the currently installed service pack
-                servicePack = os.ServicePack;
+                // 当前安装的服务包
+                ServicePack = OS.ServicePack;
 
 #if DEBUG
-                Console.WriteLine("ServicePack: " + os.ServicePack);
+                Console.WriteLine("ServicePack: " + OS.ServicePack);
 
 #endif
                 if (Globals.Enable_File_Output) {
-                    Tools.SaveData(Globals.Output_Filename, $"ServicePack: {os.ServicePack}\n", true);
+                    Tools.SaveData(Globals.Output_Filename, $"ServicePack: {OS.ServicePack}\n", true);
                 }
 
-                // retrieve the current CLR version
-                clrVersion = Environment.Version;
+                // 检索当前 CLR 版本
+                ClrVersion = Environment.Version;
 
 #if DEBUG
-                Console.WriteLine("CLR version: " + clrVersion);
-#endif
-
-                if (Globals.Enable_File_Output) {
-                    Tools.SaveData(Globals.Output_Filename, $"CLR version: {clrVersion}\n", true);
-                }
-
-                //the toString version of the OS
-                version = os.VersionString;
-
-#if DEBUG
-                Console.WriteLine("VersionString: " + os.VersionString);
-#endif
-                if (Globals.Enable_File_Output) {
-                    Tools.SaveData(Globals.Output_Filename, $"VersionString: {os.VersionString}\n", true);
-                }
-
-                //I have 4 processors on this PC
-                processorCount = Environment.ProcessorCount;
-
-#if DEBUG
-                Console.WriteLine("processorCount: " + processorCount);
+                Console.WriteLine("CLR version: " + ClrVersion);
 #endif
 
                 if (Globals.Enable_File_Output) {
-                    Tools.SaveData(Globals.Output_Filename, $"processorCount: {processorCount}\n", true);
+                    Tools.SaveData(Globals.Output_Filename, $"CLR version: {ClrVersion}\n", true);
                 }
 
-                // returns a list of logical drives: e.g., C: and D:
-                logicalDrives = Environment.GetLogicalDrives();
+                // 操作系统的 toString 版本
+                VersionString = OS.VersionString;
+
+#if DEBUG
+                Console.WriteLine("VersionString: " + OS.VersionString);
+#endif
+                if (Globals.Enable_File_Output) {
+                    Tools.SaveData(Globals.Output_Filename, $"VersionString: {OS.VersionString}\n", true);
+                }
+
+                // 我的电脑上有 4 个处理器
+                ProcessorCount = Environment.ProcessorCount;
+
+#if DEBUG
+                Console.WriteLine("processorCount: " + ProcessorCount);
+#endif
+
+                if (Globals.Enable_File_Output) {
+                    Tools.SaveData(Globals.Output_Filename, $"processorCount: {ProcessorCount}\n", true);
+                }
+
+                // 返回逻辑驱动器列表：例如 C: 和 D:
+                LogicalDrives = Environment.GetLogicalDrives();
 
                 if (Globals.Enable_File_Output) {
                     Tools.SaveData(Globals.Output_Filename, $"Logical Drives:\n", true);
-                    foreach (string key in logicalDrives) {
+                    foreach (string key in LogicalDrives) {
                         Tools.SaveData(Globals.Output_Filename, $"{key} |\t", true);
                     }
                     Tools.SaveData(Globals.Output_Filename, $"\n", true);
                 }
 
-                // this is how to find all environmental variables of the system and iterate through them
-                envVars = Environment.GetEnvironmentVariables();
+                // 如何查找系统的所有环境变量并遍历它们
+                EnvVars = Environment.GetEnvironmentVariables();
 
                 if (Globals.Enable_File_Output) {
                     Tools.SaveData(Globals.Output_Filename, $"Environment variables:\n", true);
-                    foreach (string key in envVars.Keys) {
-                        Debug.WriteLine(string.Concat("key: ", key, ": ", envVars[key]));
+                    foreach (string key in EnvVars.Keys) {
+                        Debug.WriteLine($"key: {key}: {EnvVars[key]}");
 
-                        Tools.SaveData(Globals.Output_Filename, $"{string.Concat("\t", key, ": ", envVars[key])}\n", true);
+                        Tools.SaveData(Globals.Output_Filename, $"\t{key}: {EnvVars[key]}\n", true);
                     }
                 }
 

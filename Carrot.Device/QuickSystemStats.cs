@@ -7,103 +7,103 @@ namespace Carrot.Device {
 
     /// <summary>
     /// \class QuickSystemStats
-    /// A shortcut class which provides some real-time statistics of the system (e.g., CPU usage, free memory size, etc.).
+    /// 一个快捷类，提供系统的一些实时统计信息（例如，CPU 使用率，空闲内存大小等）。
     /// </summary>
     public class QuickSystemStats {
 
         /// <summary>
-        /// Default constructor
+        /// 默认构造函数
         /// </summary>
         public QuickSystemStats() {
             TotalMemSize = GetTotalRAMSize();
         }
 
         /// <summary>
-        /// CPU usage percentage
+        /// CPU 使用率百分比
         /// </summary>
         public double CpuUsage { get; private set; }
 
         /// <summary>
-        /// Number of running threads
+        /// 运行线程数
         /// </summary>
         public int ThreadCount { get; private set; }
 
         /// <summary>
-        /// The size of the free memory
+        /// 空闲内存大小
         /// </summary>
         public double FreeMemSize { get; private set; }
 
         /// <summary>
-        /// The percentage of used memory
+        /// 已用内存百分比
         /// </summary>
         public double MemUsagePercent { get; private set; }
 
         /// <summary>
-        /// The total memory size
+        /// 总内存大小
         /// </summary>
         public double TotalMemSize { get; private set; }
 
         /// <summary>
-        /// Number of context switches
+        /// 上下文切换次数
         /// </summary>
         public int CPUContextSwitches { get; private set; }
 
         /// <summary>
-        /// The number of handles count
+        /// 句柄数
         /// </summary>
         public int HandlesCount { get; private set; }
 
         /// <summary>
-        /// The number of system calls being serviced by the CPU per second
+        /// CPU 每秒服务的系统调用数
         /// </summary>
         public int SystemCallsCount { get; private set; }
 
         /// <summary>
-        /// The total number of bytes read from the disk
+        /// 从磁盘读取的总字节数
         /// </summary>
         public int BytesReadFromDisk { get; private set; }
 
         /// <summary>
-        /// The total number of bytes written to the disk
+        /// 写入磁盘的总字节数
         /// </summary>
         public int BytesWrittenToDisk { get; private set; }
 
         /// <summary>
-        /// The average time of disk reading operations
+        /// 磁盘读取操作的平均时间
         /// </summary>
         public double AvgTimeDiskReadPerSeond { get; private set; }
 
         /// <summary>
-        /// The average time of disk writing operations
+        /// 磁盘写入操作的平均时间
         /// </summary>
         public double AvgTimeDiskWritePerSeond { get; private set; }
 
         /// <summary>
-        /// This function gets the CPU usage, free memory size and memory usage percent
+        /// 此函数获取 CPU 使用率、空闲内存大小和内存使用百分比
         /// </summary>
         public int GetStats() {
             try {
-                FreeMemSize = int.Parse(GetFreeMemorySize().ToString());
+                FreeMemSize = Convert.ToDouble(GetFreeMemorySize());
 
-                CpuUsage = Double.Parse(GetCPUUsage().ToString());
+                CpuUsage = Convert.ToDouble(GetCPUUsage());
 
                 MemUsagePercent = (TotalMemSize > 0) ? (TotalMemSize - FreeMemSize) * 100.0 / TotalMemSize : 0.0;
 
-                ThreadCount = int.Parse(GetThreadCount().ToString());
+                ThreadCount = Convert.ToInt32(GetThreadCount());
 
-                CPUContextSwitches = int.Parse(GetContextSwitchesCount().ToString());
+                CPUContextSwitches = Convert.ToInt32(GetContextSwitchesCount());
 
-                HandlesCount = int.Parse(GetHandlesCount().ToString());
+                HandlesCount = Convert.ToInt32(GetHandlesCount());
 
-                SystemCallsCount = int.Parse(GetSystemCallsCount().ToString());
+                SystemCallsCount = Convert.ToInt32(GetSystemCallsCount());
 
-                BytesReadFromDisk = int.Parse(GetDiskReadBytesCount().ToString());
+                BytesReadFromDisk = Convert.ToInt32(GetDiskReadBytesCount());
 
-                BytesWrittenToDisk = int.Parse(GetDiskWriteBytesCount().ToString());
+                BytesWrittenToDisk = Convert.ToInt32(GetDiskWriteBytesCount());
 
-                AvgTimeDiskReadPerSeond = Double.Parse(GetDiskReadPerSecond().ToString());
+                AvgTimeDiskReadPerSeond = Convert.ToDouble(GetDiskReadPerSecond());
 
-                AvgTimeDiskWritePerSeond = Double.Parse(GetDiskWritePerSecond().ToString());
+                AvgTimeDiskWritePerSeond = Convert.ToDouble(GetDiskWritePerSecond());
 
                 return 0;
             } catch (Exception ex) {
@@ -113,38 +113,38 @@ namespace Carrot.Device {
         }
 
         /// <summary>
-        /// Builds a string with the class members
+        /// 构建包含类成员的字符串
         /// </summary>
         /// <returns>String</returns>
         public override string ToString() {
-            StringBuilder oStr = new StringBuilder();
+            var oStr = new StringBuilder();
 
-            oStr.Append($"Total memory size: {TotalMemSize} Mbytes\n");
-            oStr.Append($"Free memory: {FreeMemSize} Mbytes\n");
-            oStr.Append($"Memory usage: {MemUsagePercent}%\n");
-            oStr.Append($"CPU usage: {CpuUsage}%\n");
-            oStr.Append($"Context switches: {CPUContextSwitches}\n");
-            oStr.Append($"No. threads: {ThreadCount}\n");
-            oStr.Append($"No. handles: {HandlesCount}\n");
-            oStr.Append($"System calls: {SystemCallsCount}\n");
-            oStr.Append($"Bytes read from the disk: {BytesReadFromDisk} bytes\n");
-            oStr.Append($"Bytes written to the disk: {BytesWrittenToDisk} bytes\n");
-            oStr.Append($"Avg. disk reading time: {AvgTimeDiskReadPerSeond}s\n");
-            oStr.Append($"Avg. disk writing time: {AvgTimeDiskWritePerSeond}s\n");
+            oStr.AppendLine($"Total memory size: {TotalMemSize} Mbytes");
+            oStr.AppendLine($"Free memory: {FreeMemSize} Mbytes");
+            oStr.AppendLine($"Memory usage: {MemUsagePercent}%");
+            oStr.AppendLine($"CPU usage: {CpuUsage}%");
+            oStr.AppendLine($"Context switches: {CPUContextSwitches}");
+            oStr.AppendLine($"No. threads: {ThreadCount}");
+            oStr.AppendLine($"No. handles: {HandlesCount}");
+            oStr.AppendLine($"System calls: {SystemCallsCount}");
+            oStr.AppendLine($"Bytes read from the disk: {BytesReadFromDisk} bytes");
+            oStr.AppendLine($"Bytes written to the disk: {BytesWrittenToDisk} bytes");
+            oStr.AppendLine($"Avg. disk reading time: {AvgTimeDiskReadPerSeond}s");
+            oStr.AppendLine($"Avg. disk writing time: {AvgTimeDiskWritePerSeond}s");
 
             return oStr.ToString();
         }
 
         /// <summary>
-        /// Get the total size of the RAM memory
+        /// 获取 RAM 内存的总大小
         /// </summary>
         /// <returns>Double value</returns>
         private double GetTotalRAMSize() {
-            ManagementClass mc = new ManagementClass("Win32_ComputerSystem");
-            ManagementObjectCollection moc = mc.GetInstances();
+            using var mc = new ManagementClass("Win32_ComputerSystem");
+            var moc = mc.GetInstances();
             double size = 0;
 
-            foreach (ManagementObject item in moc) {
+            foreach (var item in moc) {
                 size += Math.Round(Convert.ToDouble(item.Properties["TotalPhysicalMemory"].Value) / 1048576, 0);
             }
 
@@ -152,109 +152,98 @@ namespace Carrot.Device {
         }
 
         /// <summary>
-        /// Gets the current CPU usage time
+        /// 获取当前 CPU 使用时间
         /// </summary>
         /// <returns>Object</returns>
         private object GetCPUUsage() {
-            PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+            using var cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
 
             // will always start at 0
-            dynamic firstValue = cpuCounter.NextValue();
+            cpuCounter.NextValue();
             System.Threading.Thread.Sleep(100);
 
             // now matches task manager reading
-            dynamic secondValue = cpuCounter.NextValue();
-
-            return secondValue;
+            return cpuCounter.NextValue();
         }
 
         /// <summary>
-        /// Reports the total size of free memory
+        /// 报告空闲内存的总大小
         /// </summary>
         /// <returns>Object</returns>
         private object GetFreeMemorySize() {
-            PerformanceCounter ramCounter = new PerformanceCounter("Memory", "Available MBytes");
-
+            using var ramCounter = new PerformanceCounter("Memory", "Available MBytes");
             return ramCounter.NextValue();
         }
 
         /// <summary>
-        /// Reports the total number of threads running on CPU
+        /// 报告 CPU 上运行的线程总数
         /// </summary>
         /// <returns>Object</returns>
         private object GetThreadCount() {
-            PerformanceCounter threadCount = new PerformanceCounter("Process", "Thread Count", "_Total");
-
+            using var threadCount = new PerformanceCounter("Process", "Thread Count", "_Total");
             return threadCount.NextValue();
         }
 
         /// <summary>
-        /// Gets the total number of context switches (thread changes) per second
+        /// 获取每秒的上下文切换（线程更改）总数
         /// </summary>
         /// <returns>Object</returns>
         private object GetContextSwitchesCount() {
-            PerformanceCounter contextSwitchesCount = new PerformanceCounter("System", "Context Switches/sec", null);
-
+            using var contextSwitchesCount = new PerformanceCounter("System", "Context Switches/sec", null);
             return contextSwitchesCount.NextValue();
         }
 
         /// <summary>
-        /// Reports the number of handles that processes opened for objects they create
+        /// 报告进程为其创建的对象打开的句柄数
         /// </summary>
         /// <returns>Object</returns>
         private object GetHandlesCount() {
-            PerformanceCounter threadHandlesCount = new PerformanceCounter("Process", "Handle Count", "_Total");
-
+            using var threadHandlesCount = new PerformanceCounter("Process", "Handle Count", "_Total");
             return threadHandlesCount.NextValue();
         }
 
         /// <summary>
-        /// Reports the number of system calls being serviced by the CPU per second
+        /// 报告 CPU 每秒服务的系统调用数
         /// </summary>
         /// <returns>Object</returns>
         private object GetSystemCallsCount() {
-            PerformanceCounter systemCallsCount = new PerformanceCounter("System", "System Calls/sec", null);
-
+            using var systemCallsCount = new PerformanceCounter("System", "System Calls/sec", null);
             return systemCallsCount.NextValue();
         }
 
         /// <summary>
-        /// Reports the total number of bytes read from the disk per second
+        /// 报告从磁盘每秒读取的总字节数
         /// </summary>
         /// <returns>Object</returns>
         private object GetDiskReadBytesCount() {
-            PerformanceCounter diskReadBytesCount = new PerformanceCounter("PhysicalDisk", "Disk Read Bytes/sec", "_Total");
-
+            using var diskReadBytesCount = new PerformanceCounter("PhysicalDisk", "Disk Read Bytes/sec", "_Total");
             return diskReadBytesCount.NextValue();
         }
 
         /// <summary>
-        /// Reports the total number of bytes written to the disk per second
+        /// 报告每秒写入磁盘的总字节数
         /// </summary>
         /// <returns>Object</returns>
         private object GetDiskWriteBytesCount() {
-            PerformanceCounter diskWriteBytesCount = new PerformanceCounter("PhysicalDisk", "Disk Write Bytes/sec", "_Total");
-
+            using var diskWriteBytesCount = new PerformanceCounter("PhysicalDisk", "Disk Write Bytes/sec", "_Total");
             return diskWriteBytesCount.NextValue();
         }
 
         /// <summary>
-        /// Reports the average time in reading operations from the disk
+        /// 报告从磁盘读取操作的平均时间
         /// </summary>
         /// <returns>Object</returns>
         private object GetDiskReadPerSecond() {
-            PerformanceCounter diskReadPerSeond = new PerformanceCounter("PhysicalDisk", "Avg. Disk sec/Read", "_Total");
-
+            using var diskReadPerSeond = new PerformanceCounter("PhysicalDisk", "Avg. Disk sec/Read", "_Total");
             return diskReadPerSeond.NextValue();
         }
 
         /// <summary>
-        /// Reports the average time in writing operations to the disk
+        /// 报告写入磁盘操作的平均时间
         /// </summary>
         /// <returns>Object</returns>
         private object GetDiskWritePerSecond() {
-            PerformanceCounter diskWritePerSeond = new PerformanceCounter("PhysicalDisk", "Avg. Disk sec/Write", "_Total");
-
+            using var diskWritePerSeond = new PerformanceCounter("PhysicalDisk", "Avg. Disk sec/Write", "_Total");
             return diskWritePerSeond.NextValue();
         }
     }

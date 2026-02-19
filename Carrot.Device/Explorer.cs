@@ -6,12 +6,12 @@ namespace Carrot.Device {
 
     /// <summary>
     /// \class Explorer
-    /// A class that instantiates and calls all the classes in charge of discovering the installed hardware / software.
+    /// 一个实例化并调用所有负责发现已安装硬件/软件的类的类。
     /// </summary>
     public class Explorer {
 
         /// <summary>
-        /// Default construct which initializes all hardware objects
+        /// 默认构造函数，初始化所有硬件对象
         /// </summary>
         public Explorer() {
             System_CPUs = new List<CPUInfo>();
@@ -24,74 +24,74 @@ namespace Carrot.Device {
         }
 
         /// <summary>
-        /// The platform information
+        /// 平台信息
         /// </summary>
         public PlatformInfo PlatformInformation { get; set; }
 
         /// <summary>
-        /// List of system CPUs
+        /// 系统 CPU 列表
         /// </summary>
         public List<CPUInfo> System_CPUs { get; set; }
 
         /// <summary>
-        /// List of memory banks information
+        /// 内存条信息列表
         /// </summary>
         public List<MemoryBankInfo> System_Memory { get; set; }
 
         /// <summary>
-        /// General information about installed memory
+        /// 已安装内存的常规信息
         /// </summary>
         public MemoryInfo MemoryInformation { get; set; }
 
         /// <summary>
-        /// List of video controller information
+        /// 视频控制器信息列表
         /// </summary>
         public List<VideoControllerInfo> System_VideoControllers { get; set; }
 
         /// <summary>
-        /// List of disk drives information
+        /// 磁盘驱动器信息列表
         /// </summary>
         public List<DiskDriveInfo> System_DiskDrives { get; set; }
 
         /// <summary>
-        /// List of disk partitions' information
+        /// 磁盘分区信息列表
         /// </summary>
         public List<DiskPartition> System_DiskPartitions { get; set; }
 
         /// <summary>
-        /// This functions queries the different software / hardware records in order to get their properties
+        /// 此函数查询不同的软件/硬件记录以获取其属性
         /// </summary>
-        /// <returns>0 if success and -1 if an exception arises</returns>
+        /// <returns>如果成功则为 0，如果出现异常则为 -1</returns>
         public int Run() {
             try {
                 int error = 0;
 
-                // Gather generic system information
+                // 收集通用系统信息
                 PlatformInformation.GetSystemInfo();
 
-                // Get specific CPU information
+                // 获取特定 CPU 信息
                 GetCPUInfo();
 
-                // Get memory information
+                // 获取内存信息
                 GetMemoryInfo();
 
-                // Compute memory parameters
+                // 计算内存参数
                 MemoryInformation.GetMemoryInfo(System_Memory);
 #if DEBUG
                 Console.WriteLine(MemoryInformation.ToString());
 #endif
 
                 if (Globals.Enable_File_Output) {
-                    Tools.SaveData(Globals.Output_Filename, $"{MemoryInformation.ToString()}\n", true);
+                    Tools.SaveData(Globals.Output_Filename, $"{MemoryInformation}\n", true);
                 }
 
-                // Get video controller information
+                // 获取视频控制器信息
                 GetVideoControllerInfo();
 
-                // Get disk information
+                // 获取磁盘信息
                 GetDiskDriveInfo();
 
-                // Get disk partitions
+                // 获取磁盘分区
                 GetDiskPartitionInfo();
 
                 return error;
@@ -104,12 +104,12 @@ namespace Carrot.Device {
         }
 
         /// <summary>
-        /// This function queries the Win32_Processor in order to extract the properties of all installed CPUs
+        /// 查询 Win32_Processor 以提取所有已安装 CPU 的属性
         /// <seealso cref="CPUInfo"/>
         /// </summary>
         public void GetCPUInfo() {
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_Processor");
-            ManagementObjectCollection objCol = searcher.Get();
+            using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_Processor");
+            var objCol = searcher.Get();
 
 #if DEBUG
             Console.WriteLine($"\n********** Processor Info **********");
@@ -125,26 +125,26 @@ namespace Carrot.Device {
                 }
             }
 
-            foreach (ManagementObject mgtObject in objCol) {
-                CPUInfo cpu = new CPUInfo();
-                cpu.GetCpuInfo(mgtObject);
+            foreach (var mgtObject in objCol) {
+                var cpu = new CPUInfo();
+                cpu.GetCpuInfo((ManagementObject)mgtObject);
 
                 System_CPUs.Add(cpu);
 
 #if DEBUG
-                Console.WriteLine(cpu.ToString());
-                Tools.SaveData(Globals.Output_Filename, $"{cpu.ToString()}\n", true);
+                Console.WriteLine(cpu);
+                Tools.SaveData(Globals.Output_Filename, $"{cpu}\n", true);
 #endif
             }
         }
 
         /// <summary>
-        /// This function queries the Win32_PhysicalMemory in order to extract the properties of all installed memory banks
+        /// 查询 Win32_PhysicalMemory 以提取所有已安装内存条的属性
         /// <seealso cref="MemoryBankInfo"/>
         /// </summary>
         public void GetMemoryInfo() {
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PhysicalMemory");
-            ManagementObjectCollection objCol = searcher.Get();
+            using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_PhysicalMemory");
+            var objCol = searcher.Get();
 
 #if DEBUG
             Console.WriteLine($"\n********** Memory Info **********");
@@ -160,27 +160,27 @@ namespace Carrot.Device {
                 }
             }
 
-            foreach (ManagementObject mgtObject in objCol) {
-                MemoryBankInfo mem = new MemoryBankInfo();
-                mem.GetMemInfo(mgtObject);
+            foreach (var mgtObject in objCol) {
+                var mem = new MemoryBankInfo();
+                mem.GetMemInfo((ManagementObject)mgtObject);
 
                 System_Memory.Add(mem);
 #if DEBUG
-                Console.WriteLine(mem.ToString());
+                Console.WriteLine(mem);
 #endif
                 if (Globals.Enable_File_Output) {
-                    Tools.SaveData(Globals.Output_Filename, $"{mem.ToString()}\n", true);
+                    Tools.SaveData(Globals.Output_Filename, $"{mem}\n", true);
                 }
             }
         }
 
         /// <summary>
-        /// This function queries the Win32_VideoController in order to extract the properties of all installed video controllers
+        /// 查询 Win32_VideoController 以提取所有已安装视频控制器的属性
         /// <seealso cref="VideoControllerInfo"/>
         /// </summary>
         public void GetVideoControllerInfo() {
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_VideoController");
-            ManagementObjectCollection objCol = searcher.Get();
+            using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_VideoController");
+            var objCol = searcher.Get();
 
 #if DEBUG
             Console.WriteLine($"\n********** Video Controllers **********");
@@ -196,28 +196,28 @@ namespace Carrot.Device {
                 }
             }
 
-            foreach (ManagementObject mgtObject in objCol) {
-                VideoControllerInfo vid = new VideoControllerInfo();
-                vid.GetVideoControllerInfo(mgtObject);
+            foreach (var mgtObject in objCol) {
+                var vid = new VideoControllerInfo();
+                vid.GetVideoControllerInfo((ManagementObject)mgtObject);
 
                 System_VideoControllers.Add(vid);
 
 #if DEBUG
-                Console.WriteLine(vid.ToString());
+                Console.WriteLine(vid);
 #endif
                 if (Globals.Enable_File_Output) {
-                    Tools.SaveData(Globals.Output_Filename, $"{vid.ToString()}\n", true);
+                    Tools.SaveData(Globals.Output_Filename, $"{vid}\n", true);
                 }
             }
         }
 
         /// <summary>
-        /// This function queries the Win32_DiskDrive in order to extract the properties of all installed disk drives
+        /// 查询 Win32_DiskDrive 以提取所有已安装磁盘驱动器的属性
         /// <seealso cref="DiskDriveInfo"/>
         /// </summary>
         public void GetDiskDriveInfo() {
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive");
-            ManagementObjectCollection objCol = searcher.Get();
+            using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DiskDrive");
+            var objCol = searcher.Get();
 
 #if DEBUG
             Console.WriteLine($"\n********** Disk Drives **********");
@@ -233,26 +233,26 @@ namespace Carrot.Device {
                 }
             }
 
-            foreach (ManagementObject mgtObject in objCol) {
-                DiskDriveInfo disk = new DiskDriveInfo();
-                disk.GetDiskDriveInfo(mgtObject);
+            foreach (var mgtObject in objCol) {
+                var disk = new DiskDriveInfo();
+                disk.GetDiskDriveInfo((ManagementObject)mgtObject);
 
                 System_DiskDrives.Add(disk);
 
 #if DEBUG
-                Console.WriteLine(disk.ToString());
-                Tools.SaveData(Globals.Output_Filename, $"{disk.ToString()}\n", true);
+                Console.WriteLine(disk);
+                Tools.SaveData(Globals.Output_Filename, $"{disk}\n", true);
 #endif
             }
         }
 
         /// <summary>
-        /// This function queries the Win32_DiskPartition in order to extract the properties of all available disk partitions
+        /// 查询 Win32_DiskPartition 以提取所有可用磁盘分区的属性
         /// <seealso cref="DiskPartition"/>
         /// </summary>
         public void GetDiskPartitionInfo() {
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DiskPartition");
-            ManagementObjectCollection objCol = searcher.Get();
+            using var searcher = new ManagementObjectSearcher("SELECT * FROM Win32_DiskPartition");
+            var objCol = searcher.Get();
 
 #if DEBUG
             Console.WriteLine($"\n********** Disk Partitions **********");
@@ -267,17 +267,17 @@ namespace Carrot.Device {
                 }
             }
 
-            foreach (ManagementObject mgtObject in objCol) {
-                DiskPartition partition = new DiskPartition();
-                partition.GetDiskPartitionInfo(mgtObject);
+            foreach (var mgtObject in objCol) {
+                var partition = new DiskPartition();
+                partition.GetDiskPartitionInfo((ManagementObject)mgtObject);
 
                 System_DiskPartitions.Add(partition);
 
 #if DEBUG
-                Console.WriteLine(partition.ToString());
+                Console.WriteLine(partition);
 #endif
                 if (Globals.Enable_File_Output) {
-                    Tools.SaveData(Globals.Output_Filename, $"{partition.ToString()}\n", true);
+                    Tools.SaveData(Globals.Output_Filename, $"{partition}\n", true);
                 }
             }
         }
