@@ -1,7 +1,8 @@
 using Carrot.Common;
 using System;
 using System.Drawing;
-using System.Text.RegularExpressions;
+using System.Net;
+using System.Net.Sockets;
 using System.Windows.Forms;
 
 namespace Carrot.AutoLock;
@@ -13,7 +14,7 @@ namespace Carrot.AutoLock;
 public partial class MainForm : Form {
 
     private const string NAME = "CarrotLock";
-    private static readonly Regex ReIp = new(@"^\d+\.\d+\.\d+\.\d+$", RegexOptions.Compiled);
+    private const int NotifyTextMaxLength = 63;
 
     private readonly NotifyIcon _notifyIcon;
     private readonly ContextMenuStrip _contextMenuStrip;
@@ -119,7 +120,14 @@ public partial class MainForm : Form {
             e.Cancel = true;
             this.WindowState = FormWindowState.Minimized;
             _notifyIcon.Visible = true;
+            return;
         }
+
+        _checker.Stop();
+        _checker.Callback = null;
+        _notifyIcon.Visible = false;
+        _notifyIcon.Dispose();
+        _contextMenuStrip.Dispose();
     }
 
     private void NotifyIcon_Click(object? sender, EventArgs e) {
@@ -165,10 +173,12 @@ public partial class MainForm : Form {
             // Update device IP from text box
             _deviceIP = textIPAddress.Text.Trim();
 
-            if (!ReIp.IsMatch(_deviceIP)) {
+            if (!TryGetValidIpv4(_deviceIP, out var validatedIP)) {
                 MessageBox.Show(@"IP address format is incorrect", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+            _deviceIP = validatedIP;
+
             SaveConfig();
             _checker.SetTargetIP(_deviceIP);
             _checker.Callback = OnStatusChanged;
@@ -209,11 +219,7 @@ public partial class MainForm : Form {
         // Use InfoText (TextBox) instead of labelStatus
         InfoText.Text = string.Join("\r\n", textLines);
 
-        if (running) {
-            _notifyIcon.Text = $"{NAME} - Running\n{_deviceIP}";
-        } else {
-            _notifyIcon.Text = $"{NAME} - Stopped";
-        }
+        _notifyIcon.Text = BuildNotifyText(running);
     }
 
     /// <summary>
@@ -248,7 +254,8 @@ public partial class MainForm : Form {
             if (key == null) return;
 
             if (enable) {
-                key.SetValue(appName, appPath);
+                var quotedPath = string.IsNullOrWhiteSpace(appPath) ? string.Empty : $"\"{appPath}\"";
+                key.SetValue(appName, quotedPath);
             } else {
                 key.DeleteValue(appName, false);
             }
@@ -267,5 +274,30 @@ public partial class MainForm : Form {
         this.WindowState = FormWindowState.Normal;
         this.Activate();
         _notifyIcon.Visible = false;
+    }
+
+    private static bool TryGetValidIpv4(string input, out string normalizedIp) {
+        normalizedIp = string.Empty;
+        if (!IPAddress.TryParse(input, out var address)) {
+            return false;
+        }
+
+        if (address.AddressFamily != AddressFamily.InterNetwork) {
+            return false;
+        }
+
+        normalizedIp = address.ToString();
+        return true;
+    }
+
+    private string BuildNotifyText(bool running) {
+        var text = running ? $"{NAME} - Running {_deviceIP}" : $"{NAME} - Stopped";
+        text = text.Replace('\r', ' ').Replace('\n', ' ');
+
+        if (text.Length > NotifyTextMaxLength) {
+            text = text[..NotifyTextMaxLength];
+        }
+
+        return text;
     }
 }

@@ -30,13 +30,12 @@ internal static class Program {
         using var mutex = new Mutex(true, @$"Global\{ProComConst.PIPE_MAIN}", out bool isNewInstance);
         
         if (!isNewInstance) {
-            // Activate the existing instance if possible.
-            // 如果程序已在运行，提示用户或激活前一个实例。
-            MessageBox.Show("Another instance is already running.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
-            
             // Try to activate the existing instance via IPC.
             // 尝试通过 IPC 唤醒前一个实例。
-            PipeService.SendAndReceive(ProComConst.PIPE_MAIN, CmdShowWindow);
+            var (_, error) = PipeService.SendAndReceive(ProComConst.PIPE_MAIN, CmdShowWindow);
+            if (error != null) {
+                Logger.Warning($"Failed to wake existing instance: {error.Message}");
+            }
             return;
         }
 
@@ -49,6 +48,30 @@ internal static class Program {
         // 记录当前框架版本以便调试。
         // Console.WriteLine(AppDomain.CurrentDomain.SetupInformation.TargetFrameworkName);
         
-        Application.Run(new MainForm());
+        var mainForm = new MainForm();
+        PipeMessageHandler messageHandler = (_, message) => {
+            if (!string.Equals(message, CmdShowWindow, StringComparison.OrdinalIgnoreCase)) {
+                return false;
+            }
+
+            if (mainForm.IsHandleCreated) {
+                if (mainForm.InvokeRequired) {
+                    mainForm.BeginInvoke(mainForm.ShowWindow);
+                } else {
+                    mainForm.ShowWindow();
+                }
+            }
+
+            return false;
+        };
+        PipeService.Default.MessageHandler += messageHandler;
+
+        PipeService.Default.StartServer(ProComConst.PIPE_MAIN);
+        try {
+            Application.Run(mainForm);
+        } finally {
+            PipeService.Default.MessageHandler -= messageHandler;
+            PipeService.Default.StopServer();
+        }
     }
 }
