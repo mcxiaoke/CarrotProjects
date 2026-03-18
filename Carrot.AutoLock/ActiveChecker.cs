@@ -32,7 +32,7 @@ public class ActiveChecker : IDisposable {
     /// Max offline count threshold before locking.
     /// 设备离线检测次数阈值，连续离线多少次后触发锁定。
     /// </summary>
-    public const int MAX_OFFLINE_COUNT = 6;
+    public const int MAX_OFFLINE_COUNT = 10;
 
     /// <summary>
     /// Inactive duration threshold in seconds before assuming absence.
@@ -49,6 +49,16 @@ public class ActiveChecker : IDisposable {
     private string _targetIP = DEFAULT_IP;
 
     private CancellationTokenSource? _cancellationTokenSource;
+
+    // 实例化蓝牙检测器
+    private readonly BluetoothDetector _bluetoothDetector = new();
+
+    // 目标手机的蓝牙名称，可以开放给 UI 让用户配置
+    //  Paired: 'ZXK M14', ID=Bluetooth#Bluetoothb0:a4:60:6a:e9:af-20:3b:34:54:8a:1d
+    private string _targetBluetoothName = "ZXK M14";
+
+    // 通知管理器
+    private readonly NotificationManager _notificationManager = new();
 
     /// <summary>
     /// Status update callback.
@@ -75,13 +85,27 @@ public class ActiveChecker : IDisposable {
         _targetIP = targetIP;
     }
 
+    /// <summary>
+    /// 供外部(如UI)动态修改要检测的蓝牙名称
+    /// </summary>
+    public void SetTargetBluetoothName(string bluetoothName) {
+        _targetBluetoothName = bluetoothName;
+    }
+
+    /// <summary>
+    /// 获取通知管理器，用于配置通知渠道
+    /// Get notification manager for configuring notification channels
+    /// </summary>
+    public NotificationManager GetNotificationManager() {
+        return _notificationManager;
+    }
+
     #region Windows API - GetLastInputInfo (替代全局键鼠 Hook)
 
     internal struct LASTINPUTINFO {
         public uint cbSize;
         public uint dwTime;
     }
-
     [DllImport("User32.dll")]
     private static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
 
@@ -120,6 +144,9 @@ public class ActiveChecker : IDisposable {
         _cancellationTokenSource = new CancellationTokenSource();
         SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
 
+        // 开启蓝牙雷达扫描模式
+        //_bluetoothDetector.StartBleScanner();
+
         Task.Run(() => CheckDeviceStatusLoop(_cancellationTokenSource.Token));
 
         Callback?.Invoke("");
@@ -136,6 +163,10 @@ public class ActiveChecker : IDisposable {
         _checkerRunning = false;
         _cancellationTokenSource?.Cancel();
         SystemEvents.SessionSwitch -= SystemEvents_SessionSwitch;
+
+        // 停止蓝牙扫描
+        //_bluetoothDetector.StopBleScanner();
+
         Callback?.Invoke("");
     }
 
@@ -145,17 +176,14 @@ public class ActiveChecker : IDisposable {
                 // Skip check if screen is locked
                 if (_isScreenLocked) {
                     Logger.Info("Screen locked, skip check");
-                    await Task.Delay(3000, cancellationToken);
+                    await Task.Delay(5000, cancellationToken);
                     continue;
                 }
 
-                // Check device status
+                // Check device status (Wi-Fi + Bluetooth fallback)
                 bool isOnline = await CheckDeviceStatusAsync();
                 bool statusChanged = isOnline != _deviceOnline;
                 _deviceOnline = isOnline;
-
-                Logger.Info($"Device: {_targetIP}, Online: {isOnline}, OffCount: {_offlineCount}/{MAX_OFFLINE_COUNT}, " +
-                    $"Inactive: {GetInactiveSeconds():F1}s/{INACTIVE_SECONDS}s, ShouldCheck: {ShouldCheckStatus()}");
 
                 if (isOnline) {
                     _offlineCount = 0;
@@ -170,9 +198,12 @@ public class ActiveChecker : IDisposable {
 
                 // Only trigger callback if status changed to reduce unnecessary UI updates.
                 if (statusChanged) {
+                    Logger.Info($"Device: {_targetIP}|{_targetBluetoothName}, Online: {isOnline}, " +
+                        $"OffCount: {_offlineCount}/{MAX_OFFLINE_COUNT}, "
+                        + $"Inactive: {GetInactiveSeconds():F1}s/{INACTIVE_SECONDS}s,");
                     Callback?.Invoke("");
                 }
-                await Task.Delay(3000, cancellationToken);
+                await Task.Delay(5000, cancellationToken);
             } catch (OperationCanceledException) {
                 Logger.Info("CheckDeviceStatusLoop cancelled");
                 break;
@@ -180,7 +211,7 @@ public class ActiveChecker : IDisposable {
                 Logger.Error("Error in CheckDeviceStatusLoop", ex);
                 // 发生其它异常时休眠一下防止死循环狂飙，同时也支持 Cancellation
                 try {
-                    await Task.Delay(3000, cancellationToken);
+                    await Task.Delay(5000, cancellationToken);
                 } catch (OperationCanceledException) {
                     break;
                 }
@@ -188,8 +219,49 @@ public class ActiveChecker : IDisposable {
         }
     }
 
+    /// <summary>
+    /// 核心检测逻辑：Wi-Fi 与 蓝牙双重检测
+    /// </summary>
+    private async Task<bool> CheckDeviceStatusAsync() {            // 第二层检测：查询系统蓝牙配对状态
+        bool isBluetoothConnected2 = await _bluetoothDetector.IsPairedDeviceConnectedAsync(_targetBluetoothName);
+        if (isBluetoothConnected2) {
+            Logger.Debug($"[{_targetBluetoothName}] 111 is paired and connected via Bluetooth.");
+            return true;
+        }
+        // 第一层检测：Wi-Fi 网络 (Ping & ARP)
+        bool isWifiOnline = await CheckWifiStatusAsync();
+        if (isWifiOnline) {
+            return true;
+        }
 
-    private async Task<bool> CheckDeviceStatusAsync() {
+        // Wi-Fi 离线，进入蓝牙后备检测
+        if (!string.IsNullOrEmpty(_targetBluetoothName)) {
+            Logger.Debug($"Wi-Fi [{_targetIP}] offline. Fallback to Bluetooth check for [{_targetBluetoothName}]...");
+
+            // 第二层检测：查询系统蓝牙配对状态
+            bool isBluetoothConnected = await _bluetoothDetector.IsPairedDeviceConnectedAsync(_targetBluetoothName);
+            if (isBluetoothConnected) {
+                Logger.Debug($"[{_targetBluetoothName}] is paired and connected via Bluetooth.");
+                return true;
+            }
+
+            // 第三层检测：BLE 雷达广播扫描检测
+            // 判定条件：最近 30 秒内有广播包，且信号强度大于 -85dBm (您可以根据实际工位距离调整 -85 的阈值)
+            //bool isNearby = _bluetoothDetector.IsDeviceNearby(_targetBluetoothName, timeoutSeconds: 30, minRssi: -85);
+            //if (isNearby) {
+            //    Logger.Debug($"[{_targetBluetoothName}] BLE signal detected nearby.");
+            //    return true;
+            //}
+        }
+
+        // 所有手段都检测不到，判定为离线
+        return false;
+    }
+
+    /// <summary>
+    /// 原先的 Wi-Fi 状态检测逻辑 (Ping + ARP)
+    /// </summary>
+    private async Task<bool> CheckWifiStatusAsync() {
         try {
             using var ping = new Ping();
             var reply = await ping.SendPingAsync(_targetIP, 1000);
@@ -201,11 +273,7 @@ public class ActiveChecker : IDisposable {
             Logger.Debug($"Ping error: {e.Message} {_targetIP}");
         }
 
-        // Fallback to ARP table check using new ArpHelper
-        // 如果 Ping 失败，检查 ARP 表中是否有该设备。
-        // Originally NetUtils.GetOnlineDevices(), now ArpHelper.GetOnlineDevices()
         var onlineDevices = ArpHelper.GetOnlineDevices();
-        // We use string match. ArpHelper.GetOnlineDevices returns List<string>.
         return onlineDevices.Contains(_targetIP);
     }
 
@@ -214,7 +282,18 @@ public class ActiveChecker : IDisposable {
     /// 锁定工作站 (Win + L)。
     /// </summary>
     private void LockWorkStation() {
-        Logger.Info($"{_targetIP} lock screen now");
+        Logger.Info($"{_targetIP} / {_targetBluetoothName} lock screen now");
+
+        // 发送通知（异步，不阻塞锁定流程）
+        try {
+            var deviceInfo = string.IsNullOrEmpty(_targetBluetoothName) ? _targetIP : $"{_targetIP} / {_targetBluetoothName}";
+            var reason = "设备离线且用户无活动";
+            _notificationManager.SendLockNotification(deviceInfo, reason);
+        } catch (Exception ex) {
+            Logger.Error("Failed to send lock notification", ex);
+        }
+
+        // 执行锁定
         try {
             bool result = LockWorkStationInternal();
             if (!result) {
@@ -249,6 +328,8 @@ public class ActiveChecker : IDisposable {
     public void Dispose() {
         Stop();
         _cancellationTokenSource?.Dispose();
+        _bluetoothDetector.Dispose(); // 确保蓝牙雷达资源也被释放
+        _notificationManager.Dispose(); // 释放通知管理器资源
         GC.SuppressFinalize(this);
     }
 }

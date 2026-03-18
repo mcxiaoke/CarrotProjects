@@ -15,7 +15,7 @@
     <Title></Title>
 
     <Major>1</Major>
-    <Minor>0</Minor>
+    <Minor>1</Minor>
     <Patch>0</Patch>
     <VersionPrefix>$(Major).$(Minor).$(Patch)</VersionPrefix>
     <FileVersionEpoch>2026-01-01</FileVersionEpoch>

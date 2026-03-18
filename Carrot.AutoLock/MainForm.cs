@@ -9,7 +9,7 @@ namespace Carrot.AutoLock;
 
 /// <summary>
 /// Main application form. Controls tray icon and menu logic.
-/// �������ࡣ��������ͼ��Ͳ˵��߼���
+/// 主窗体类。控制系统托盘图标和菜单逻辑。
 /// </summary>
 public partial class MainForm : Form {
 
@@ -18,12 +18,12 @@ public partial class MainForm : Form {
 
     private readonly NotifyIcon _notifyIcon;
     private readonly ContextMenuStrip _contextMenuStrip;
-    private string _deviceIP = "";
+    private readonly AppConfig _appConfig = new();
     private readonly ActiveChecker _checker;
 
     /// <summary>
     /// Initializes the main form and tray icon.
-    /// ��ʼ�����������ͼ�ꡣ
+    /// 初始化主窗体和托盘图标。
     /// </summary>
     public MainForm() {
         Logger.Info(@"MainForm()");
@@ -38,14 +38,14 @@ public partial class MainForm : Form {
         _contextMenuStrip = new ContextMenuStrip();
 
         // Show Window menu item
-        var showMenuItem = new ToolStripMenuItem("��ʾ����", null, ShowWindowMenuItem_Click);
+        var showMenuItem = new ToolStripMenuItem("显示窗口", null, ShowWindowMenuItem_Click);
         _contextMenuStrip.Items.Add(showMenuItem);
 
         // Add separator
         _contextMenuStrip.Items.Add(new ToolStripSeparator());
 
         // Exit menu item
-        var exitMenuItem = new ToolStripMenuItem("�˳�Ӧ��", null, ExitMenuItem_Click);
+        var exitMenuItem = new ToolStripMenuItem("退出应用", null, ExitMenuItem_Click);
         _contextMenuStrip.Items.Add(exitMenuItem);
 
         // Bind ContextMenuStrip to NotifyIcon
@@ -56,51 +56,27 @@ public partial class MainForm : Form {
     }
 
     private void MainForm_Load(object sender, EventArgs e) {
-        Logger.Info(@"MainForm_Load");
-        LoadConfig();
-        textIPAddress.Text = _deviceIP;
+        Logger.Debug(@"MainForm_Load");
+
+        // 加载配置
+        _appConfig.Load();
+
+        // 填充 UI
+        textIPAddress.Text = _appConfig.Data.TargetIP;
+        textBluetoothName.Text = _appConfig.Data.TargetBluetoothName;
+        textWeChatKey.Text = _appConfig.Data.WeChatWebhookKey;
+        textTelegramToken.Text = _appConfig.Data.TelegramBotToken;
+        textTelegramChatId.Text = _appConfig.Data.TelegramChatId;
 
         // Initialize AutoStart Checkbox
-        cbAutoStart.Checked = IsAutoStartEnabled(Application.ProductName ?? NAME);
+        cbAutoStart.Checked = _appConfig.Data.AutoStartEnabled;
 
         UpdateUI();
         ToggleCheck();
     }
 
-    /// <summary>
-    /// Loads the configuration (target IP) from file.
-    /// �������ļ��������� (Ŀ�� IP)��
-    /// </summary>
-    private void LoadConfig() {
-        try {
-            // AppInfo.LocalAppDataPath already includes Company/Product folders
-            string path = Path.Combine(AppInfo.LocalAppDataPath, "config.txt");
-            if (File.Exists(path)) {
-                _deviceIP = File.ReadAllText(path).Trim();
-            }
-        } catch (Exception ex) {
-            Logger.Error("LoadConfig", ex);
-        }
-        if (string.IsNullOrWhiteSpace(_deviceIP)) {
-            _deviceIP = ActiveChecker.DEFAULT_IP;
-        }
-    }
-
-    /// <summary>
-    /// Saves the configuration (target IP) to file.
-    /// �������� (Ŀ�� IP) ���ļ���
-    /// </summary>
-    private void SaveConfig() {
-        try {
-            string path = Path.Combine(AppInfo.LocalAppDataPath, "config.txt");
-            File.WriteAllText(path, _deviceIP);
-        } catch (Exception ex) {
-            Logger.Error("SaveConfig", ex);
-        }
-    }
-
     private void MainForm_Resize(object sender, EventArgs e) {
-        Logger.Info($@"MainForm_Resize {this.WindowState}");
+        Logger.Debug($@"MainForm_Resize {this.WindowState}");
         // Check if window is minimized
         if (this.WindowState == FormWindowState.Minimized) {
             // Hide window
@@ -114,7 +90,7 @@ public partial class MainForm : Form {
     }
 
     private void MainForm_FormClosing(object sender, FormClosingEventArgs e) {
-        Logger.Info($@"MainForm_FormClosing Reason:{e.CloseReason}");
+        Logger.Debug($@"MainForm_FormClosing Reason:{e.CloseReason}");
         // If user creates closing event, minimize to tray
         if (e.CloseReason == CloseReason.UserClosing) {
             e.Cancel = true;
@@ -123,6 +99,7 @@ public partial class MainForm : Form {
             return;
         }
 
+        SaveConfiguration();
         _checker.Stop();
         _checker.Callback = null;
         _notifyIcon.Visible = false;
@@ -144,43 +121,57 @@ public partial class MainForm : Form {
     }
 
     private void ExitMenuItem_Click(object? sender, EventArgs e) {
-        Logger.Info(@"ExitMenuItem_Click");
+        Logger.Debug(@"ExitMenuItem_Click");
         _checker.Stop();
         Application.Exit();
     }
 
     private void BtnExit_Click(object sender, EventArgs e) {
-        Logger.Info(@"BtnExit_Click");
+        Logger.Debug(@"BtnExit_Click");
+        SaveConfiguration();
         _checker.Stop();
         _checker.Callback = null;
         Application.Exit();
     }
 
     private void BtnStart_Click(object sender, EventArgs e) {
-        Logger.Info(@"BtnStart_Click");
+        Logger.Debug(@"BtnStart_Click");
         ToggleCheck();
+    }
+
+    private LogViewerForm? _logViewerForm;
+
+    private void BtnViewLog_Click(object sender, EventArgs e) {
+        //Logger.Debug(@"BtnViewLog_Click");
+        if (_logViewerForm == null || _logViewerForm.IsDisposed) {
+            _logViewerForm = new LogViewerForm();
+            _logViewerForm.Show(this);
+        } else {
+            _logViewerForm.Activate();
+        }
     }
 
     /// <summary>
     /// Toggles the checker status (Start/Stop).
-    /// �л������״̬ (��ʼ/ֹͣ)��
+    /// 切换检测状态 (开始/停止)。
     /// </summary>
     private void ToggleCheck() {
         if (_checker.IsRunning()) {
             _checker.Stop();
             _checker.Callback = null;
         } else {
-            // Update device IP from text box
-            _deviceIP = textIPAddress.Text.Trim();
-
-            if (!TryGetValidIpv4(_deviceIP, out var validatedIP)) {
-                MessageBox.Show(@"IP address format is incorrect", @"Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            // 验证并保存配置
+            if (!SaveConfiguration()) {
                 return;
             }
-            _deviceIP = validatedIP;
 
-            SaveConfig();
-            _checker.SetTargetIP(_deviceIP);
+            // 配置检测器
+            _checker.SetTargetIP(_appConfig.Data.TargetIP);
+            _checker.SetTargetBluetoothName(_appConfig.Data.TargetBluetoothName);
+
+            // 配置通知器
+            ConfigureNotifiers();
+
             _checker.Callback = OnStatusChanged;
             _checker.Start();
         }
@@ -188,11 +179,33 @@ public partial class MainForm : Form {
     }
 
     /// <summary>
+    /// 配置通知器
+    /// Configure notifiers
+    /// </summary>
+    private void ConfigureNotifiers() {
+        var notificationManager = _checker.GetNotificationManager();
+        notificationManager.ClearNotifiers();
+
+        // 添加企业微信通知器
+        if (!string.IsNullOrWhiteSpace(_appConfig.Data.WeChatWebhookKey)) {
+            var weChatNotifier = new WeChatNotifier(_appConfig.Data.WeChatWebhookKey);
+            notificationManager.AddNotifier(weChatNotifier);
+        }
+
+        // 添加 Telegram 通知器
+        if (!string.IsNullOrWhiteSpace(_appConfig.Data.TelegramBotToken) &&
+            !string.IsNullOrWhiteSpace(_appConfig.Data.TelegramChatId)) {
+            var telegramNotifier = new TelegramNotifier(_appConfig.Data.TelegramBotToken, _appConfig.Data.TelegramChatId);
+            notificationManager.AddNotifier(telegramNotifier);
+        }
+    }
+
+    /// <summary>
     /// Callback for status updates, invokes UI update.
-    /// ״̬���»ص����������� UI ���¡�
+    /// 状态变更回调，触发 UI 更新。
     /// </summary>
     public void OnStatusChanged(string result) {
-        Logger.Info("OnStatusChanged");
+        Logger.Debug("OnStatusChanged");
         if (InvokeRequired) {
             Invoke(new MethodInvoker(UpdateUI));
         } else {
@@ -202,18 +215,26 @@ public partial class MainForm : Form {
 
     /// <summary>
     /// Updates the UI based on checker status.
-    /// ���ݼ����״̬���� UI��
+    /// 根据检测状态更新 UI。
     /// </summary>
     private void UpdateUI() {
         if (_checker == null || _notifyIcon == null) return;
 
         var running = _checker.IsRunning();
+
+        // 禁用/启用输入控件
         textIPAddress.Enabled = !running;
+        textBluetoothName.Enabled = !running;
+        textWeChatKey.Enabled = !running;
+        textTelegramToken.Enabled = !running;
+        textTelegramChatId.Enabled = !running;
+
         btnStart.Text = running ? "STOP" : "START";
 
         var textLines = new List<string> {
             $"Running: {running}",
-            $"Device Online: {_checker.IsDeviceOnline()}"
+            $"Device Online: {_checker.IsDeviceOnline()}",
+            $"Notifiers: {_checker.GetNotificationManager().ConfiguredCount}"
         };
 
         // Use InfoText (TextBox) instead of labelStatus
@@ -224,9 +245,9 @@ public partial class MainForm : Form {
 
     /// <summary>
     /// Checks if auto-start is enabled.
-    /// ��鿪�������Ƿ������á�
+    /// 检查开机启动是否已启用。
     /// </summary>
-    private bool IsAutoStartEnabled(string appName) {
+    private static bool IsAutoStartEnabled(string appName) {
         try {
             using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", false);
             return key?.GetValue(appName) != null;
@@ -250,15 +271,16 @@ public partial class MainForm : Form {
     }
 
     private void CbAutoStart_CheckedChanged(object? sender, EventArgs e) {
+        _appConfig.Data.AutoStartEnabled = cbAutoStart.Checked;
         SetAutoStart(cbAutoStart.Checked, Application.ProductName ?? NAME, Application.ExecutablePath ?? string.Empty);
     }
 
     /// <summary>
     /// Sets the auto-start registry key.
-    /// ���ÿ�������ע����
+    /// 设置开机启动注册表项。
     /// </summary>
-    private void SetAutoStart(bool enable, string appName, string appPath) {
-        Logger.Debug($@"SetAutoStart Enable:{enable} AppPath:{appPath}");
+    private static void SetAutoStart(bool enable, string appName, string appPath) {
+        Logger.Info($@"SetAutoStart Enable:{enable} AppPath:{appPath}");
         try {
             using var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
             if (key == null) return;
@@ -277,7 +299,7 @@ public partial class MainForm : Form {
 
     /// <summary>
     /// Shows the window and hides the tray icon.
-    /// ��ʾ���ڲ���������ͼ�ꡣ
+    /// 显示窗口并隐藏托盘图标。
     /// </summary>
     public void ShowWindow() {
         this.Show();
@@ -301,7 +323,11 @@ public partial class MainForm : Form {
     }
 
     private string BuildNotifyText(bool running) {
-        var text = running ? $"{NAME} - Running {_deviceIP}" : $"{NAME} - Stopped";
+        var deviceInfo = string.IsNullOrEmpty(_appConfig.Data.TargetBluetoothName)
+            ? _appConfig.Data.TargetIP
+            : $"{_appConfig.Data.TargetIP}/{_appConfig.Data.TargetBluetoothName}";
+
+        var text = running ? $"{NAME} - Running {deviceInfo}" : $"{NAME} - Stopped";
         text = text.Replace('\r', ' ').Replace('\n', ' ');
 
         if (text.Length > NotifyTextMaxLength) {
@@ -309,5 +335,39 @@ public partial class MainForm : Form {
         }
 
         return text;
+    }
+
+    /// <summary>
+    /// 保存配置到文件
+    /// Save configuration to file
+    /// </summary>
+    private bool SaveConfiguration() {
+        try {
+            // 验证 IP 地址
+            var ip = textIPAddress.Text.Trim();
+            if (!TryGetValidIpv4(ip, out var validatedIP)) {
+                MessageBox.Show(@"IP 地址格式不正确", @"错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                textIPAddress.Focus();
+                return false;
+            }
+
+            // 更新配置数据
+            _appConfig.Data.TargetIP = validatedIP;
+            _appConfig.Data.TargetBluetoothName = textBluetoothName.Text.Trim();
+            _appConfig.Data.WeChatWebhookKey = textWeChatKey.Text.Trim();
+            _appConfig.Data.TelegramBotToken = textTelegramToken.Text.Trim();
+            _appConfig.Data.TelegramChatId = textTelegramChatId.Text.Trim();
+            _appConfig.Data.AutoStartEnabled = cbAutoStart.Checked;
+
+            // 保存到文件
+            _appConfig.Save();
+
+            Logger.Info("Configuration saved successfully");
+            return true;
+        } catch (Exception ex) {
+            Logger.Error("Failed to save configuration", ex);
+            MessageBox.Show($@"保存配置失败: {ex.Message}", @"错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return false;
+        }
     }
 }

@@ -1,0 +1,8 @@
+{
+  "TargetIP": "192.168.1.100",
+  "TargetBluetoothName": "Your Phone Name",
+  "WeChatWebhookKey": "your-wechat-webhook-key-here",
+  "TelegramBotToken": "your-telegram-bot-token-here",
+  "TelegramChatId": "your-telegram-chat-id-here",
+  "AutoStartEnabled": false
+}
