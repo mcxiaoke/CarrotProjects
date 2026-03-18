@@ -1,9 +1,9 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Resources;
-using Newtonsoft.Json;
 
 namespace Carrot.Common;
 
@@ -159,20 +159,20 @@ internal class ApplicationData {
     public string CurrentCulture { get; private set; } = string.Empty;
 
     [JsonIgnore]
-    public FileVersionInfo FileInfo { get; private set; }
+    public FileVersionInfo FileInfo { get; private set; } = default!;
 
     public ApplicationData() {
         var process = Process.GetCurrentProcess();
         var module = process.MainModule;
-        
+
         if (module != null) {
             ModuleName = module.ModuleName ?? string.Empty;
             FileInfo = module.FileVersionInfo;
             // https://stackoverflow.com/questions/64581054
             ExecutablePath = module.FileName ?? string.Empty;
         } else {
-             // Fallback or handle null module if necessary (e.g. specialized environments)
-             FileInfo = FileVersionInfo.GetVersionInfo(process.MainModule?.FileName ?? Environment.ProcessPath ?? string.Empty);
+            // Fallback or handle null module if necessary (e.g. specialized environments)
+            FileInfo = FileVersionInfo.GetVersionInfo(process.MainModule?.FileName ?? Environment.ProcessPath ?? string.Empty);
         }
 
         StartupPath = AppContext.BaseDirectory;
@@ -182,7 +182,7 @@ internal class ApplicationData {
             var mainType = entryAssembly.EntryPoint?.ReflectedType;
             AssemblyName = entryAssembly.GetName().Name ?? ModuleName;
             ParseAssembly(entryAssembly);
-            
+
             // Fallbacks
             CompanyName = string.IsNullOrEmpty(CompanyName) ? (FileInfo?.CompanyName ?? mainType?.Namespace ?? AssemblyName) : CompanyName;
             ProductName = string.IsNullOrEmpty(ProductName) ? (FileInfo?.ProductName ?? mainType?.Namespace ?? AssemblyName) : ProductName;
@@ -191,10 +191,10 @@ internal class ApplicationData {
             Copyright = string.IsNullOrEmpty(Copyright) ? (FileInfo?.LegalCopyright ?? string.Empty) : Copyright;
             Title = string.IsNullOrEmpty(Title) ? ProductName : Title;
         }
-        
+
         Description = FileInfo?.FileDescription ?? string.Empty;
-        CurrentCulture = string.IsNullOrEmpty(CurrentCulture) 
-            ? System.Globalization.CultureInfo.CreateSpecificCulture("en-US").Name 
+        CurrentCulture = string.IsNullOrEmpty(CurrentCulture)
+            ? System.Globalization.CultureInfo.CreateSpecificCulture("en-US").Name
             : CurrentCulture;
     }
 
