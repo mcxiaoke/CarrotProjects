@@ -27,8 +27,6 @@
             this.BigButton = new System.Windows.Forms.Button();
             this.BigTextBox = new System.Windows.Forms.RichTextBox();
             this.AProgressBar = new System.Windows.Forms.ProgressBar();
-            this.LoadingPic = new System.Windows.Forms.PictureBox();
-            ((System.ComponentModel.ISupportInitialize)(this.LoadingPic)).BeginInit();
             this.SuspendLayout();
             // 
             // BigButton
@@ -71,23 +69,11 @@
             this.AProgressBar.TabIndex = 3;
             this.AProgressBar.Visible = false;
             // 
-            // LoadingPic
-            // 
-            this.LoadingPic.Image = ((System.Drawing.Image)(resources.GetObject("LoadingPic.Image")));
-            this.LoadingPic.Location = new System.Drawing.Point(320, 247);
-            this.LoadingPic.Margin = new System.Windows.Forms.Padding(16);
-            this.LoadingPic.Name = "LoadingPic";
-            this.LoadingPic.Size = new System.Drawing.Size(100, 100);
-            this.LoadingPic.TabIndex = 4;
-            this.LoadingPic.TabStop = false;
-            this.LoadingPic.Visible = false;
-            // 
             // UpdateDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 21F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(738, 484);
-            this.Controls.Add(this.LoadingPic);
             this.Controls.Add(this.AProgressBar);
             this.Controls.Add(this.BigTextBox);
             this.Controls.Add(this.BigButton);
@@ -105,7 +91,6 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.UpdateDialog_FormClosed);
             this.Load += new System.EventHandler(this.UpdateDialog_Load);
             this.Shown += new System.EventHandler(this.UpdateDialog_Shown);
-            ((System.ComponentModel.ISupportInitialize)(this.LoadingPic)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -115,7 +100,6 @@
         private System.Windows.Forms.Button BigButton;
         private System.Windows.Forms.RichTextBox BigTextBox;
         private System.Windows.Forms.ProgressBar AProgressBar;
-        private System.Windows.Forms.PictureBox LoadingPic;
     }
 }
 

@@ -6,17 +6,6 @@ namespace SharpUpdater {
 
     public static class RichTextBoxExtensions {
 
-        public static void AppendColorText2(this RichTextBox box,
-            string text, Color? color = null, bool addNewLine = false) {
-            box.SuspendLayout();
-            box.SelectionColor = color ?? box.ForeColor;
-            box.AppendText(addNewLine
-                ? $"{text}{Environment.NewLine}"
-                : text);
-            box.ScrollToCaret();
-            box.ResumeLayout();
-        }
-
         public static void AppendColorText(this RichTextBox box, string text, Color? color = null) {
             box.SelectionStart = box.TextLength;
             box.SelectionLength = 0;
