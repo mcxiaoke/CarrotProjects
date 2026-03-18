@@ -1,9 +1,11 @@
 ﻿using Carrot.Common;
-using Gma.System.MouseKeyHook;
 using Microsoft.Win32;
 using System;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Carrot.AutoLock;
 
@@ -12,7 +14,7 @@ namespace Carrot.AutoLock;
 /// Monitors device online status and user activity to lock workstation or adjust brightness.
 /// 活跃状态检测器。监控设备在线状态及用户活动，自动锁定或调整亮度。
 /// </summary>
-public class ActiveChecker {
+public class ActiveChecker : IDisposable {
 
     /// <summary>
     /// Callback delegate for status changes.
@@ -38,14 +40,14 @@ public class ActiveChecker {
     /// </summary>
     public const int INACTIVE_SECONDS = 60;
 
-    private bool _isScreenLocked;
-    private bool _checkerRunning;
-    private bool _deviceOnline;
+    // 跨线程使用的布尔值，增加 volatile 保证线程间读取最新值
+    private volatile bool _isScreenLocked;
+    private volatile bool _checkerRunning;
+    private volatile bool _deviceOnline;
+
     private int _offlineCount;
     private string _targetIP = DEFAULT_IP;
-    private DateTime _lastActive = DateTime.Now;
 
-    private IKeyboardMouseEvents? _globalHook;
     private CancellationTokenSource? _cancellationTokenSource;
 
     /// <summary>
@@ -55,7 +57,6 @@ public class ActiveChecker {
     public StatusCallback? Callback { get; set; }
 
     public ActiveChecker() {
-        _lastActive = DateTime.Now;
     }
 
     /// <summary>
@@ -74,9 +75,33 @@ public class ActiveChecker {
         _targetIP = targetIP;
     }
 
-    public double GetInactiveSeconds() {
-        return (DateTime.Now - _lastActive).TotalSeconds;
+    #region Windows API - GetLastInputInfo (替代全局键鼠 Hook)
+
+    internal struct LASTINPUTINFO {
+        public uint cbSize;
+        public uint dwTime;
     }
+
+    [DllImport("User32.dll")]
+    private static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
+
+    /// <summary>
+    /// 通过系统 API 获取键鼠空闲时间，彻底免除第三方 Hook
+    /// </summary>
+    public double GetInactiveSeconds() {
+        var lastInputInfo = new LASTINPUTINFO();
+        lastInputInfo.cbSize = (uint)Marshal.SizeOf(lastInputInfo);
+
+        if (GetLastInputInfo(ref lastInputInfo)) {
+            // 使用 Environment.TickCount64 避免 24 天溢出问题
+            long systemUptime = Environment.TickCount64;
+            long lastInputTicks = lastInputInfo.dwTime;
+            return (systemUptime - lastInputTicks) / 1000.0;
+        }
+        return 0;
+    }
+
+    #endregion
 
     private bool ShouldCheckStatus() {
         return GetInactiveSeconds() > INACTIVE_SECONDS;
@@ -87,8 +112,9 @@ public class ActiveChecker {
     /// 启动检测服务。
     /// </summary>
     public void Start() {
+        if (_checkerRunning) return; // 防止重复启动
+
         Logger.Info("Start");
-        _lastActive = DateTime.Now;
 
         _checkerRunning = true;
         _cancellationTokenSource = new CancellationTokenSource();
@@ -96,7 +122,6 @@ public class ActiveChecker {
 
         Task.Run(() => CheckDeviceStatusLoop(_cancellationTokenSource.Token));
 
-        Subscribe();
         Callback?.Invoke("");
     }
 
@@ -105,8 +130,9 @@ public class ActiveChecker {
     /// 停止检测服务。
     /// </summary>
     public void Stop() {
+        if (!_checkerRunning) return; // 防止重复停止
+
         Logger.Info("Stop");
-        Unsubscribe();
         _checkerRunning = false;
         _cancellationTokenSource?.Cancel();
         SystemEvents.SessionSwitch -= SystemEvents_SessionSwitch;
@@ -122,12 +148,15 @@ public class ActiveChecker {
                     await Task.Delay(3000, cancellationToken);
                     continue;
                 }
+
                 // Check device status
                 bool isOnline = await CheckDeviceStatusAsync();
                 bool statusChanged = isOnline != _deviceOnline;
                 _deviceOnline = isOnline;
+
                 Logger.Info($"Device: {_targetIP}, Online: {isOnline}, OffCount: {_offlineCount}/{MAX_OFFLINE_COUNT}, " +
                     $"Inactive: {GetInactiveSeconds():F1}s/{INACTIVE_SECONDS}s, ShouldCheck: {ShouldCheckStatus()}");
+
                 if (isOnline) {
                     _offlineCount = 0;
                 } else {
@@ -138,6 +167,7 @@ public class ActiveChecker {
                         }
                     }
                 }
+
                 // Only trigger callback if status changed to reduce unnecessary UI updates.
                 if (statusChanged) {
                     Callback?.Invoke("");
@@ -148,7 +178,12 @@ public class ActiveChecker {
                 break;
             } catch (Exception ex) {
                 Logger.Error("Error in CheckDeviceStatusLoop", ex);
-                await Task.Delay(3000, cancellationToken);
+                // 发生其它异常时休眠一下防止死循环狂飙，同时也支持 Cancellation
+                try {
+                    await Task.Delay(3000, cancellationToken);
+                } catch (OperationCanceledException) {
+                    break;
+                }
             }
         }
     }
@@ -183,7 +218,7 @@ public class ActiveChecker {
         try {
             bool result = LockWorkStationInternal();
             if (!result) {
-                int errorCode = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+                int errorCode = Marshal.GetLastWin32Error();
                 Logger.Warning($"Failed to lock workstation. Error code: {errorCode}");
             }
             _isScreenLocked = true;
@@ -191,8 +226,7 @@ public class ActiveChecker {
             Logger.Error("LockWorkStation", ex);
         }
     }
-
-    [System.Runtime.InteropServices.DllImport("user32.dll", EntryPoint = "LockWorkStation", SetLastError = true)]
+    [DllImport("user32.dll", EntryPoint = "LockWorkStation", SetLastError = true)]
     private static extern bool LockWorkStationInternal();
 
     private void SystemEvents_SessionSwitch(object sender, SessionSwitchEventArgs e) {
@@ -200,47 +234,21 @@ public class ActiveChecker {
             Logger.Info("SessionUnlock: reset timer");
             _isScreenLocked = false;
             _offlineCount = 0;
-            _lastActive = DateTime.Now;
+            // 移除 _lastActive 重置，GetLastInputInfo 是取系统原生空闲时间，自动跟随系统刷新
         } else if (e.Reason == SessionSwitchReason.SessionLock) {
             Logger.Info("SessionLock: stop timer");
             _isScreenLocked = true;
             _offlineCount = 0;
-            _lastActive = DateTime.Now;
         }
         Callback?.Invoke("");
     }
 
-    private void Subscribe() {
-        Logger.Info("Subscribe");
-        // Ensure to dispose previous hook if any?
-        Unsubscribe();
-
-        _globalHook = Hook.GlobalEvents();
-        _globalHook.MouseDownExt += GlobalHookUserActivity;
-        _globalHook.MouseMoveExt += GlobalHookUserActivity;
-        _globalHook.MouseWheelExt += GlobalHookUserActivity;
-        _globalHook.KeyPress += GlobalHookKeyPress;
-    }
-
-    private void Unsubscribe() {
-        if (_globalHook != null) {
-            Logger.Info("Unsubscribe");
-            _globalHook.MouseDownExt -= GlobalHookUserActivity;
-            _globalHook.MouseMoveExt -= GlobalHookUserActivity;
-            _globalHook.MouseWheelExt -= GlobalHookUserActivity;
-            _globalHook.KeyPress -= GlobalHookKeyPress;
-            _globalHook.Dispose();
-            _globalHook = null;
-        }
-    }
-
-    private void GlobalHookKeyPress(object sender, KeyPressEventArgs e) {
-        // Logger.Info("KeyPress: " + e.KeyChar);
-        _lastActive = DateTime.Now;
-    }
-
-    private void GlobalHookUserActivity(object sender, MouseEventExtArgs e) {
-        // Logger.Info("MouseActivity: " + e.Button);
-        _lastActive = DateTime.Now;
+    /// <summary>
+    /// 实现 IDisposable 清理资源
+    /// </summary>
+    public void Dispose() {
+        Stop();
+        _cancellationTokenSource?.Dispose();
+        GC.SuppressFinalize(this);
     }
 }
