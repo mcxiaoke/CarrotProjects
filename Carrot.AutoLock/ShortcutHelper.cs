@@ -6,7 +6,7 @@ using System.Linq;
 using System.Windows.Forms;
 using Carrot.Common;
 
-namespace GenshinNotifier {
+namespace Carrot.AutoLock {
 
     /// <summary>
     /// 快捷方式辅助类

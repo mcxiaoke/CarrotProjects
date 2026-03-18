@@ -71,14 +71,20 @@ public class MonitorManager : IDisposable {
                 Rect = lprcMonitor
             };
 
-            if (GetNumberOfPhysicalMonitorsFromHMONITOR(hMonitor, out uint count) && count > 0) {
-                var physicalMonitors = new PHYSICAL_MONITOR[count];
-                if (GetPhysicalMonitorsFromHMONITOR(hMonitor, count, physicalMonitors)) {
-                    monitor.PhysicalMonitors = physicalMonitors.Select(pm => new PhysicalMonitor {
-                        Handle = pm.hPhysicalMonitor,
-                        DeviceName = pm.szPhysicalMonitorDescription ?? string.Empty
-                    }).ToList();
+            try {
+                if (GetNumberOfPhysicalMonitorsFromHMONITOR(hMonitor, out uint count) && count > 0) {
+                    var physicalMonitors = new PHYSICAL_MONITOR[count];
+                    if (GetPhysicalMonitorsFromHMONITOR(hMonitor, count, physicalMonitors)) {
+                        monitor.PhysicalMonitors = physicalMonitors.Select(pm => new PhysicalMonitor {
+                            Handle = pm.hPhysicalMonitor,
+                            DeviceName = pm.szPhysicalMonitorDescription ?? string.Empty
+                        }).ToList();
+                    } else {
+                        Logger.Warning($"Failed to get physical monitors for hMonitor: {hMonitor}");
+                    }
                 }
+            } catch (Exception ex) {
+                Logger.Error("Error enumerating physical monitors", ex);
             }
 
             _monitors.Add(monitor);

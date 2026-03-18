@@ -9,29 +9,33 @@ using Carrot.ProCom.Pipe;
 namespace Carrot.AutoLock;
 
 /// <summary>
-/// The main entry point for the application.
-/// Ó¦ÓÃ³ÌÐòµÄÖ÷Èë¿Úµã¡£
+/// The main entry point for the Carrot.AutoLock application.
+/// Carrot.AutoLock Ó¦ï¿½Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµã¡£
+///
+/// This application monitors a target device's online status and automatically
+/// locks the workstation when the device goes offline and the user is inactive.
+/// ï¿½ï¿½ï¿½Ó¦ï¿½Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½è±¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è±¸ï¿½ï¿½ï¿½ï¿½ï¿½ß²ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½î¶¯Ê±ï¿½Ô¶ï¿½ï¿½ï¿½ï¿½ä¹¤ï¿½ï¿½Õ¾ï¿½ï¿½
 /// </summary>
 internal static class Program {
     /// <summary>
     ///  The command to show the window via IPC.
-    ///  ÓÃÓÚÍ¨¹ý IPC ÏÔÊ¾´°¿ÚµÄÃüÁî¡£
+    ///  ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ IPC ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½Úµï¿½ï¿½ï¿½ï¿½î¡£
     /// </summary>
     public const string CmdShowWindow = $"{ProComConst.CMD_PREFIX}/action/showWindow";
 
     /// <summary>
     ///  The main entry point for the application.
-    ///  Ó¦ÓÃ³ÌÐòµÄÖ÷Èë¿Úµã¡£
+    ///  Ó¦ï¿½Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Úµã¡£
     /// </summary>
     [STAThread]
     static void Main() {
         // Use a global Mutex to ensure a single instance.
-        // Ê¹ÓÃÈ«¾Ö Mutex È·±£µ¥ÊµÀýÔËÐÐ¡£
+        // Ê¹ï¿½ï¿½È«ï¿½ï¿½ Mutex È·ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½
         using var mutex = new Mutex(true, @$"Global\{ProComConst.PIPE_MAIN}", out bool isNewInstance);
         
         if (!isNewInstance) {
             // Try to activate the existing instance via IPC.
-            // ³¢ÊÔÍ¨¹ý IPC »½ÐÑÇ°Ò»¸öÊµÀý¡£
+            // ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½ IPC ï¿½ï¿½ï¿½ï¿½Ç°Ò»ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½
             var (_, error) = PipeService.SendAndReceive(ProComConst.PIPE_MAIN, CmdShowWindow);
             if (error != null) {
                 Logger.Warning($"Failed to wake existing instance: {error.Message}");
@@ -40,12 +44,14 @@ internal static class Program {
         }
 
         // Initialize application configuration.
-        // ³õÊ¼»¯Ó¦ÓÃ³ÌÐòÅäÖÃ¡£
+        // ï¿½ï¿½Ê¼ï¿½ï¿½Ó¦ï¿½Ã³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¡ï¿½
         // See https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
 
         // Log the current framework version for debugging.
-        // ¼ÇÂ¼µ±Ç°¿ò¼Ü°æ±¾ÒÔ±ãµ÷ÊÔ¡£
+        // ï¿½ï¿½Â¼ï¿½ï¿½Ç°ï¿½ï¿½Ü°æ±¾ï¿½Ô±ï¿½ï¿½ï¿½Ô¡ï¿½
+        Logger.Info($"Starting Carrot.AutoLock v{Application.ProductVersion}");
+        Logger.Info($"Framework: {AppDomain.CurrentDomain.SetupInformation.TargetFrameworkName}");
         // Console.WriteLine(AppDomain.CurrentDomain.SetupInformation.TargetFrameworkName);
         
         var mainForm = new MainForm();

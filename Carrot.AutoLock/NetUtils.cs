@@ -89,9 +89,10 @@ public static class ArpHelper {
                 for (int i = 0; i < count; i++) {
                     MIB_IPNETROW row = Marshal.PtrToStructure<MIB_IPNETROW>(current);
                     
-                    // dwAddr is in network byte order ? No, usually integer.
+                    // dwAddr is in network byte order (big-endian), need to convert to host byte order
                     // Convert integer IP to string.
-                    IPAddress ip = new IPAddress(BitConverter.GetBytes(row.dwAddr));
+                    uint ipAddr = (uint)IPAddress.NetworkToHostOrder((int)row.dwAddr);
+                    IPAddress ip = new IPAddress(BitConverter.GetBytes(ipAddr));
                     devices.Add(ip.ToString());
 
                     current = IntPtr.Add(current, Marshal.SizeOf<MIB_IPNETROW>());

@@ -46,6 +46,7 @@ public class ActiveChecker {
     private DateTime _lastActive = DateTime.Now;
 
     private IKeyboardMouseEvents? _globalHook;
+    private CancellationTokenSource? _cancellationTokenSource;
 
     /// <summary>
     /// Status update callback.
@@ -90,9 +91,10 @@ public class ActiveChecker {
         _lastActive = DateTime.Now;
 
         _checkerRunning = true;
+        _cancellationTokenSource = new CancellationTokenSource();
         SystemEvents.SessionSwitch += SystemEvents_SessionSwitch;
 
-        Task.Run(CheckDeviceStatusLoop);
+        Task.Run(() => CheckDeviceStatusLoop(_cancellationTokenSource.Token));
 
         Subscribe();
         Callback?.Invoke("");
@@ -106,39 +108,48 @@ public class ActiveChecker {
         Logger.Info("Stop");
         Unsubscribe();
         _checkerRunning = false;
+        _cancellationTokenSource?.Cancel();
         SystemEvents.SessionSwitch -= SystemEvents_SessionSwitch;
         Callback?.Invoke("");
     }
 
-    private async Task CheckDeviceStatusLoop() {
-        while (_checkerRunning) {
-            // Skip check if screen is locked
-            if (_isScreenLocked) {
-                Logger.Info("Screen locked, skip check");
-                await Task.Delay(3000);
-                continue;
-            }
-            // Check device status
-            bool isOnline = await CheckDeviceStatusAsync();
-            bool statusChanged = isOnline != _deviceOnline;
-            _deviceOnline = isOnline;
-            Logger.Info($"Online: {isOnline}, OffCount: {_offlineCount}, " +
-                $"Inactive: {GetInactiveSeconds():F1}s");
-            if (isOnline) {
-                _offlineCount = 0;
-            } else {
-                _offlineCount++;
-                if (ShouldCheckStatus()) {
-                    if (_offlineCount >= MAX_OFFLINE_COUNT) {
-                        LockWorkStation();
+    private async Task CheckDeviceStatusLoop(CancellationToken cancellationToken) {
+        while (_checkerRunning && !cancellationToken.IsCancellationRequested) {
+            try {
+                // Skip check if screen is locked
+                if (_isScreenLocked) {
+                    Logger.Info("Screen locked, skip check");
+                    await Task.Delay(3000, cancellationToken);
+                    continue;
+                }
+                // Check device status
+                bool isOnline = await CheckDeviceStatusAsync();
+                bool statusChanged = isOnline != _deviceOnline;
+                _deviceOnline = isOnline;
+                Logger.Info($"Device: {_targetIP}, Online: {isOnline}, OffCount: {_offlineCount}/{MAX_OFFLINE_COUNT}, " +
+                    $"Inactive: {GetInactiveSeconds():F1}s/{INACTIVE_SECONDS}s, ShouldCheck: {ShouldCheckStatus()}");
+                if (isOnline) {
+                    _offlineCount = 0;
+                } else {
+                    _offlineCount++;
+                    if (ShouldCheckStatus()) {
+                        if (_offlineCount >= MAX_OFFLINE_COUNT) {
+                            LockWorkStation();
+                        }
                     }
                 }
+                // Only trigger callback if status changed to reduce unnecessary UI updates.
+                if (statusChanged) {
+                    Callback?.Invoke("");
+                }
+                await Task.Delay(3000, cancellationToken);
+            } catch (OperationCanceledException) {
+                Logger.Info("CheckDeviceStatusLoop cancelled");
+                break;
+            } catch (Exception ex) {
+                Logger.Error("Error in CheckDeviceStatusLoop", ex);
+                await Task.Delay(3000, cancellationToken);
             }
-            // Only trigger callback if status changed to reduce unnecessary UI updates.
-            if (statusChanged) {
-                Callback?.Invoke("");
-            }
-            await Task.Delay(3000);
         }
     }
 
@@ -169,8 +180,16 @@ public class ActiveChecker {
     /// </summary>
     private void LockWorkStation() {
         Logger.Info($"{_targetIP} lock screen now");
-        _isScreenLocked = true;
-        LockWorkStationInternal();
+        try {
+            bool result = LockWorkStationInternal();
+            if (!result) {
+                int errorCode = System.Runtime.InteropServices.Marshal.GetLastWin32Error();
+                Logger.Warning($"Failed to lock workstation. Error code: {errorCode}");
+            }
+            _isScreenLocked = true;
+        } catch (Exception ex) {
+            Logger.Error("LockWorkStation", ex);
+        }
     }
 
     [System.Runtime.InteropServices.DllImport("user32.dll", EntryPoint = "LockWorkStation", SetLastError = true)]

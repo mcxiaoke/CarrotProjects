@@ -9,7 +9,7 @@ namespace Carrot.AutoLock;
 
 /// <summary>
 /// Main application form. Controls tray icon and menu logic.
-/// Ö÷´°ÌåÀà¡£¿ØÖÆÍÐÅÌÍ¼±êºÍ²Ëµ¥Âß¼­¡£
+/// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½à¡£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½Í²Ëµï¿½ï¿½ß¼ï¿½ï¿½ï¿½
 /// </summary>
 public partial class MainForm : Form {
 
@@ -23,7 +23,7 @@ public partial class MainForm : Form {
 
     /// <summary>
     /// Initializes the main form and tray icon.
-    /// ³õÊ¼»¯´°ÌåºÍÍÐÅÌÍ¼±ê¡£
+    /// ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ê¡£
     /// </summary>
     public MainForm() {
         Logger.Info(@"MainForm()");
@@ -38,14 +38,14 @@ public partial class MainForm : Form {
         _contextMenuStrip = new ContextMenuStrip();
 
         // Show Window menu item
-        var showMenuItem = new ToolStripMenuItem("ÏÔÊ¾´°¿Ú", null, ShowWindowMenuItem_Click);
+        var showMenuItem = new ToolStripMenuItem("ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½", null, ShowWindowMenuItem_Click);
         _contextMenuStrip.Items.Add(showMenuItem);
 
         // Add separator
         _contextMenuStrip.Items.Add(new ToolStripSeparator());
 
         // Exit menu item
-        var exitMenuItem = new ToolStripMenuItem("ÍË³öÓ¦ÓÃ", null, ExitMenuItem_Click);
+        var exitMenuItem = new ToolStripMenuItem("ï¿½Ë³ï¿½Ó¦ï¿½ï¿½", null, ExitMenuItem_Click);
         _contextMenuStrip.Items.Add(exitMenuItem);
 
         // Bind ContextMenuStrip to NotifyIcon
@@ -69,7 +69,7 @@ public partial class MainForm : Form {
 
     /// <summary>
     /// Loads the configuration (target IP) from file.
-    /// ´ÓÅäÖÃÎÄ¼þ¼ÓÔØÅäÖÃ (Ä¿±ê IP)¡£
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (Ä¿ï¿½ï¿½ IP)ï¿½ï¿½
     /// </summary>
     private void LoadConfig() {
         try {
@@ -88,7 +88,7 @@ public partial class MainForm : Form {
 
     /// <summary>
     /// Saves the configuration (target IP) to file.
-    /// ±£´æÅäÖÃ (Ä¿±ê IP) µ½ÎÄ¼þ¡£
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (Ä¿ï¿½ï¿½ IP) ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½
     /// </summary>
     private void SaveConfig() {
         try {
@@ -163,7 +163,7 @@ public partial class MainForm : Form {
 
     /// <summary>
     /// Toggles the checker status (Start/Stop).
-    /// ÇÐ»»¼ì²âÆ÷×´Ì¬ (¿ªÊ¼/Í£Ö¹)¡£
+    /// ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬ (ï¿½ï¿½Ê¼/Í£Ö¹)ï¿½ï¿½
     /// </summary>
     private void ToggleCheck() {
         if (_checker.IsRunning()) {
@@ -189,7 +189,7 @@ public partial class MainForm : Form {
 
     /// <summary>
     /// Callback for status updates, invokes UI update.
-    /// ×´Ì¬¸üÐÂ»Øµ÷º¯Êý£¬µ÷ÓÃ UI ¸üÐÂ¡£
+    /// ×´Ì¬ï¿½ï¿½ï¿½Â»Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ UI ï¿½ï¿½ï¿½Â¡ï¿½
     /// </summary>
     public void OnStatusChanged(string result) {
         Logger.Info("OnStatusChanged");
@@ -202,7 +202,7 @@ public partial class MainForm : Form {
 
     /// <summary>
     /// Updates the UI based on checker status.
-    /// ¸ù¾Ý¼ì²âÆ÷×´Ì¬¸üÐÂ UI¡£
+    /// ï¿½ï¿½ï¿½Ý¼ï¿½ï¿½ï¿½ï¿½×´Ì¬ï¿½ï¿½ï¿½ï¿½ UIï¿½ï¿½
     /// </summary>
     private void UpdateUI() {
         if (_checker == null || _notifyIcon == null) return;
@@ -224,7 +224,7 @@ public partial class MainForm : Form {
 
     /// <summary>
     /// Checks if auto-start is enabled.
-    /// ¼ì²é¿ª»úÆô¶¯ÊÇ·ñÒÑÆôÓÃ¡£
+    /// ï¿½ï¿½é¿ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã¡ï¿½
     /// </summary>
     private bool IsAutoStartEnabled(string appName) {
         try {
@@ -236,7 +236,17 @@ public partial class MainForm : Form {
     }
 
     private void TextIPAddress_TextChanged(object? sender, EventArgs e) {
-        // Optional: Validate input dynamically or enable/disable buttons
+        // Validate IP address format in real-time
+        string ip = textIPAddress.Text.Trim();
+        bool isValid = TryGetValidIpv4(ip, out _);
+
+        // Visual feedback for invalid IP
+        textIPAddress.BackColor = isValid || string.IsNullOrEmpty(ip)
+            ? SystemColors.Window
+            : Color.LightPink;
+
+        // Enable/disable start button based on validity
+        btnStart.Enabled = isValid || string.IsNullOrEmpty(ip);
     }
 
     private void CbAutoStart_CheckedChanged(object? sender, EventArgs e) {
@@ -245,7 +255,7 @@ public partial class MainForm : Form {
 
     /// <summary>
     /// Sets the auto-start registry key.
-    /// ÉèÖÃ¿ª»úÆô¶¯×¢²á±íÏî¡£
+    /// ï¿½ï¿½ï¿½Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×¢ï¿½ï¿½ï¿½ï¿½î¡£
     /// </summary>
     private void SetAutoStart(bool enable, string appName, string appPath) {
         Logger.Debug($@"SetAutoStart Enable:{enable} AppPath:{appPath}");
@@ -267,7 +277,7 @@ public partial class MainForm : Form {
 
     /// <summary>
     /// Shows the window and hides the tray icon.
-    /// ÏÔÊ¾´°¿Ú²¢Òþ²ØÍÐÅÌÍ¼±ê¡£
+    /// ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½Ú²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ê¡£
     /// </summary>
     public void ShowWindow() {
         this.Show();
