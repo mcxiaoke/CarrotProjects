@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFrameworks>net10.0-windows</TargetFrameworks>
+    <TargetFrameworks>net10.0-windows10.0.19041.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -13,7 +13,62 @@
     <ApplicationHighDpiMode>SystemAware</ApplicationHighDpiMode>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <Title></Title>
+
+    <Major>1</Major>
+    <Minor>0</Minor>
+    <Patch>0</Patch>
+    <VersionPrefix>$(Major).$(Minor).$(Patch)</VersionPrefix>
+    <FileVersionEpoch>2026-01-01</FileVersionEpoch>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+    
   </PropertyGroup>
+
+  <Target Name="GenerateCustomVersion"
+          BeforeTargets="GetAssemblyVersion;GenerateNuspec;GetPackageVersion">
+
+    <!-- 1. 获取 Git short commit -->
+    <Exec Command="git rev-parse --short HEAD"
+          ConsoleToMSBuild="true"
+          StandardOutputImportance="low"
+          IgnoreExitCode="true">
+      <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitHash" />
+    </Exec>
+
+    <!-- 2. 计算构建时间 + 天数（跨年永不回滚） -->
+    <PropertyGroup>
+      <BuildDate>$([System.DateTime]::Now.ToString('yyyyMMdd'))</BuildDate>
+      <BuildTime>$([System.DateTime]::Now.ToString('HHmm'))</BuildTime>
+
+      <!-- 关键：自基准年以来第几天（每天+1，跨年自动增大） -->
+      <DaysSinceEpoch>$([System.DateTime]::Now.Subtract($([System.DateTime]::Parse('$(FileVersionEpoch)'))).Days)</DaysSinceEpoch>
+
+      <GitCommitHash Condition="'$(GitCommitHash)' == ''">unknown</GitCommitHash>
+    </PropertyGroup>
+
+    <!-- 3. Debug / Release 后缀（不变） -->
+    <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+      <VersionSuffix>debug</VersionSuffix>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+      <VersionSuffix>$(BuildDate)-$(GitCommitHash)</VersionSuffix>
+    </PropertyGroup>
+
+    <!-- 4. 核心版本设置（不变） -->
+    <PropertyGroup>
+      <Version>$(VersionPrefix)-$(VersionSuffix)</Version>
+      <InformationalVersion>$(Version)</InformationalVersion>
+    </PropertyGroup>
+
+    <!-- 5. FileVersion（已修复跨年问题） -->
+    <PropertyGroup>
+      <FileVersion>$(Major).$(Minor).$(DaysSinceEpoch).$(BuildTime)</FileVersion>
+    </PropertyGroup>
+
+    <!-- 构建日志（现在会显示真实递增的 FileVersion） -->
+    <Message Importance="high"
+             Text="=== [编译信息] 干净版本: $(Version) | FileVersion: $(FileVersion) (天数=$(DaysSinceEpoch)) ===" />
+
+  </Target>
 
   <ItemGroup>
   </ItemGroup>
