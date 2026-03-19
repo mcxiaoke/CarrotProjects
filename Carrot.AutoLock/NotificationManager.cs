@@ -1,8 +1,8 @@
+using Carrot.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Carrot.Common;
 
 namespace Carrot.AutoLock;
 
@@ -110,7 +110,7 @@ public class NotificationManager : IDisposable {
                       $"**时间**: {timestamp}\n\n" +
                       $"_Carrot.AutoLock 自动锁定提醒_";
 
-        SendMarkdown(content);
+        SendMessage(content);
     }
 
     public void Dispose() {

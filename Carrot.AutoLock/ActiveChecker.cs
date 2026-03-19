@@ -29,23 +29,24 @@ public class ActiveChecker : IDisposable {
     public const string DEFAULT_IP = "192.168.1.100";
 
     /// <summary>
-    /// Max offline count threshold before locking.
-    /// 设备离线检测次数阈值，连续离线多少次后触发锁定。
+    /// Offline duration threshold in seconds before locking.
+    /// 设备离线时间阈值 (秒)，连续离线超过此时间后触发锁定。
     /// </summary>
-    public const int MAX_OFFLINE_COUNT = 10;
+    public const int OFFLINE_THRESHOLD = 120;
 
     /// <summary>
     /// Inactive duration threshold in seconds before assuming absence.
     /// 键盘鼠标无操作时间阈值 (秒)，超过此时间才认为用户可能离开。
     /// </summary>
-    public const int INACTIVE_SECONDS = 60;
+    public const int INACTIVE_SECONDS = 180;
 
     // 跨线程使用的布尔值，增加 volatile 保证线程间读取最新值
     private volatile bool _isScreenLocked;
     private volatile bool _checkerRunning;
     private volatile bool _deviceOnline;
 
-    private int _offlineCount;
+    // 离线开始时间 (用于计算离线时长)
+    private DateTime? _offlineStartTime;
     private string _targetIP = DEFAULT_IP;
 
     private CancellationTokenSource? _cancellationTokenSource;
@@ -81,6 +82,14 @@ public class ActiveChecker : IDisposable {
     /// </summary>
     public bool IsDeviceOnline() => _deviceOnline;
 
+    /// <summary>
+    /// Gets the offline duration in seconds.
+    /// 获取设备离线时长 (秒)。
+    /// </summary>
+    public double OfflineSeconds => _offlineStartTime.HasValue
+        ? (DateTime.Now - _offlineStartTime.Value).TotalSeconds
+        : 0;
+
     public void SetTargetIP(string targetIP) {
         _targetIP = targetIP;
     }
@@ -112,7 +121,7 @@ public class ActiveChecker : IDisposable {
     /// <summary>
     /// 通过系统 API 获取键鼠空闲时间，彻底免除第三方 Hook
     /// </summary>
-    public double GetInactiveSeconds() {
+    public static double GetInactiveSeconds() {
         var lastInputInfo = new LASTINPUTINFO();
         lastInputInfo.cbSize = (uint)Marshal.SizeOf(lastInputInfo);
 
@@ -126,10 +135,6 @@ public class ActiveChecker : IDisposable {
     }
 
     #endregion
-
-    private bool ShouldCheckStatus() {
-        return GetInactiveSeconds() > INACTIVE_SECONDS;
-    }
 
     /// <summary>
     /// Starts the monitoring service.
@@ -175,8 +180,8 @@ public class ActiveChecker : IDisposable {
             try {
                 // Skip check if screen is locked
                 if (_isScreenLocked) {
-                    Logger.Info("Screen locked, skip check");
-                    await Task.Delay(5000, cancellationToken);
+                    Logger.Debug("Screen locked, skip check");
+                    await Task.Delay(6000 * 2, cancellationToken);
                     continue;
                 }
 
@@ -185,25 +190,34 @@ public class ActiveChecker : IDisposable {
                 bool statusChanged = isOnline != _deviceOnline;
                 _deviceOnline = isOnline;
 
+                var offlineSeconds = _offlineStartTime.HasValue ? (DateTime.Now - _offlineStartTime.Value).TotalSeconds : 0;
+
                 if (isOnline) {
-                    _offlineCount = 0;
+                    _offlineStartTime = null;
                 } else {
-                    _offlineCount++;
-                    if (ShouldCheckStatus()) {
-                        if (_offlineCount >= MAX_OFFLINE_COUNT) {
-                            LockWorkStation();
-                        }
+                    // 记录离线开始时间
+                    _offlineStartTime ??= DateTime.Now;
+                    if (GetInactiveSeconds() > INACTIVE_SECONDS
+                        && offlineSeconds >= OFFLINE_THRESHOLD) {
+                        // print offline info
+                        Logger.Warning($"Device offline {offlineSeconds:F0}s and " +
+                            $"user inactive {GetInactiveSeconds():F1}s, " +
+                            $"locking workstation...");
+                        LockWorkStation();
                     }
                 }
 
+                var statusInfo = $"Device: {_targetIP}|{_targetBluetoothName}, Online: {isOnline}, " +
+                        $"Offline: {offlineSeconds:F0}s/{OFFLINE_THRESHOLD}s, " +
+                        $"Inactive: {GetInactiveSeconds():F1}s/{INACTIVE_SECONDS}s";
                 // Only trigger callback if status changed to reduce unnecessary UI updates.
                 if (statusChanged) {
-                    Logger.Info($"Device: {_targetIP}|{_targetBluetoothName}, Online: {isOnline}, " +
-                        $"OffCount: {_offlineCount}/{MAX_OFFLINE_COUNT}, "
-                        + $"Inactive: {GetInactiveSeconds():F1}s/{INACTIVE_SECONDS}s,");
+                    Logger.Info(statusInfo);
                     Callback?.Invoke("");
+                } else {
+                    Logger.Debug(statusInfo);
                 }
-                await Task.Delay(5000, cancellationToken);
+                await Task.Delay(6000, cancellationToken);
             } catch (OperationCanceledException) {
                 Logger.Info("CheckDeviceStatusLoop cancelled");
                 break;
@@ -211,7 +225,7 @@ public class ActiveChecker : IDisposable {
                 Logger.Error("Error in CheckDeviceStatusLoop", ex);
                 // 发生其它异常时休眠一下防止死循环狂飙，同时也支持 Cancellation
                 try {
-                    await Task.Delay(5000, cancellationToken);
+                    await Task.Delay(6000, cancellationToken);
                 } catch (OperationCanceledException) {
                     break;
                 }
@@ -222,12 +236,7 @@ public class ActiveChecker : IDisposable {
     /// <summary>
     /// 核心检测逻辑：Wi-Fi 与 蓝牙双重检测
     /// </summary>
-    private async Task<bool> CheckDeviceStatusAsync() {            // 第二层检测：查询系统蓝牙配对状态
-        bool isBluetoothConnected2 = await _bluetoothDetector.IsPairedDeviceConnectedAsync(_targetBluetoothName);
-        if (isBluetoothConnected2) {
-            Logger.Debug($"[{_targetBluetoothName}] 111 is paired and connected via Bluetooth.");
-            return true;
-        }
+    private async Task<bool> CheckDeviceStatusAsync() {
         // 第一层检测：Wi-Fi 网络 (Ping & ARP)
         bool isWifiOnline = await CheckWifiStatusAsync();
         if (isWifiOnline) {
@@ -262,6 +271,7 @@ public class ActiveChecker : IDisposable {
     /// 原先的 Wi-Fi 状态检测逻辑 (Ping + ARP)
     /// </summary>
     private async Task<bool> CheckWifiStatusAsync() {
+        // 第一层：Ping 目标 IP（最快）
         try {
             using var ping = new Ping();
             var reply = await ping.SendPingAsync(_targetIP, 1000);
@@ -273,6 +283,7 @@ public class ActiveChecker : IDisposable {
             Logger.Debug($"Ping error: {e.Message} {_targetIP}");
         }
 
+        // 第二层：ARP 缓存匹配
         var onlineDevices = ArpHelper.GetOnlineDevices();
         return onlineDevices.Contains(_targetIP);
     }
@@ -287,7 +298,10 @@ public class ActiveChecker : IDisposable {
         // 发送通知（异步，不阻塞锁定流程）
         try {
             var deviceInfo = string.IsNullOrEmpty(_targetBluetoothName) ? _targetIP : $"{_targetIP} / {_targetBluetoothName}";
-            var reason = "设备离线且用户无活动";
+            var offlineTime = _offlineStartTime.HasValue
+                ? $"{(DateTime.Now - _offlineStartTime.Value).TotalSeconds:F0}s"
+                : "N/A";
+            var reason = $"设备离线 {offlineTime} 且用户无活动";
             _notificationManager.SendLockNotification(deviceInfo, reason);
         } catch (Exception ex) {
             Logger.Error("Failed to send lock notification", ex);
@@ -312,12 +326,11 @@ public class ActiveChecker : IDisposable {
         if (e.Reason == SessionSwitchReason.SessionUnlock) {
             Logger.Info("SessionUnlock: reset timer");
             _isScreenLocked = false;
-            _offlineCount = 0;
-            // 移除 _lastActive 重置，GetLastInputInfo 是取系统原生空闲时间，自动跟随系统刷新
+            _offlineStartTime = null;
         } else if (e.Reason == SessionSwitchReason.SessionLock) {
             Logger.Info("SessionLock: stop timer");
             _isScreenLocked = true;
-            _offlineCount = 0;
+            _offlineStartTime = null;
         }
         Callback?.Invoke("");
     }
