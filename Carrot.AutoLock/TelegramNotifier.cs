@@ -1,4 +1,5 @@
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,10 +26,18 @@ public class TelegramNotifier : INotifier {
     /// </summary>
     /// <param name="botToken">Bot Token</param>
     /// <param name="chatId">Chat ID（用户或群组 ID） / Chat ID (user or group ID)</param>
-    public TelegramNotifier(string botToken, string chatId) {
+    /// <param name="proxyUrl">代理地址（可选） / Proxy URL (optional)</param>
+    public TelegramNotifier(string botToken, string chatId, string? proxyUrl = null) {
         _botToken = botToken?.Trim() ?? string.Empty;
         _chatId = chatId?.Trim() ?? string.Empty;
-        _httpClient = new HttpClient {
+
+        var handler = new HttpClientHandler();
+        if (!string.IsNullOrEmpty(proxyUrl)) {
+            handler.Proxy = new WebProxy(proxyUrl);
+            handler.UseProxy = true;
+        }
+
+        _httpClient = new HttpClient(handler) {
             Timeout = TimeSpan.FromSeconds(10)
         };
     }

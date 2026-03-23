@@ -32,7 +32,7 @@ public class ActiveChecker : IDisposable {
     /// Offline duration threshold in seconds before locking.
     /// 设备离线时间阈值 (秒)，连续离线超过此时间后触发锁定。
     /// </summary>
-    public const int OFFLINE_THRESHOLD = 120;
+    public const int OFFLINE_THRESHOLD = 300;
 
     /// <summary>
     /// Inactive duration threshold in seconds before assuming absence.
@@ -190,26 +190,31 @@ public class ActiveChecker : IDisposable {
                 bool statusChanged = isOnline != _deviceOnline;
                 _deviceOnline = isOnline;
 
-                var offlineSeconds = _offlineStartTime.HasValue ? (DateTime.Now - _offlineStartTime.Value).TotalSeconds : 0;
-
                 if (isOnline) {
                     _offlineStartTime = null;
                 } else {
                     // 记录离线开始时间
                     _offlineStartTime ??= DateTime.Now;
-                    if (GetInactiveSeconds() > INACTIVE_SECONDS
-                        && offlineSeconds >= OFFLINE_THRESHOLD) {
-                        // print offline info
-                        Logger.Warning($"Device offline {offlineSeconds:F0}s and " +
-                            $"user inactive {GetInactiveSeconds():F1}s, " +
-                            $"locking workstation...");
-                        LockWorkStation();
-                    }
+                }
+
+                var offlineSeconds = _offlineStartTime.HasValue ? (DateTime.Now - _offlineStartTime.Value).TotalSeconds : 0;
+                var inactiveSeconds = GetInactiveSeconds();
+                if (inactiveSeconds > 900) {
+                    // 条件1：用户无操作超过 15 分钟，强制锁屏
+                    Logger.Warning($"User inactive {inactiveSeconds:F0}s (>15min), forcing lock...");
+                    LockWorkStation();
+                } else if (inactiveSeconds > INACTIVE_SECONDS
+                    && offlineSeconds >= OFFLINE_THRESHOLD) {
+                    // 条件2：设备离线 + 用户无操作
+                    Logger.Warning($"Device offline {offlineSeconds:F0}s and " +
+                        $"user inactive {inactiveSeconds:F1}s, " +
+                        $"locking workstation...");
+                    LockWorkStation();
                 }
 
                 var statusInfo = $"Device: {_targetIP}|{_targetBluetoothName}, Online: {isOnline}, " +
                         $"Offline: {offlineSeconds:F0}s/{OFFLINE_THRESHOLD}s, " +
-                        $"Inactive: {GetInactiveSeconds():F1}s/{INACTIVE_SECONDS}s";
+                        $"Inactive: {inactiveSeconds:F1}s/{INACTIVE_SECONDS}s";
                 // Only trigger callback if status changed to reduce unnecessary UI updates.
                 if (statusChanged) {
                     Logger.Info(statusInfo);

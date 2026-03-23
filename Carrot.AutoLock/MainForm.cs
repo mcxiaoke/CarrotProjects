@@ -195,7 +195,7 @@ public partial class MainForm : Form {
         // 添加 Telegram 通知器
         if (!string.IsNullOrWhiteSpace(_appConfig.Data.TelegramBotToken) &&
             !string.IsNullOrWhiteSpace(_appConfig.Data.TelegramChatId)) {
-            var telegramNotifier = new TelegramNotifier(_appConfig.Data.TelegramBotToken, _appConfig.Data.TelegramChatId);
+            var telegramNotifier = new TelegramNotifier(_appConfig.Data.TelegramBotToken, _appConfig.Data.TelegramChatId, "http://127.0.0.1:7890");
             notificationManager.AddNotifier(telegramNotifier);
         }
     }

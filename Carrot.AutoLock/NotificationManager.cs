@@ -104,10 +104,10 @@ public class NotificationManager : IDisposable {
     /// <param name="reason">锁定原因 / Lock reason</param>
     public void SendLockNotification(string deviceInfo, string reason) {
         var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-        var content = $"🔒 **电脑即将锁定**\n\n" +
-                      $"**设备**: {deviceInfo}\n" +
-                      $"**原因**: {reason}\n" +
-                      $"**时间**: {timestamp}\n\n" +
+        var content = $"🔒 电脑即将锁定\n\n" +
+                      $"设备: {deviceInfo}\n" +
+                      $"原因: {reason}\n" +
+                      $"时间: {timestamp}\n\n" +
                       $"_Carrot.AutoLock 自动锁定提醒_";
 
         SendMessage(content);
