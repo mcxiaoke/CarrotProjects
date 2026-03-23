@@ -64,6 +64,8 @@ public partial class MainForm : Form {
         // 填充 UI
         textIPAddress.Text = _appConfig.Data.TargetIP;
         textBluetoothName.Text = _appConfig.Data.TargetBluetoothName;
+        textOfflineSecs.Text = _appConfig.Data.OfflineTimeoutSeconds.ToString();
+        textInactiveSecs.Text = _appConfig.Data.InactiveTimeoutSeconds.ToString();
         textWeChatKey.Text = _appConfig.Data.WeChatWebhookKey;
         textTelegramToken.Text = _appConfig.Data.TelegramBotToken;
         textTelegramChatId.Text = _appConfig.Data.TelegramChatId;
@@ -169,6 +171,7 @@ public partial class MainForm : Form {
             _checker.SetTargetIP(_appConfig.Data.TargetIP);
             _checker.SetTargetBluetoothName(_appConfig.Data.TargetBluetoothName);
             _checker.SetRouterPassword(_appConfig.Data.RouterPassword);
+            _checker.SetTimeoutSecs(_appConfig.Data.OfflineTimeoutSeconds, _appConfig.Data.InactiveTimeoutSeconds);
 
             // 配置通知器
             ConfigureNotifiers();
@@ -226,17 +229,19 @@ public partial class MainForm : Form {
         // 禁用/启用输入控件
         textIPAddress.Enabled = !running;
         textBluetoothName.Enabled = !running;
+        textOfflineSecs.Enabled = !running;
+        textInactiveSecs.Enabled = !running;
         textWeChatKey.Enabled = !running;
         textTelegramToken.Enabled = !running;
         textTelegramChatId.Enabled = !running;
 
-        btnStart.Text = running ? "STOP" : "START";
+        btnStart.Text = running ? "停止" : "启动";
 
         var textLines = new List<string> {
             $"Notifiers: {_checker.GetNotificationManager().ConfiguredCount}",
             $"Running: {running}, " + $"Online: {_checker.IsDeviceOnline()}",
-            $"Offline Seconds: {_checker.OfflineSeconds:F0}s / {ActiveChecker.OFFLINE_THRESHOLD}s",
-            $"Inactive Seconds: {ActiveChecker.GetInactiveSeconds():F0}s / {ActiveChecker.INACTIVE_THRESHOLD}s"
+            $"Offline Seconds: {_checker.OfflineSeconds:F0}s / {_appConfig.Data.OfflineTimeoutSeconds}s",
+            $"Inactive Seconds: {ActiveChecker.GetInactiveSeconds():F0}s / {_appConfig.Data.InactiveTimeoutSeconds}s"
         };
 
         // Use InfoText (TextBox) instead of labelStatus
@@ -356,6 +361,24 @@ public partial class MainForm : Form {
             // 更新配置数据
             _appConfig.Data.TargetIP = validatedIP;
             _appConfig.Data.TargetBluetoothName = textBluetoothName.Text.Trim();
+
+            // 验证并保存超时时间
+            if (int.TryParse(textOfflineSecs.Text.Trim(), out int offlineSecs) && offlineSecs > 0) {
+                _appConfig.Data.OfflineTimeoutSeconds = offlineSecs;
+            } else {
+                MessageBox.Show(@"设备离线超时必须是正整数", @"错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                textOfflineSecs.Focus();
+                return false;
+            }
+
+            if (int.TryParse(textInactiveSecs.Text.Trim(), out int inactiveSecs) && inactiveSecs > 0) {
+                _appConfig.Data.InactiveTimeoutSeconds = inactiveSecs;
+            } else {
+                MessageBox.Show(@"设备空闲超时必须是正整数", @"错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                textInactiveSecs.Focus();
+                return false;
+            }
+
             _appConfig.Data.WeChatWebhookKey = textWeChatKey.Text.Trim();
             _appConfig.Data.TelegramBotToken = textTelegramToken.Text.Trim();
             _appConfig.Data.TelegramChatId = textTelegramChatId.Text.Trim();
@@ -371,5 +394,17 @@ public partial class MainForm : Form {
             MessageBox.Show($@"保存配置失败: {ex.Message}", @"错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return false;
         }
+    }
+
+    private void textBluetoothName_TextChanged(object sender, EventArgs e) {
+
+    }
+
+    private void textOfflineSecs_TextChanged(object sender, EventArgs e) {
+
+    }
+
+    private void textInactiveSecs_TextChanged(object sender, EventArgs e) {
+
     }
 }

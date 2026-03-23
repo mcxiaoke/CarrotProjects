@@ -47,6 +47,10 @@ public class ActiveChecker : IDisposable {
     /// </summary>
     public const int LOOP_DELAY_MS = 5000;
 
+    // 可配置的超时时间
+    private int _offlineThreshold = OFFLINE_THRESHOLD;
+    private int _inactiveThreshold = INACTIVE_THRESHOLD;
+
     // 跨线程使用的布尔值，增加 volatile 保证线程间读取最新值
     private volatile bool _isScreenLocked;
     private volatile bool _checkerRunning;
@@ -128,6 +132,14 @@ public class ActiveChecker : IDisposable {
         if (!string.IsNullOrEmpty(password)) {
             _router = new TPLinkRouter(password);
         }
+    }
+
+    /// <summary>
+    /// 设置超时时间
+    /// </summary>
+    public void SetTimeoutSecs(int offlineThreshold, int inactiveThreshold) {
+        _offlineThreshold = offlineThreshold;
+        _inactiveThreshold = inactiveThreshold;
     }
 
     /// <summary>
@@ -233,8 +245,8 @@ public class ActiveChecker : IDisposable {
                     // 条件1：用户无操作超过 15 分钟，强制锁屏
                     Logger.Warning($"User inactive {inactiveSeconds:F0}s (>15min), forcing lock...");
                     LockWorkStation();
-                } else if (inactiveSeconds > INACTIVE_THRESHOLD
-                    && offlineSeconds >= OFFLINE_THRESHOLD) {
+                } else if (inactiveSeconds > _inactiveThreshold
+                    && offlineSeconds >= _offlineThreshold) {
                     // 条件2：设备离线 + 用户无操作
                     Logger.Warning($"Device offline {offlineSeconds:F0}s and " +
                         $"user inactive {inactiveSeconds:F1}s, " +
@@ -243,8 +255,8 @@ public class ActiveChecker : IDisposable {
                 }
 
                 var statusInfo = $"Device: {_targetIP} | {_targetBluetoothName}\r\n" +
-                        $"Offline: {offlineSeconds:F0}s/{OFFLINE_THRESHOLD}s, " +
-                        $"Inactive: {inactiveSeconds:F1}s/{INACTIVE_THRESHOLD}s";
+                        $"Offline: {offlineSeconds:F0}s/{_offlineThreshold}s, " +
+                        $"Inactive: {inactiveSeconds:F1}s/{_inactiveThreshold}s";
 
                 Logger.Debug(statusInfo);
                 Callback?.Invoke("");

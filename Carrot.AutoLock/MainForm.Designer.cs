@@ -24,216 +24,267 @@
         /// </summary>
         private void InitializeComponent() {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.textIPAddress = new System.Windows.Forms.TextBox();
-            this.btnStart = new System.Windows.Forms.Button();
-            this.btnExit = new System.Windows.Forms.Button();
-            this.cbAutoStart = new System.Windows.Forms.CheckBox();
-            this.btnViewLog = new System.Windows.Forms.Button();
-            this.InfoText = new System.Windows.Forms.TextBox();
-            this.labelIP = new System.Windows.Forms.Label();
-            this.labelBluetooth = new System.Windows.Forms.Label();
-            this.textBluetoothName = new System.Windows.Forms.TextBox();
-            this.labelWeChat = new System.Windows.Forms.Label();
-            this.textWeChatKey = new System.Windows.Forms.TextBox();
-            this.labelTelegram = new System.Windows.Forms.Label();
-            this.textTelegramToken = new System.Windows.Forms.TextBox();
-            this.labelTelegramChat = new System.Windows.Forms.Label();
-            this.textTelegramChatId = new System.Windows.Forms.TextBox();
-            this.SuspendLayout();
-            // 
-            // labelIP
-            // 
-            this.labelIP.AutoSize = true;
-            this.labelIP.Font = new System.Drawing.Font("Microsoft YaHei UI", 10F);
-            this.labelIP.Location = new System.Drawing.Point(40, 15);
-            this.labelIP.Name = "labelIP";
-            this.labelIP.Size = new System.Drawing.Size(120, 27);
-            this.labelIP.TabIndex = 100;
-            this.labelIP.Text = "目标IP地址";
+            textIPAddress = new TextBox();
+            btnStart = new Button();
+            btnExit = new Button();
+            cbAutoStart = new CheckBox();
+            btnViewLog = new Button();
+            InfoText = new TextBox();
+            labelIP = new Label();
+            labelBluetooth = new Label();
+            textBluetoothName = new TextBox();
+            labelWeChat = new Label();
+            textWeChatKey = new TextBox();
+            labelTelegram = new Label();
+            textTelegramToken = new TextBox();
+            labelTelegramChat = new Label();
+            textTelegramChatId = new TextBox();
+            offlineLabel = new Label();
+            inactiveLabel = new Label();
+            textOfflineSecs = new TextBox();
+            textInactiveSecs = new TextBox();
+            SuspendLayout();
             // 
             // textIPAddress
             // 
-            this.textIPAddress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textIPAddress.Font = new System.Drawing.Font("Microsoft YaHei UI", 12F);
-            this.textIPAddress.Location = new System.Drawing.Point(40, 45);
-            this.textIPAddress.MaxLength = 16;
-            this.textIPAddress.Name = "textIPAddress";
-            this.textIPAddress.Size = new System.Drawing.Size(620, 39);
-            this.textIPAddress.TabIndex = 0;
-            this.textIPAddress.Text = "192.168.1.";
-            this.textIPAddress.TextChanged += new System.EventHandler(this.TextIPAddress_TextChanged);
-            // 
-            // labelBluetooth
-            // 
-            this.labelBluetooth.AutoSize = true;
-            this.labelBluetooth.Font = new System.Drawing.Font("Microsoft YaHei UI", 10F);
-            this.labelBluetooth.Location = new System.Drawing.Point(40, 95);
-            this.labelBluetooth.Name = "labelBluetooth";
-            this.labelBluetooth.Size = new System.Drawing.Size(130, 27);
-            this.labelBluetooth.TabIndex = 101;
-            this.labelBluetooth.Text = "蓝牙设备名称";
-            // 
-            // textBluetoothName
-            // 
-            this.textBluetoothName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textBluetoothName.Font = new System.Drawing.Font("Microsoft YaHei UI", 12F);
-            this.textBluetoothName.Location = new System.Drawing.Point(40, 125);
-            this.textBluetoothName.Name = "textBluetoothName";
-            this.textBluetoothName.Size = new System.Drawing.Size(620, 39);
-            this.textBluetoothName.TabIndex = 1;
-            // 
-            // labelWeChat
-            // 
-            this.labelWeChat.AutoSize = true;
-            this.labelWeChat.Font = new System.Drawing.Font("Microsoft YaHei UI", 10F);
-            this.labelWeChat.Location = new System.Drawing.Point(40, 175);
-            this.labelWeChat.Name = "labelWeChat";
-            this.labelWeChat.Size = new System.Drawing.Size(180, 27);
-            this.labelWeChat.TabIndex = 102;
-            this.labelWeChat.Text = "企业微信机器人Key";
-            // 
-            // textWeChatKey
-            // 
-            this.textWeChatKey.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textWeChatKey.Font = new System.Drawing.Font("Microsoft YaHei UI", 12F);
-            this.textWeChatKey.Location = new System.Drawing.Point(40, 205);
-            this.textWeChatKey.Name = "textWeChatKey";
-            this.textWeChatKey.Size = new System.Drawing.Size(620, 39);
-            this.textWeChatKey.TabIndex = 2;
-            this.textWeChatKey.UseSystemPasswordChar = true;
-            // 
-            // labelTelegram
-            // 
-            this.labelTelegram.AutoSize = true;
-            this.labelTelegram.Font = new System.Drawing.Font("Microsoft YaHei UI", 10F);
-            this.labelTelegram.Location = new System.Drawing.Point(40, 255);
-            this.labelTelegram.Name = "labelTelegram";
-            this.labelTelegram.Size = new System.Drawing.Size(140, 27);
-            this.labelTelegram.TabIndex = 103;
-            this.labelTelegram.Text = "Telegram Bot Token";
-            // 
-            // textTelegramToken
-            // 
-            this.textTelegramToken.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textTelegramToken.Font = new System.Drawing.Font("Microsoft YaHei UI", 12F);
-            this.textTelegramToken.Location = new System.Drawing.Point(40, 285);
-            this.textTelegramToken.Name = "textTelegramToken";
-            this.textTelegramToken.Size = new System.Drawing.Size(620, 39);
-            this.textTelegramToken.TabIndex = 3;
-            this.textTelegramToken.UseSystemPasswordChar = true;
-            // 
-            // labelTelegramChat
-            // 
-            this.labelTelegramChat.AutoSize = true;
-            this.labelTelegramChat.Font = new System.Drawing.Font("Microsoft YaHei UI", 10F);
-            this.labelTelegramChat.Location = new System.Drawing.Point(40, 335);
-            this.labelTelegramChat.Name = "labelTelegramChat";
-            this.labelTelegramChat.Size = new System.Drawing.Size(160, 27);
-            this.labelTelegramChat.TabIndex = 104;
-            this.labelTelegramChat.Text = "Telegram Chat ID";
-            // 
-            // textTelegramChatId
-            // 
-            this.textTelegramChatId.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.textTelegramChatId.Font = new System.Drawing.Font("Microsoft YaHei UI", 12F);
-            this.textTelegramChatId.Location = new System.Drawing.Point(40, 365);
-            this.textTelegramChatId.Name = "textTelegramChatId";
-            this.textTelegramChatId.Size = new System.Drawing.Size(620, 39);
-            this.textTelegramChatId.TabIndex = 4;
+            textIPAddress.Font = new Font("Microsoft YaHei UI", 12F);
+            textIPAddress.Location = new Point(49, 60);
+            textIPAddress.Margin = new Padding(4);
+            textIPAddress.MaxLength = 16;
+            textIPAddress.Name = "textIPAddress";
+            textIPAddress.Size = new Size(388, 38);
+            textIPAddress.TabIndex = 0;
+            textIPAddress.Text = "192.168.1.";
+            textIPAddress.TextChanged += TextIPAddress_TextChanged;
             // 
             // btnStart
             // 
-            this.btnStart.Font = new System.Drawing.Font("Microsoft YaHei UI", 11F);
-            this.btnStart.Location = new System.Drawing.Point(40, 420);
-            this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(100, 35);
-            this.btnStart.TabIndex = 5;
-            this.btnStart.Text = "Start";
-            this.btnStart.UseVisualStyleBackColor = true;
-            this.btnStart.Click += new System.EventHandler(this.BtnStart_Click);
-            // 
-            // btnViewLog
-            // 
-            this.btnViewLog.Font = new System.Drawing.Font("Microsoft YaHei UI", 11F);
-            this.btnViewLog.Location = new System.Drawing.Point(160, 420);
-            this.btnViewLog.Name = "btnViewLog";
-            this.btnViewLog.Size = new System.Drawing.Size(100, 35);
-            this.btnViewLog.TabIndex = 6;
-            this.btnViewLog.Text = "日志";
-            this.btnViewLog.UseVisualStyleBackColor = true;
-            this.btnViewLog.Click += new System.EventHandler(this.BtnViewLog_Click);
+            btnStart.Font = new Font("Microsoft YaHei UI", 11F);
+            btnStart.Location = new Point(49, 560);
+            btnStart.Margin = new Padding(4);
+            btnStart.Name = "btnStart";
+            btnStart.Size = new Size(122, 47);
+            btnStart.TabIndex = 5;
+            btnStart.Text = "启动";
+            btnStart.UseVisualStyleBackColor = true;
+            btnStart.Click += BtnStart_Click;
             // 
             // btnExit
             // 
-            this.btnExit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExit.Font = new System.Drawing.Font("Microsoft YaHei UI", 11F);
-            this.btnExit.Location = new System.Drawing.Point(560, 420);
-            this.btnExit.Name = "btnExit";
-            this.btnExit.Size = new System.Drawing.Size(100, 35);
-            this.btnExit.TabIndex = 8;
-            this.btnExit.Text = "Exit";
-            this.btnExit.UseVisualStyleBackColor = true;
-            this.btnExit.Click += new System.EventHandler(this.BtnExit_Click);
+            btnExit.Font = new Font("Microsoft YaHei UI", 11F);
+            btnExit.Location = new Point(684, 560);
+            btnExit.Margin = new Padding(4);
+            btnExit.Name = "btnExit";
+            btnExit.Size = new Size(122, 47);
+            btnExit.TabIndex = 8;
+            btnExit.Text = "退出";
+            btnExit.UseVisualStyleBackColor = true;
+            btnExit.Click += BtnExit_Click;
             // 
             // cbAutoStart
             // 
-            this.cbAutoStart.AutoSize = true;
-            this.cbAutoStart.Font = new System.Drawing.Font("Microsoft YaHei UI", 10F);
-            this.cbAutoStart.Location = new System.Drawing.Point(40, 470);
-            this.cbAutoStart.Name = "cbAutoStart";
-            this.cbAutoStart.Size = new System.Drawing.Size(112, 31);
-            this.cbAutoStart.TabIndex = 7;
-            this.cbAutoStart.Text = "开机启动";
-            this.cbAutoStart.UseVisualStyleBackColor = true;
-            this.cbAutoStart.CheckedChanged += new System.EventHandler(this.CbAutoStart_CheckedChanged);
+            cbAutoStart.AutoSize = true;
+            cbAutoStart.Font = new Font("Microsoft YaHei UI", 10F);
+            cbAutoStart.Location = new Point(49, 627);
+            cbAutoStart.Margin = new Padding(4);
+            cbAutoStart.Name = "cbAutoStart";
+            cbAutoStart.Size = new Size(118, 31);
+            cbAutoStart.TabIndex = 7;
+            cbAutoStart.Text = "开机启动";
+            cbAutoStart.UseVisualStyleBackColor = true;
+            cbAutoStart.CheckedChanged += CbAutoStart_CheckedChanged;
+            // 
+            // btnViewLog
+            // 
+            btnViewLog.Font = new Font("Microsoft YaHei UI", 11F);
+            btnViewLog.Location = new Point(196, 560);
+            btnViewLog.Margin = new Padding(4);
+            btnViewLog.Name = "btnViewLog";
+            btnViewLog.Size = new Size(122, 47);
+            btnViewLog.TabIndex = 6;
+            btnViewLog.Text = "日志";
+            btnViewLog.UseVisualStyleBackColor = true;
+            btnViewLog.Click += BtnViewLog_Click;
             // 
             // InfoText
             // 
-            this.InfoText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.InfoText.Location = new System.Drawing.Point(40, 510);
-            this.InfoText.Multiline = true;
-            this.InfoText.Name = "InfoText";
-            this.InfoText.ReadOnly = true;
-            this.InfoText.Size = new System.Drawing.Size(620, 100);
-            this.InfoText.TabIndex = 9;
-            this.InfoText.TabStop = false;
+            InfoText.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            InfoText.Location = new Point(49, 680);
+            InfoText.Margin = new Padding(4);
+            InfoText.Multiline = true;
+            InfoText.Name = "InfoText";
+            InfoText.ReadOnly = true;
+            InfoText.Size = new Size(757, 132);
+            InfoText.TabIndex = 9;
+            InfoText.TabStop = false;
+            // 
+            // labelIP
+            // 
+            labelIP.AutoSize = true;
+            labelIP.Font = new Font("Microsoft YaHei UI", 10F);
+            labelIP.Location = new Point(49, 20);
+            labelIP.Margin = new Padding(4, 0, 4, 0);
+            labelIP.Name = "labelIP";
+            labelIP.Size = new Size(110, 27);
+            labelIP.TabIndex = 100;
+            labelIP.Text = "目标IP地址";
+            // 
+            // labelBluetooth
+            // 
+            labelBluetooth.AutoSize = true;
+            labelBluetooth.Font = new Font("Microsoft YaHei UI", 10F);
+            labelBluetooth.Location = new Point(445, 20);
+            labelBluetooth.Margin = new Padding(4, 0, 4, 0);
+            labelBluetooth.Name = "labelBluetooth";
+            labelBluetooth.Size = new Size(132, 27);
+            labelBluetooth.TabIndex = 101;
+            labelBluetooth.Text = "目标蓝牙名称";
+            // 
+            // textBluetoothName
+            // 
+            textBluetoothName.Font = new Font("Microsoft YaHei UI", 12F);
+            textBluetoothName.Location = new Point(445, 60);
+            textBluetoothName.Margin = new Padding(4);
+            textBluetoothName.Name = "textBluetoothName";
+            textBluetoothName.Size = new Size(361, 38);
+            textBluetoothName.TabIndex = 1;
+            textBluetoothName.TextChanged += textBluetoothName_TextChanged;
+            // 
+            // labelWeChat
+            // 
+            labelWeChat.AutoSize = true;
+            labelWeChat.Font = new Font("Microsoft YaHei UI", 10F);
+            labelWeChat.Location = new Point(49, 233);
+            labelWeChat.Margin = new Padding(4, 0, 4, 0);
+            labelWeChat.Name = "labelWeChat";
+            labelWeChat.Size = new Size(187, 27);
+            labelWeChat.TabIndex = 102;
+            labelWeChat.Text = "企业微信机器人Key";
+            // 
+            // textWeChatKey
+            // 
+            textWeChatKey.Font = new Font("Microsoft YaHei UI", 12F);
+            textWeChatKey.Location = new Point(49, 273);
+            textWeChatKey.Margin = new Padding(4);
+            textWeChatKey.Name = "textWeChatKey";
+            textWeChatKey.Size = new Size(757, 38);
+            textWeChatKey.TabIndex = 2;
+            textWeChatKey.UseSystemPasswordChar = true;
+            // 
+            // labelTelegram
+            // 
+            labelTelegram.AutoSize = true;
+            labelTelegram.Font = new Font("Microsoft YaHei UI", 10F);
+            labelTelegram.Location = new Point(49, 340);
+            labelTelegram.Margin = new Padding(4, 0, 4, 0);
+            labelTelegram.Name = "labelTelegram";
+            labelTelegram.Size = new Size(204, 27);
+            labelTelegram.TabIndex = 103;
+            labelTelegram.Text = "Telegram Bot Token";
+            // 
+            // textTelegramToken
+            // 
+            textTelegramToken.Font = new Font("Microsoft YaHei UI", 12F);
+            textTelegramToken.Location = new Point(49, 380);
+            textTelegramToken.Margin = new Padding(4);
+            textTelegramToken.Name = "textTelegramToken";
+            textTelegramToken.Size = new Size(757, 38);
+            textTelegramToken.TabIndex = 3;
+            textTelegramToken.UseSystemPasswordChar = true;
+            // 
+            // labelTelegramChat
+            // 
+            labelTelegramChat.AutoSize = true;
+            labelTelegramChat.Font = new Font("Microsoft YaHei UI", 10F);
+            labelTelegramChat.Location = new Point(49, 447);
+            labelTelegramChat.Margin = new Padding(4, 0, 4, 0);
+            labelTelegramChat.Name = "labelTelegramChat";
+            labelTelegramChat.Size = new Size(177, 27);
+            labelTelegramChat.TabIndex = 104;
+            labelTelegramChat.Text = "Telegram Chat ID";
+            // 
+            // textTelegramChatId
+            // 
+            textTelegramChatId.Font = new Font("Microsoft YaHei UI", 12F);
+            textTelegramChatId.Location = new Point(49, 487);
+            textTelegramChatId.Margin = new Padding(4);
+            textTelegramChatId.Name = "textTelegramChatId";
+            textTelegramChatId.Size = new Size(757, 38);
+            textTelegramChatId.TabIndex = 4;
+            // 
+            // offlineLabel
+            // 
+            offlineLabel.AutoSize = true;
+            offlineLabel.Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            offlineLabel.Location = new Point(49, 123);
+            offlineLabel.Name = "offlineLabel";
+            offlineLabel.Size = new Size(192, 27);
+            offlineLabel.TabIndex = 105;
+            offlineLabel.Text = "设备离线超时（秒）";
+            // 
+            // inactiveLabel
+            // 
+            inactiveLabel.AutoSize = true;
+            inactiveLabel.Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            inactiveLabel.Location = new Point(445, 123);
+            inactiveLabel.Name = "inactiveLabel";
+            inactiveLabel.Size = new Size(192, 27);
+            inactiveLabel.TabIndex = 106;
+            inactiveLabel.Text = "设备空闲超时（秒）";
+            // 
+            // textOfflineSecs
+            // 
+            textOfflineSecs.Font = new Font("Microsoft YaHei UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            textOfflineSecs.Location = new Point(51, 163);
+            textOfflineSecs.Name = "textOfflineSecs";
+            textOfflineSecs.Size = new Size(388, 38);
+            textOfflineSecs.TabIndex = 107;
+            textOfflineSecs.TextChanged += textOfflineSecs_TextChanged;
+            // 
+            // textInactiveSecs
+            // 
+            textInactiveSecs.Font = new Font("Microsoft YaHei UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            textInactiveSecs.Location = new Point(445, 163);
+            textInactiveSecs.Name = "textInactiveSecs";
+            textInactiveSecs.Size = new Size(361, 38);
+            textInactiveSecs.TabIndex = 108;
+            textInactiveSecs.TextChanged += textInactiveSecs_TextChanged;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(700, 635);
-            this.Controls.Add(this.InfoText);
-            this.Controls.Add(this.btnViewLog);
-            this.Controls.Add(this.cbAutoStart);
-            this.Controls.Add(this.btnExit);
-            this.Controls.Add(this.btnStart);
-            this.Controls.Add(this.textTelegramChatId);
-            this.Controls.Add(this.labelTelegramChat);
-            this.Controls.Add(this.textTelegramToken);
-            this.Controls.Add(this.labelTelegram);
-            this.Controls.Add(this.textWeChatKey);
-            this.Controls.Add(this.labelWeChat);
-            this.Controls.Add(this.textBluetoothName);
-            this.Controls.Add(this.labelBluetooth);
-            this.Controls.Add(this.textIPAddress);
-            this.Controls.Add(this.labelIP);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.MinimumSize = new System.Drawing.Size(720, 660);
-            this.Name = "MainForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "CarrotLock";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.Load += new System.EventHandler(this.MainForm_Load);
-            this.Resize += new System.EventHandler(this.MainForm_Resize);
-            this.ResumeLayout(false);
-            this.PerformLayout();
+            AutoScaleDimensions = new SizeF(11F, 24F);
+            AutoScaleMode = AutoScaleMode.Font;
+            ClientSize = new Size(856, 847);
+            Controls.Add(textInactiveSecs);
+            Controls.Add(textOfflineSecs);
+            Controls.Add(inactiveLabel);
+            Controls.Add(offlineLabel);
+            Controls.Add(InfoText);
+            Controls.Add(btnViewLog);
+            Controls.Add(cbAutoStart);
+            Controls.Add(btnExit);
+            Controls.Add(btnStart);
+            Controls.Add(textTelegramChatId);
+            Controls.Add(labelTelegramChat);
+            Controls.Add(textTelegramToken);
+            Controls.Add(labelTelegram);
+            Controls.Add(textWeChatKey);
+            Controls.Add(labelWeChat);
+            Controls.Add(textBluetoothName);
+            Controls.Add(labelBluetooth);
+            Controls.Add(textIPAddress);
+            Controls.Add(labelIP);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Margin = new Padding(4);
+            MinimumSize = new Size(875, 861);
+            Name = "MainForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Carrot AutoLock";
+            FormClosing += MainForm_FormClosing;
+            Load += MainForm_Load;
+            Resize += MainForm_Resize;
+            ResumeLayout(false);
+            PerformLayout();
 
         }
 
@@ -254,5 +305,9 @@
         private Button btnExit;
         private Button btnViewLog;
         private TextBox InfoText;
+        private Label offlineLabel;
+        private Label inactiveLabel;
+        private TextBox textOfflineSecs;
+        private TextBox textInactiveSecs;
     }
 }
