@@ -23,14 +23,10 @@
     
   </PropertyGroup>
 
-  <Target Name="GenerateCustomVersion"
-          BeforeTargets="GetAssemblyVersion;GenerateNuspec;GetPackageVersion">
+  <Target Name="GenerateCustomVersion" BeforeTargets="GetAssemblyVersion;GenerateNuspec;GetPackageVersion">
 
     <!-- 1. 获取 Git short commit -->
-    <Exec Command="git rev-parse --short HEAD"
-          ConsoleToMSBuild="true"
-          StandardOutputImportance="low"
-          IgnoreExitCode="true">
+    <Exec Command="git rev-parse --short HEAD" ConsoleToMSBuild="true" StandardOutputImportance="low" IgnoreExitCode="true">
       <Output TaskParameter="ConsoleOutput" PropertyName="GitCommitHash" />
     </Exec>
 
@@ -65,13 +61,9 @@
     </PropertyGroup>
 
     <!-- 构建日志（现在会显示真实递增的 FileVersion） -->
-    <Message Importance="high"
-             Text="=== [编译信息] 干净版本: $(Version) | FileVersion: $(FileVersion) (天数=$(DaysSinceEpoch)) ===" />
+    <Message Importance="high" Text="=== [编译信息] 干净版本: $(Version) | FileVersion: $(FileVersion) (天数=$(DaysSinceEpoch)) ===" />
 
   </Target>
-
-  <ItemGroup>
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Assets\carrot_512.ico" />

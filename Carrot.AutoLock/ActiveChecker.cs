@@ -1,6 +1,8 @@
-﻿using Carrot.Common;
+﻿using Carrot.AutoLock.Router;
+using Carrot.Common;
 using Microsoft.Win32;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Runtime.InteropServices;
@@ -26,7 +28,7 @@ public class ActiveChecker : IDisposable {
     /// Default target IP.
     /// 默认要监视的设备的 IP 地址。
     /// </summary>
-    public const string DEFAULT_IP = "192.168.1.100";
+    public const string DEFAULT_IP = AppConfig.DefaultTargetIP;
 
     /// <summary>
     /// Offline duration threshold in seconds before locking.
@@ -38,7 +40,12 @@ public class ActiveChecker : IDisposable {
     /// Inactive duration threshold in seconds before assuming absence.
     /// 键盘鼠标无操作时间阈值 (秒)，超过此时间才认为用户可能离开。
     /// </summary>
-    public const int INACTIVE_SECONDS = 180;
+    public const int INACTIVE_THRESHOLD = 180;
+
+    /// <summary>
+    /// 循环检测间隔时间，毫秒
+    /// </summary>
+    public const int LOOP_DELAY_MS = 5000;
 
     // 跨线程使用的布尔值，增加 volatile 保证线程间读取最新值
     private volatile bool _isScreenLocked;
@@ -57,6 +64,12 @@ public class ActiveChecker : IDisposable {
     // 目标手机的蓝牙名称，可以开放给 UI 让用户配置
     //  Paired: 'ZXK M14', ID=Bluetooth#Bluetoothb0:a4:60:6a:e9:af-20:3b:34:54:8a:1d
     private string _targetBluetoothName = "ZXK M14";
+
+    // 目标设备 MAC 地址 (用于路由器检测)
+    private string _targetMac = AppConfig.DefaultTargetMac;
+
+    // 路由器检测器
+    private TPLinkRouter? _router;
 
     // 通知管理器
     private readonly NotificationManager _notificationManager = new();
@@ -99,6 +112,22 @@ public class ActiveChecker : IDisposable {
     /// </summary>
     public void SetTargetBluetoothName(string bluetoothName) {
         _targetBluetoothName = bluetoothName;
+    }
+
+    /// <summary>
+    /// 设置目标设备 MAC 地址
+    /// </summary>
+    public void SetTargetMac(string mac) {
+        _targetMac = mac;
+    }
+
+    /// <summary>
+    /// 设置路由器密码以启用路由器检测
+    /// </summary>
+    public void SetRouterPassword(string password) {
+        if (!string.IsNullOrEmpty(password)) {
+            _router = new TPLinkRouter(password);
+        }
     }
 
     /// <summary>
@@ -152,7 +181,7 @@ public class ActiveChecker : IDisposable {
         // 开启蓝牙雷达扫描模式
         //_bluetoothDetector.StartBleScanner();
 
-        Task.Run(() => CheckDeviceStatusLoop(_cancellationTokenSource.Token));
+        Task.Run(() => CheckLoop(_cancellationTokenSource.Token));
 
         Callback?.Invoke("");
     }
@@ -175,18 +204,19 @@ public class ActiveChecker : IDisposable {
         Callback?.Invoke("");
     }
 
-    private async Task CheckDeviceStatusLoop(CancellationToken cancellationToken) {
+    private async Task CheckLoop(CancellationToken cancellationToken) {
         while (_checkerRunning && !cancellationToken.IsCancellationRequested) {
+
             try {
                 // Skip check if screen is locked
                 if (_isScreenLocked) {
                     Logger.Debug("Screen locked, skip check");
-                    await Task.Delay(6000 * 2, cancellationToken);
+                    await Task.Delay(LOOP_DELAY_MS * 2, cancellationToken);
                     continue;
                 }
 
                 // Check device status (Wi-Fi + Bluetooth fallback)
-                bool isOnline = await CheckDeviceStatusAsync();
+                bool isOnline = await CheckDeviceAsync();
                 bool statusChanged = isOnline != _deviceOnline;
                 _deviceOnline = isOnline;
 
@@ -197,13 +227,13 @@ public class ActiveChecker : IDisposable {
                     _offlineStartTime ??= DateTime.Now;
                 }
 
-                var offlineSeconds = _offlineStartTime.HasValue ? (DateTime.Now - _offlineStartTime.Value).TotalSeconds : 0;
+                var offlineSeconds = OfflineSeconds;
                 var inactiveSeconds = GetInactiveSeconds();
                 if (inactiveSeconds > 900) {
                     // 条件1：用户无操作超过 15 分钟，强制锁屏
                     Logger.Warning($"User inactive {inactiveSeconds:F0}s (>15min), forcing lock...");
                     LockWorkStation();
-                } else if (inactiveSeconds > INACTIVE_SECONDS
+                } else if (inactiveSeconds > INACTIVE_THRESHOLD
                     && offlineSeconds >= OFFLINE_THRESHOLD) {
                     // 条件2：设备离线 + 用户无操作
                     Logger.Warning($"Device offline {offlineSeconds:F0}s and " +
@@ -212,25 +242,21 @@ public class ActiveChecker : IDisposable {
                     LockWorkStation();
                 }
 
-                var statusInfo = $"Device: {_targetIP}|{_targetBluetoothName}, Online: {isOnline}, " +
+                var statusInfo = $"Device: {_targetIP} | {_targetBluetoothName}\r\n" +
                         $"Offline: {offlineSeconds:F0}s/{OFFLINE_THRESHOLD}s, " +
-                        $"Inactive: {inactiveSeconds:F1}s/{INACTIVE_SECONDS}s";
-                // Only trigger callback if status changed to reduce unnecessary UI updates.
-                if (statusChanged) {
-                    Logger.Info(statusInfo);
-                    Callback?.Invoke("");
-                } else {
-                    Logger.Debug(statusInfo);
-                }
-                await Task.Delay(6000, cancellationToken);
+                        $"Inactive: {inactiveSeconds:F1}s/{INACTIVE_THRESHOLD}s";
+
+                Logger.Debug(statusInfo);
+                Callback?.Invoke("");
+                await Task.Delay(LOOP_DELAY_MS, cancellationToken);
             } catch (OperationCanceledException) {
-                Logger.Info("CheckDeviceStatusLoop cancelled");
+                Logger.Info("cancelled");
                 break;
             } catch (Exception ex) {
-                Logger.Error("Error in CheckDeviceStatusLoop", ex);
+                Logger.Error("Error", ex);
                 // 发生其它异常时休眠一下防止死循环狂飙，同时也支持 Cancellation
                 try {
-                    await Task.Delay(6000, cancellationToken);
+                    await Task.Delay(LOOP_DELAY_MS, cancellationToken);
                 } catch (OperationCanceledException) {
                     break;
                 }
@@ -239,33 +265,41 @@ public class ActiveChecker : IDisposable {
     }
 
     /// <summary>
-    /// 核心检测逻辑：Wi-Fi 与 蓝牙双重检测
+    /// 核心检测逻辑：路由器 -> Wi-Fi -> 蓝牙多重检测
     /// </summary>
-    private async Task<bool> CheckDeviceStatusAsync() {
+    private async Task<bool> CheckDeviceAsync() {
+
+
         // 第一层检测：Wi-Fi 网络 (Ping & ARP)
-        bool isWifiOnline = await CheckWifiStatusAsync();
+        bool isWifiOnline = await CheckWifiAsync();
         if (isWifiOnline) {
+            Logger.Debug($"Ping result: OK {_targetIP}");
             return true;
+        }
+
+        // 第二层检测：路由器在线设备检测 (通过 MAC 地址)
+        if (_router != null && !string.IsNullOrEmpty(_targetMac)) {
+            try {
+                bool isRouterOnline = await _router.IsOnlineAsync(_targetMac);
+                if (isRouterOnline) {
+                    Logger.Debug($"Router detected [{_targetMac}] online.");
+                    return true;
+                }
+            } catch (Exception ex) {
+                Logger.Debug($"Router check failed: {ex.Message}");
+            }
         }
 
         // Wi-Fi 离线，进入蓝牙后备检测
         if (!string.IsNullOrEmpty(_targetBluetoothName)) {
-            Logger.Debug($"Wi-Fi [{_targetIP}] offline. Fallback to Bluetooth check for [{_targetBluetoothName}]...");
+            Logger.Debug($"Wi-Fi [{_targetIP}] offline. Bluetooth check for [{_targetBluetoothName}]...");
 
-            // 第二层检测：查询系统蓝牙配对状态
+            // 第三层检测：查询系统蓝牙配对状态
             bool isBluetoothConnected = await _bluetoothDetector.IsPairedDeviceConnectedAsync(_targetBluetoothName);
             if (isBluetoothConnected) {
                 Logger.Debug($"[{_targetBluetoothName}] is paired and connected via Bluetooth.");
                 return true;
             }
-
-            // 第三层检测：BLE 雷达广播扫描检测
-            // 判定条件：最近 30 秒内有广播包，且信号强度大于 -85dBm (您可以根据实际工位距离调整 -85 的阈值)
-            //bool isNearby = _bluetoothDetector.IsDeviceNearby(_targetBluetoothName, timeoutSeconds: 30, minRssi: -85);
-            //if (isNearby) {
-            //    Logger.Debug($"[{_targetBluetoothName}] BLE signal detected nearby.");
-            //    return true;
-            //}
         }
 
         // 所有手段都检测不到，判定为离线
@@ -275,12 +309,12 @@ public class ActiveChecker : IDisposable {
     /// <summary>
     /// 原先的 Wi-Fi 状态检测逻辑 (Ping + ARP)
     /// </summary>
-    private async Task<bool> CheckWifiStatusAsync() {
+    private async Task<bool> CheckWifiAsync() {
         // 第一层：Ping 目标 IP（最快）
         try {
             using var ping = new Ping();
             var reply = await ping.SendPingAsync(_targetIP, 1000);
-            Logger.Debug($"Ping result: {reply.Status} {_targetIP}");
+            //Logger.Debug($"Ping result: {reply.Status} {_targetIP}");
             if (reply.Status == IPStatus.Success) {
                 return true;
             }

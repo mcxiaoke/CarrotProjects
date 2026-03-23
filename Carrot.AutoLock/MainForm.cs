@@ -168,6 +168,7 @@ public partial class MainForm : Form {
             // 配置检测器
             _checker.SetTargetIP(_appConfig.Data.TargetIP);
             _checker.SetTargetBluetoothName(_appConfig.Data.TargetBluetoothName);
+            _checker.SetRouterPassword(_appConfig.Data.RouterPassword);
 
             // 配置通知器
             ConfigureNotifiers();
@@ -205,11 +206,11 @@ public partial class MainForm : Form {
     /// 状态变更回调，触发 UI 更新。
     /// </summary>
     public void OnStatusChanged(string result) {
-        Logger.Debug("OnStatusChanged");
+        //Logger.Debug("OnStatusChanged");
         if (InvokeRequired) {
-            Invoke(new MethodInvoker(UpdateUI));
+            Invoke(new MethodInvoker(() => UpdateUI(result)));
         } else {
-            UpdateUI();
+            UpdateUI(result);
         }
     }
 
@@ -217,7 +218,7 @@ public partial class MainForm : Form {
     /// Updates the UI based on checker status.
     /// 根据检测状态更新 UI。
     /// </summary>
-    private void UpdateUI() {
+    private void UpdateUI(string? statusInfo = null) {
         if (_checker == null || _notifyIcon == null) return;
 
         var running = _checker.IsRunning();
@@ -232,9 +233,10 @@ public partial class MainForm : Form {
         btnStart.Text = running ? "STOP" : "START";
 
         var textLines = new List<string> {
-            $"Running: {running}",
-            $"Device Online: {_checker.IsDeviceOnline()}",
-            $"Notifiers: {_checker.GetNotificationManager().ConfiguredCount}"
+            $"Notifiers: {_checker.GetNotificationManager().ConfiguredCount}",
+            $"Running: {running}, " + $"Online: {_checker.IsDeviceOnline()}",
+            $"Offline Seconds: {_checker.OfflineSeconds:F0}s / {ActiveChecker.OFFLINE_THRESHOLD}s",
+            $"Inactive Seconds: {ActiveChecker.GetInactiveSeconds():F0}s / {ActiveChecker.INACTIVE_THRESHOLD}s"
         };
 
         // Use InfoText (TextBox) instead of labelStatus
