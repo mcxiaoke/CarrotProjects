@@ -1,4 +1,4 @@
-﻿using Carrot.AutoLock.Router;
+using Carrot.AutoLock.Router;
 using Carrot.Common;
 using Microsoft.Win32;
 using System;
@@ -40,12 +40,12 @@ public class ActiveChecker : IDisposable {
     /// Inactive duration threshold in seconds before assuming absence.
     /// 键盘鼠标无操作时间阈值 (秒)，超过此时间才认为用户可能离开。
     /// </summary>
-    public const int INACTIVE_THRESHOLD = 180;
+    public const int INACTIVE_THRESHOLD = 240;
 
     /// <summary>
     /// 循环检测间隔时间，毫秒
     /// </summary>
-    public const int LOOP_DELAY_MS = 5000;
+    public const int LOOP_DELAY_MS = 8000;
 
     // 可配置的超时时间
     private int _offlineThreshold = OFFLINE_THRESHOLD;
@@ -62,6 +62,9 @@ public class ActiveChecker : IDisposable {
 
     private CancellationTokenSource? _cancellationTokenSource;
 
+    // 上次记录状态信息的时间（用于每3分钟记录一次）
+    private DateTime _lastStatusLogTime = DateTime.MinValue;
+
     // 实例化蓝牙检测器
     private readonly BluetoothDetector _bluetoothDetector = new();
 
@@ -77,6 +80,12 @@ public class ActiveChecker : IDisposable {
 
     // 通知管理器
     private readonly NotificationManager _notificationManager = new();
+
+    // 豁免锁屏的进程名称列表
+    private List<string> _exemptProcesses = new();
+
+    // 上次检测到豁免进程的时间（用于日志去重）
+    private DateTime _lastExemptProcessLogTime = DateTime.MinValue;
 
     /// <summary>
     /// Status update callback.
@@ -148,6 +157,18 @@ public class ActiveChecker : IDisposable {
     /// </summary>
     public NotificationManager GetNotificationManager() {
         return _notificationManager;
+    }
+
+    /// <summary>
+    /// 设置豁免锁屏的进程列表
+    /// Set the list of processes that prevent screen lock
+    /// </summary>
+    /// <param name="processes">进程名称列表（不含 .exe 后缀）</param>
+    public void SetExemptProcesses(List<string> processes) {
+        _exemptProcesses = processes ?? new List<string>();
+        if (_exemptProcesses.Count > 0) {
+            Logger.Info($"Exempt processes configured: {string.Join(", ", _exemptProcesses)}");
+        }
     }
 
     #region Windows API - GetLastInputInfo (替代全局键鼠 Hook)
@@ -241,24 +262,43 @@ public class ActiveChecker : IDisposable {
 
                 var offlineSeconds = OfflineSeconds;
                 var inactiveSeconds = GetInactiveSeconds();
-                if (inactiveSeconds > 900) {
-                    // 条件1：用户无操作超过 15 分钟，强制锁屏
-                    Logger.Warning($"User inactive {inactiveSeconds:F0}s (>15min), forcing lock...");
-                    LockWorkStation();
-                } else if (inactiveSeconds > _inactiveThreshold
-                    && offlineSeconds >= _offlineThreshold) {
-                    // 条件2：设备离线 + 用户无操作
-                    Logger.Warning($"Device offline {offlineSeconds:F0}s and " +
-                        $"user inactive {inactiveSeconds:F1}s, " +
-                        $"locking workstation...");
-                    LockWorkStation();
+
+                // 只在离线时间达到阈值时才检测豁免进程
+                bool hasExemptProcess = false;
+                if (offlineSeconds >= _offlineThreshold && _exemptProcesses.Count > 0) {
+                    hasExemptProcess = ProcessChecker.IsAnyProcessRunning(_exemptProcesses);
+                    if (hasExemptProcess) {
+                        if ((DateTime.Now - _lastExemptProcessLogTime).TotalMinutes >= 3) {
+                            Logger.ConsoleInfo("Exempt process running, skipping lock check");
+                            _lastExemptProcessLogTime = DateTime.Now;
+                        }
+                    }
+                }
+
+                if (!hasExemptProcess) {
+                    if (inactiveSeconds > _inactiveThreshold
+                        && offlineSeconds >= _offlineThreshold) {
+                        // 条件2：设备离线 + 用户无操作
+                        Logger.Warning($"Device offline {offlineSeconds:F0}s and " +
+                            $"user inactive {inactiveSeconds:F1}s, " +
+                            $"locking workstation...");
+                        LockWorkStation();
+                    }
                 }
 
                 var statusInfo = $"Device: {_targetIP} | {_targetBluetoothName}\r\n" +
                         $"Offline: {offlineSeconds:F0}s/{_offlineThreshold}s, " +
                         $"Inactive: {inactiveSeconds:F1}s/{_inactiveThreshold}s";
 
-                Logger.Debug(statusInfo);
+                // 每 3 分钟记录一次状态信息到日志
+                var now = DateTime.Now;
+                if ((now - _lastStatusLogTime).TotalMinutes >= 3) {
+                    Logger.ConsoleInfo(statusInfo);
+                    _lastStatusLogTime = now;
+                } else {
+                    Logger.Debug(statusInfo);
+                }
+
                 Callback?.Invoke("");
                 await Task.Delay(LOOP_DELAY_MS, cancellationToken);
             } catch (OperationCanceledException) {
@@ -349,10 +389,7 @@ public class ActiveChecker : IDisposable {
         // 发送通知（异步，不阻塞锁定流程）
         try {
             var deviceInfo = string.IsNullOrEmpty(_targetBluetoothName) ? _targetIP : $"{_targetIP} / {_targetBluetoothName}";
-            var offlineTime = _offlineStartTime.HasValue
-                ? $"{(DateTime.Now - _offlineStartTime.Value).TotalSeconds:F0}s"
-                : "N/A";
-            var reason = $"设备离线 {offlineTime} 且用户无活动";
+            var reason = $"设备离线 {OfflineSeconds:F0}秒，用户无活动 {GetInactiveSeconds():F0}秒";
             _notificationManager.SendLockNotification(deviceInfo, reason);
         } catch (Exception ex) {
             Logger.Error("Failed to send lock notification", ex);

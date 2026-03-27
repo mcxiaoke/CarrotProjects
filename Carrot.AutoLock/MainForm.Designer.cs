@@ -1,4 +1,4 @@
-﻿namespace Carrot.AutoLock {
+namespace Carrot.AutoLock {
     partial class MainForm {
         /// <summary>
         ///  Required designer variable.
@@ -43,6 +43,8 @@
             inactiveLabel = new Label();
             textOfflineSecs = new TextBox();
             textInactiveSecs = new TextBox();
+            labelExemptProcesses = new Label();
+            textExemptProcesses = new TextBox();
             SuspendLayout();
             // 
             // textIPAddress
@@ -60,7 +62,7 @@
             // btnStart
             // 
             btnStart.Font = new Font("Microsoft YaHei UI", 11F);
-            btnStart.Location = new Point(49, 560);
+            btnStart.Location = new Point(49, 640);
             btnStart.Margin = new Padding(4);
             btnStart.Name = "btnStart";
             btnStart.Size = new Size(122, 47);
@@ -72,7 +74,7 @@
             // btnExit
             // 
             btnExit.Font = new Font("Microsoft YaHei UI", 11F);
-            btnExit.Location = new Point(684, 560);
+            btnExit.Location = new Point(684, 640);
             btnExit.Margin = new Padding(4);
             btnExit.Name = "btnExit";
             btnExit.Size = new Size(122, 47);
@@ -85,7 +87,7 @@
             // 
             cbAutoStart.AutoSize = true;
             cbAutoStart.Font = new Font("Microsoft YaHei UI", 10F);
-            cbAutoStart.Location = new Point(49, 627);
+            cbAutoStart.Location = new Point(49, 705);
             cbAutoStart.Margin = new Padding(4);
             cbAutoStart.Name = "cbAutoStart";
             cbAutoStart.Size = new Size(118, 31);
@@ -97,7 +99,7 @@
             // btnViewLog
             // 
             btnViewLog.Font = new Font("Microsoft YaHei UI", 11F);
-            btnViewLog.Location = new Point(196, 560);
+            btnViewLog.Location = new Point(196, 640);
             btnViewLog.Margin = new Padding(4);
             btnViewLog.Name = "btnViewLog";
             btnViewLog.Size = new Size(122, 47);
@@ -109,7 +111,7 @@
             // InfoText
             // 
             InfoText.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            InfoText.Location = new Point(49, 680);
+            InfoText.Location = new Point(49, 755);
             InfoText.Margin = new Padding(4);
             InfoText.Multiline = true;
             InfoText.Name = "InfoText";
@@ -250,11 +252,31 @@
             textInactiveSecs.TabIndex = 108;
             textInactiveSecs.TextChanged += textInactiveSecs_TextChanged;
             // 
+            // labelExemptProcesses
+            // 
+            labelExemptProcesses.AutoSize = true;
+            labelExemptProcesses.Font = new Font("Microsoft YaHei UI", 10F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            labelExemptProcesses.Location = new Point(49, 540);
+            labelExemptProcesses.Name = "labelExemptProcesses";
+            labelExemptProcesses.Size = new Size(220, 27);
+            labelExemptProcesses.TabIndex = 109;
+            labelExemptProcesses.Text = "豁免进程（逗号分隔）";
+            // 
+            // textExemptProcesses
+            // 
+            textExemptProcesses.Font = new Font("Microsoft YaHei UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 134);
+            textExemptProcesses.Location = new Point(49, 580);
+            textExemptProcesses.Name = "textExemptProcesses";
+            textExemptProcesses.Size = new Size(757, 38);
+            textExemptProcesses.TabIndex = 110;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(11F, 24F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(856, 847);
+            ClientSize = new Size(856, 920);
+            Controls.Add(textExemptProcesses);
+            Controls.Add(labelExemptProcesses);
             Controls.Add(textInactiveSecs);
             Controls.Add(textOfflineSecs);
             Controls.Add(inactiveLabel);
@@ -276,7 +298,7 @@
             Controls.Add(labelIP);
             Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(4);
-            MinimumSize = new Size(875, 861);
+            MinimumSize = new Size(875, 934);
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Carrot AutoLock";
@@ -309,5 +331,7 @@
         private Label inactiveLabel;
         private TextBox textOfflineSecs;
         private TextBox textInactiveSecs;
+        private Label labelExemptProcesses;
+        private TextBox textExemptProcesses;
     }
 }

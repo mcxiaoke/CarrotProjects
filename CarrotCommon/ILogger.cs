@@ -27,6 +27,20 @@ public static class Logger {
     private static readonly List<ILogSink> _registeredSinks = new();
     private static readonly object _lock = new();
     private static Serilog.ILogger _logger = null!;
+    private static Serilog.ILogger _loggerNoFile = null!;
+    private static LogEventLevel _minimumLevel;
+
+    /// <summary>
+    /// 获取当前最小日志级别
+    /// Get current minimum log level
+    /// </summary>
+    public static LogEventLevel MinimumLevel => _minimumLevel;
+
+    /// <summary>
+    /// 是否启用详细日志（Debug 级别）
+    /// Whether verbose logging (Debug level) is enabled
+    /// </summary>
+    public static bool IsVerboseEnabled => _minimumLevel <= LogEventLevel.Debug;
 
     static Logger() {
         InitializeLogger();
@@ -37,6 +51,7 @@ public static class Logger {
         Storage.CheckOrCreateDir(logOutput);
 
 #if DEBUG
+        _minimumLevel = LogEventLevel.Debug;
         // Debug 模式：日志文件名为 debug-YYYYMMDD.txt，每天一个文件
         var logFile = Path.Combine(logOutput, "debug-log-.txt");
 
@@ -46,7 +61,15 @@ public static class Logger {
             .WriteTo.Console()
             .WriteTo.Async(a => a.File(logFile, rollingInterval: RollingInterval.Day))
             .CreateLogger();
+
+        // 不写文件的 logger（用于频繁的状态日志）
+        _loggerNoFile = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.Debug()
+            .WriteTo.Console()
+            .CreateLogger();
 #else
+        _minimumLevel = LogEventLevel.Information;
         // Release 模式：日志文件名为 release-YYYYMMDD.txt，每天一个文件
         var logFile = Path.Combine(logOutput, "release-log-.txt");
 
@@ -54,8 +77,34 @@ public static class Logger {
             .MinimumLevel.Information()
             .WriteTo.Async(a => a.File(logFile, rollingInterval: RollingInterval.Day))
             .CreateLogger();
+
+        // 不写文件的 logger
+        _loggerNoFile = new LoggerConfiguration()
+            .MinimumLevel.Information()
+            .CreateLogger();
 #endif
         Serilog.Log.Logger = _logger;
+    }
+
+    /// <summary>
+    /// 设置最小日志级别
+    /// Set minimum log level
+    /// </summary>
+    /// <param name="level">日志级别 / Log level</param>
+    public static void SetMinimumLevel(LogEventLevel level) {
+        lock (_lock) {
+            _minimumLevel = level;
+            RebuildLogger();
+        }
+    }
+
+    /// <summary>
+    /// 启用或禁用详细日志（Debug 级别）
+    /// Enable or disable verbose logging (Debug level)
+    /// </summary>
+    /// <param name="enabled">是否启用 / Whether to enable</param>
+    public static void SetVerboseLogging(bool enabled) {
+        SetMinimumLevel(enabled ? LogEventLevel.Debug : LogEventLevel.Information);
     }
 
     private static string F(string? m, string member, string file, int line) {
@@ -82,6 +131,21 @@ public static class Logger {
     /// </summary>
     public static void Info(string? m, [CallerMemberName] string member = "", [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
         => Serilog.Log.Logger.Write(LogEventLevel.Information, F(m, member, file, line));
+
+    /// <summary>
+    /// Logs an information message with option to skip file logging.
+    /// 记录信息消息，可选择跳过文件日志。
+    /// </summary>
+    /// <param name="m">Message to log / 要记录的消息</param>
+    /// <param name="logToFile">Whether to log to file (default true) / 是否记录到文件（默认为 true）</param>
+    /// <param name="member">Caller member name / 调用方成员名</param>
+    /// <param name="file">Caller file path / 调用方文件路径</param>
+    /// <param name="line">Caller line number / 调用方行号</param>
+    public static void ConsoleInfo(string? m, [CallerMemberName] string member = "", [CallerFilePath] string file = "", [CallerLineNumber] int line = 0) {
+        var formattedMessage = F(m, member, file, line);
+        // 只输出到非文件 sink（console、debug 等）
+        _loggerNoFile.Write(LogEventLevel.Information, formattedMessage);
+    }
 
     /// <summary>
     /// Logs a warning message.
@@ -143,18 +207,29 @@ public static class Logger {
     public static IReadOnlyList<ILogSink> GetSinks() => _registeredSinks.AsReadOnly();
 
     private static void RebuildLogger() {
-        var existingLogger = Serilog.Log.Logger;
         var config = new LoggerConfiguration()
-            .MinimumLevel.Is(existingLogger.IsEnabled(LogEventLevel.Debug)
-                ? LogEventLevel.Debug
-                : LogEventLevel.Information)
-            .WriteTo.Logger(existingLogger);
+            .MinimumLevel.Is(_minimumLevel)
+            .WriteTo.Logger(_logger);
 
         foreach (var sink in _registeredSinks) {
             config.WriteTo.Sink(sink.Sink);
         }
 
         Serilog.Log.Logger = config.CreateLogger();
+
+        // 同时更新 _loggerNoFile，添加所有自定义 sink 但不包含文件 sink
+        var configNoFile = new LoggerConfiguration()
+            .MinimumLevel.Is(_minimumLevel);
+
+#if DEBUG
+        configNoFile.WriteTo.Debug().WriteTo.Console();
+#endif
+
+        foreach (var sink in _registeredSinks) {
+            configNoFile.WriteTo.Sink(sink.Sink);
+        }
+
+        _loggerNoFile = configNoFile.CreateLogger();
     }
 
     /// <summary>

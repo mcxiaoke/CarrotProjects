@@ -1,6 +1,8 @@
 using Carrot.Common;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Windows.Forms;
@@ -69,6 +71,7 @@ public partial class MainForm : Form {
         textWeChatKey.Text = _appConfig.Data.WeChatWebhookKey;
         textTelegramToken.Text = _appConfig.Data.TelegramBotToken;
         textTelegramChatId.Text = _appConfig.Data.TelegramChatId;
+        textExemptProcesses.Text = string.Join(", ", _appConfig.Data.ExemptProcesses);
 
         // Initialize AutoStart Checkbox
         cbAutoStart.Checked = _appConfig.Data.AutoStartEnabled;
@@ -172,6 +175,7 @@ public partial class MainForm : Form {
             _checker.SetTargetBluetoothName(_appConfig.Data.TargetBluetoothName);
             _checker.SetRouterPassword(_appConfig.Data.RouterPassword);
             _checker.SetTimeoutSecs(_appConfig.Data.OfflineTimeoutSeconds, _appConfig.Data.InactiveTimeoutSeconds);
+            _checker.SetExemptProcesses(_appConfig.Data.ExemptProcesses);
 
             // 配置通知器
             ConfigureNotifiers();
@@ -234,6 +238,7 @@ public partial class MainForm : Form {
         textWeChatKey.Enabled = !running;
         textTelegramToken.Enabled = !running;
         textTelegramChatId.Enabled = !running;
+        textExemptProcesses.Enabled = !running;
 
         btnStart.Text = running ? "停止" : "启动";
 
@@ -383,6 +388,19 @@ public partial class MainForm : Form {
             _appConfig.Data.TelegramBotToken = textTelegramToken.Text.Trim();
             _appConfig.Data.TelegramChatId = textTelegramChatId.Text.Trim();
             _appConfig.Data.AutoStartEnabled = cbAutoStart.Checked;
+
+            // 解析豁免进程列表
+            var exemptProcessesText = textExemptProcesses.Text.Trim();
+            if (!string.IsNullOrWhiteSpace(exemptProcessesText)) {
+                _appConfig.Data.ExemptProcesses = exemptProcessesText
+                    .Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(p => p.Trim().Replace(".exe", "", StringComparison.OrdinalIgnoreCase))
+                    .Where(p => !string.IsNullOrWhiteSpace(p))
+                    .Distinct(StringComparer.OrdinalIgnoreCase)
+                    .ToList();
+            } else {
+                _appConfig.Data.ExemptProcesses = new List<string>();
+            }
 
             // 保存到文件
             _appConfig.Save();

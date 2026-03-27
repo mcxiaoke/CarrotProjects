@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using Carrot.Common;
 
 namespace Carrot.AutoLock;
 
@@ -15,6 +16,7 @@ public class LogViewerForm : Form {
     private readonly Button _copyButton;
     private readonly Button _clearButton;
     private readonly CheckBox _autoRefreshCheckBox;
+    private readonly CheckBox _verboseLogCheckBox;
     private readonly System.Windows.Forms.Timer _autoRefreshTimer;
     private int _lastLogCount;
 
@@ -83,11 +85,22 @@ public class LogViewerForm : Form {
         };
         _autoRefreshCheckBox.CheckedChanged += AutoRefreshCheckBox_CheckedChanged;
 
+        // 详细日志复选框
+        _verboseLogCheckBox = new CheckBox {
+            Text = "详细日志 (Debug)",
+            Location = new Point(500, 15),
+            Size = new Size(140, 25),
+            Font = new Font("Microsoft YaHei UI", 9F),
+            Checked = Logger.IsVerboseEnabled
+        };
+        _verboseLogCheckBox.CheckedChanged += VerboseLogCheckBox_CheckedChanged;
+
         // 添加控件到按钮面板
         buttonPanel.Controls.Add(_refreshButton);
         buttonPanel.Controls.Add(_copyButton);
         buttonPanel.Controls.Add(_clearButton);
         buttonPanel.Controls.Add(_autoRefreshCheckBox);
+        buttonPanel.Controls.Add(_verboseLogCheckBox);
 
         // 添加控件到窗体
         this.Controls.Add(_logTextBox);
@@ -154,7 +167,7 @@ public class LogViewerForm : Form {
                 RefreshLog();
                 MessageBox.Show("内存日志已清空", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
             } catch (Exception ex) {
-                Carrot.Common.Logger.Error("Failed to clear memory log", ex);
+                Logger.Error("Failed to clear memory log", ex);
                 MessageBox.Show($"清空日志失败: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -167,6 +180,12 @@ public class LogViewerForm : Form {
         } else {
             _autoRefreshTimer.Stop();
         }
+    }
+
+    private void VerboseLogCheckBox_CheckedChanged(object? sender, EventArgs e) {
+        Logger.SetVerboseLogging(_verboseLogCheckBox.Checked);
+        Logger.Info($"Verbose logging {(_verboseLogCheckBox.Checked ? "enabled" : "disabled")}");
+        RefreshLog();
     }
 
     private void AutoRefreshTimer_Tick(object? sender, EventArgs e) {
@@ -185,8 +204,9 @@ public class LogViewerForm : Form {
                 return;
             }
 
-            // 更新标题显示日志数量
-            this.Text = $"日志查看器 - 共 {memoryLog.LineCount} 行";
+            // 更新标题显示日志数量和日志级别
+            var levelText = Logger.IsVerboseEnabled ? "Debug" : "Info";
+            this.Text = $"日志查看器 - 共 {memoryLog.LineCount} 行 [{levelText}]";
 
             // 获取日志列表
             var logs = memoryLog.GetLogLines(2000);
@@ -203,7 +223,7 @@ public class LogViewerForm : Form {
             // 始终滚动到底部
             ScrollToBottom();
         } catch (Exception ex) {
-            Carrot.Common.Logger.Error("Failed to refresh log", ex);
+            Logger.Error("Failed to refresh log", ex);
             _logTextBox.Text = $"刷新日志失败: {ex.Message}";
         }
     }
