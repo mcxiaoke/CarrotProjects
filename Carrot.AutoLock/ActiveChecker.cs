@@ -452,7 +452,7 @@ public class ActiveChecker : IDisposable {
 
     private void OnWebSocketLockCommand() {
         Logger.Warning("WebSocket lock command received, locking workstation");
-        // LockWorkStation();
+        LockWorkStation();
     }
 
     /// <summary>

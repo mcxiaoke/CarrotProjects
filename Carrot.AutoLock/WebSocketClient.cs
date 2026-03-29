@@ -4,6 +4,7 @@ using System.Net.WebSockets;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -246,19 +247,15 @@ public class WebSocketClient : IDisposable {
     /// 处理收到的消息，解析 JSON 并根据类型分发。
     /// 支持的消息类型：connected、pong、message。
     /// </summary>
-    /// <param name="message">JSON 格式的消息字符串</param>
     private void ProcessMessage(string message) {
         Logger.Debug($"received: {message}");
         OnMessage?.Invoke(message);
 
         try {
-            using var doc = JsonDocument.Parse(message);
-            var root = doc.RootElement;
+            var root = JsonNode.Parse(message);
+            if (root == null) return;
 
-            if (!root.TryGetProperty("type", out var typeProp)) return;
-
-            var type = typeProp.GetString();
-
+            var type = root["type"]?.GetValue<string>();
             switch (type) {
                 case "connected":
                     OnConnectedMsg(root);
@@ -278,13 +275,13 @@ public class WebSocketClient : IDisposable {
     /// <summary>
     /// 处理连接成功消息，提取 clientId 和心跳间隔配置。
     /// </summary>
-    private void OnConnectedMsg(JsonElement root) {
-        if (root.TryGetProperty("clientId", out var clientIdProp)) {
-            Logger.Info($"connected with clientId: {clientIdProp.GetString()}");
+    private void OnConnectedMsg(JsonNode root) {
+        if (root["clientId"] is JsonNode clientIdNode) {
+            Logger.Info($"connected with clientId: {clientIdNode.GetValue<string>()}");
         }
 
-        if (root.TryGetProperty("heartbeatInterval", out var intervalProp)) {
-            var serverInterval = intervalProp.GetInt32();
+        if (root["heartbeatInterval"] is JsonNode intervalNode) {
+            var serverInterval = intervalNode.GetValue<int>();
             _heartbeatIntervalMs = serverInterval > 0 ? serverInterval : DefaultHeartbeatIntervalMs;
             Logger.Info($"heartbeat interval set to {_heartbeatIntervalMs}ms");
         }
@@ -292,18 +289,57 @@ public class WebSocketClient : IDisposable {
 
     /// <summary>
     /// 处理数据消息，检查是否为锁屏命令。
-    /// 当消息内容为 "/lock mcpc" 时触发锁屏事件。
+    /// 当消息内容为 "/lock mcpc" 且时间在两分钟以内时触发锁屏事件。
     /// </summary>
-    private void OnDataMsg(JsonElement root) {
-        Logger.Info($"received data message: {root.GetRawText()}");
-        if (root.TryGetProperty("data", out var dataProp)) {
-            if (dataProp.TryGetProperty("content", out var contentProp)) {
-                var content = contentProp.GetString();
-                if (content == "/lock mcpc") {
-                    OnLockCommandReceived?.Invoke();
-                }
-            }
+    private void OnDataMsg(JsonNode root) {
+        Logger.Info($"received data message: {root.ToJsonString()}");
+
+        var content = root["data"]?["content"]?.GetValue<string>();
+        if (content != "/lock mcpc") {
+            return;
         }
+
+        if (!TryValidateMessageTime(root, out var messageTime)) {
+            Logger.Warning("lock command ignored due to time validation failure");
+            return;
+        }
+
+        Logger.Info($"lock command is valid, message time: {messageTime:yyyy-MM-dd HH:mm:ss}");
+        OnLockCommandReceived?.Invoke();
+    }
+
+    /// <summary>
+    /// 验证消息时间是否在两分钟以内。
+    /// 从 data.raw.createdAt 字段获取消息时间（毫秒级 Unix 时间戳）。
+    /// </summary>
+    private bool TryValidateMessageTime(JsonNode root, out DateTime messageTime) {
+        messageTime = DateTime.MinValue;
+
+        var createdAtNode = root["data"]?["createdAt"] ?? root["data"]?["raw"]?["createdAt"];
+        if (createdAtNode == null) {
+            Logger.Warning("message missing data.createdAt field");
+            return false;
+        }
+
+        long createdAt;
+        if (createdAtNode is JsonValue value && value.TryGetValue(out long longValue)) {
+            createdAt = longValue;
+        } else if (long.TryParse(createdAtNode.ToString(), out createdAt)) {
+            // 尝试字符串解析
+        } else {
+            Logger.Warning($"failed to parse createdAt: {createdAtNode}");
+            return false;
+        }
+
+        messageTime = DateTimeOffset.FromUnixTimeMilliseconds(createdAt).LocalDateTime;
+
+        var diff = DateTime.Now - messageTime;
+        if (diff.Duration() > TimeSpan.FromMinutes(2)) {
+            Logger.Warning($"message too old, age: {diff.TotalMinutes:F1} minutes, max allowed: 2 minutes");
+            return false;
+        }
+
+        return true;
     }
 
     /// <summary>
