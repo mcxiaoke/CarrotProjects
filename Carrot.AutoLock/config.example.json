@@ -4,5 +4,6 @@
   "WeChatWebhookKey": "your-wechat-webhook-key-here",
   "TelegramBotToken": "your-telegram-bot-token-here",
   "TelegramChatId": "your-telegram-chat-id-here",
+  "WebSocketUri": "ws://localhost:8080/ws",
   "AutoStartEnabled": false
 }

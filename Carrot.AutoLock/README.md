@@ -22,6 +22,12 @@
   - 支持同时配置多个通知渠道
   - Markdown 格式消息，包含设备信息和时间
 
+- **WebSocket 远程控制**
+  - 连接 CarrotBot 消息网关
+  - 接收远程锁屏命令 `/lock mcpc`
+  - 自动重连（指数退避策略）
+  - 心跳保活机制
+
 - **系统托盘集成**
   - 最小化到系统托盘运行
   - 托盘图标实时显示运行状态
@@ -59,6 +65,41 @@
 1. **离开座位自动锁定**：当你带着手机离开工位时，检测到手机蓝牙/Wi-Fi 离线，自动锁定电脑
 2. **防止未授权访问**：确保离开时电脑总是处于锁定状态
 3. **隐私保护**：无需手动 Win+L，自动完成锁定操作
+4. **远程锁屏**：通过企业微信或 Telegram 发送 `/lock mcpc` 命令远程锁定电脑
+
+## WebSocket 远程控制
+
+Carrot.AutoLock 可以连接到 [CarrotBot](https://github.com/your-repo/CarrotBot) 消息网关，实现远程锁屏功能。
+
+### 工作原理
+
+```
+企业微信/Telegram → CarrotBot → WebSocket → Carrot.AutoLock → 锁定电脑
+```
+
+### 使用方法
+
+1. 确保 CarrotBot 服务正在运行（默认端口 3123）
+2. 启动 Carrot.AutoLock，WebSocket 客户端会自动连接
+3. 通过企业微信或 Telegram 向 CarrotBot 发送 `/lock mcpc`
+4. Carrot.AutoLock 收到命令后立即锁定电脑
+
+### 连接参数
+
+客户端连接时会自动携带以下参数：
+
+| 参数 | 说明 | 示例 |
+|------|------|------|
+| `user` | 客户端标识 | `carrot.autolock` |
+| `os` | 操作系统 | `windows` / `linux` / `macos` |
+| `arch` | CPU 架构 | `x64` / `arm64` |
+| `desc` | 系统描述 | `Microsoft Windows 10.0.19041` |
+
+### 特性
+
+- **自动重连**：断开后自动重连，延迟采用指数退避策略（5s → 10s → ... → 60s 最大）
+- **心跳保活**：每 30 秒发送心跳，保持连接活跃
+- **简洁日志**：WebSocket 异常只记录简短描述，避免日志过长
 
 ## 系统要求
 
@@ -197,6 +238,7 @@ Carrot.AutoLock/
 ├── MainForm.Designer.cs    # UI 设计器
 ├── ActiveChecker.cs        # 核心检测逻辑
 ├── BluetoothDetector.cs    # 蓝牙设备检测器
+├── WebSocketClient.cs      # WebSocket 客户端（远程控制）
 ├── INotifier.cs            # 通知器接口
 ├── WeChatNotifier.cs       # 企业微信通知器
 ├── TelegramNotifier.cs     # Telegram 通知器

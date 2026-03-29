@@ -81,6 +81,12 @@ public class ActiveChecker : IDisposable {
     // 通知管理器
     private readonly NotificationManager _notificationManager = new();
 
+    // WebSocket 客户端
+    private WebSocketClient? _wsClient;
+
+    // WebSocket URI
+    private string _wsUri = string.Empty;
+
     // 豁免锁屏的进程名称列表
     private List<string> _exemptProcesses = new();
 
@@ -171,6 +177,18 @@ public class ActiveChecker : IDisposable {
         }
     }
 
+    /// <summary>
+    /// 设置 WebSocket 服务端 URI
+    /// Set WebSocket server URI
+    /// </summary>
+    /// <param name="uri">WebSocket URI (ws:// 或 wss://)</param>
+    public void SetWebSocketUri(string uri) {
+        _wsUri = uri ?? string.Empty;
+        if (!string.IsNullOrEmpty(_wsUri)) {
+            Logger.Info($"WebSocket URI configured: {_wsUri}");
+        }
+    }
+
     #region Windows API - GetLastInputInfo (替代全局键鼠 Hook)
 
     internal struct LASTINPUTINFO {
@@ -214,6 +232,13 @@ public class ActiveChecker : IDisposable {
         // 开启蓝牙雷达扫描模式
         //_bluetoothDetector.StartBleScanner();
 
+        // 启动 WebSocket 客户端
+        if (!string.IsNullOrEmpty(_wsUri)) {
+            _wsClient = new WebSocketClient(_wsUri);
+            _wsClient.OnLockCommandReceived += OnWebSocketLockCommand;
+            _wsClient.Start();
+        }
+
         Task.Run(() => CheckLoop(_cancellationTokenSource.Token));
 
         Callback?.Invoke("");
@@ -233,6 +258,14 @@ public class ActiveChecker : IDisposable {
 
         // 停止蓝牙扫描
         //_bluetoothDetector.StopBleScanner();
+
+        // 停止 WebSocket 客户端
+        if (_wsClient != null) {
+            _wsClient.OnLockCommandReceived -= OnWebSocketLockCommand;
+            _wsClient.Stop();
+            _wsClient.Dispose();
+            _wsClient = null;
+        }
 
         Callback?.Invoke("");
     }
@@ -417,6 +450,11 @@ public class ActiveChecker : IDisposable {
         Callback?.Invoke("");
     }
 
+    private void OnWebSocketLockCommand() {
+        Logger.Warning("WebSocket lock command received, locking workstation");
+        // LockWorkStation();
+    }
+
     /// <summary>
     /// 实现 IDisposable 清理资源
     /// </summary>
@@ -425,6 +463,7 @@ public class ActiveChecker : IDisposable {
         _cancellationTokenSource?.Dispose();
         _bluetoothDetector.Dispose(); // 确保蓝牙雷达资源也被释放
         _notificationManager.Dispose(); // 释放通知管理器资源
+        _wsClient?.Dispose(); // 释放 WebSocket 客户端资源
         GC.SuppressFinalize(this);
     }
 }

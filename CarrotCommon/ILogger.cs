@@ -1,4 +1,4 @@
-﻿using Serilog;
+using Serilog;
 using Serilog.Events;
 using System;
 using System.Collections.Generic;
@@ -160,6 +160,63 @@ public static class Logger {
     /// </summary>
     public static void Error(string? m, Exception e, [CallerMemberName] string member = "", [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
         => Serilog.Log.Logger.Error(e, F(m, member, file, line));
+
+    /// <summary>
+    /// Logs an error message with a short exception summary (no full stack trace).
+    /// 记录带有异常摘要的错误消息（不含完整堆栈）。
+    /// </summary>
+    public static void ErrorShort(string? m, Exception e, [CallerMemberName] string member = "", [CallerFilePath] string file = "", [CallerLineNumber] int line = 0)
+        => Serilog.Log.Logger.Write(LogEventLevel.Error, F($"{m}: {GetExceptionSummary(e)}", member, file, line));
+
+    /// <summary>
+    /// Gets a short summary of an exception (type, message, inner exceptions).
+    /// 获取异常的简短摘要（类型、消息、内部异常）。
+    /// </summary>
+    public static string GetExceptionSummary(Exception e) {
+        var sb = new System.Text.StringBuilder();
+        var current = e;
+        var depth = 0;
+
+        while (current != null && depth < 3) {
+            if (depth > 0) sb.Append(" --> ");
+            sb.Append($"{current.GetType().Name}: {current.Message}");
+            current = current.InnerException;
+            depth++;
+        }
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Gets key frames from exception stack trace (user code only).
+    /// 从异常堆栈中提取关键帧（仅用户代码）。
+    /// </summary>
+    public static string GetExceptionKeyFrames(Exception e, int maxFrames = 3) {
+        if (e.StackTrace == null) return string.Empty;
+
+        var frames = e.StackTrace.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
+        var keyFrames = new List<string>();
+        var currentDir = AppDomain.CurrentDomain.BaseDirectory;
+
+        foreach (var frame in frames) {
+            if (keyFrames.Count >= maxFrames) break;
+            var trimmed = frame.Trim();
+            if (trimmed.Contains(currentDir) || trimmed.Contains("Carrot")) {
+                var start = trimmed.IndexOf("at ") + 3;
+                if (start > 2) {
+                    var methodPart = trimmed.Substring(start);
+                    var parenIdx = methodPart.IndexOf(')');
+                    if (parenIdx > 0) {
+                        keyFrames.Add(methodPart.Substring(0, parenIdx + 1));
+                    } else {
+                        keyFrames.Add(methodPart.Split(new[] { " in " }, StringSplitOptions.None)[0]);
+                    }
+                }
+            }
+        }
+
+        return keyFrames.Count > 0 ? string.Join(" -> ", keyFrames) : string.Empty;
+    }
 
     /// <summary>
     /// Adds a custom log sink to the logger.
