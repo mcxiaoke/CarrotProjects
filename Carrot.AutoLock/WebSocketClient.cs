@@ -24,6 +24,8 @@ public class WebSocketClient : IDisposable {
     private const int ReceiveBufferSize = 4096;
     /// <summary>默认心跳间隔（毫秒），连接成功后可从服务端获取</summary>
     private const int DefaultHeartbeatIntervalMs = 30000;
+    /// <summary>连接超时（毫秒）</summary>
+    private const int ConnectTimeoutMs = 10000;
 
     /// <summary>WebSocket 服务 URI</summary>
     private readonly string _wsUri;
@@ -86,7 +88,13 @@ public class WebSocketClient : IDisposable {
 
         _isRunning = true;
         _cancellationTokenSource = new CancellationTokenSource();
-        Task.Run(() => ConnectLoop(_cancellationTokenSource.Token));
+        _ = Task.Run(async () => {
+            try {
+                await ConnectLoop(_cancellationTokenSource.Token);
+            } catch (Exception ex) {
+                Logger.Error("ConnectLoop failed", ex);
+            }
+        });
         Logger.Info($"starting, target: {_wsUri}");
     }
 
@@ -116,24 +124,31 @@ public class WebSocketClient : IDisposable {
     /// 重连延迟采用指数退避策略，最大不超过 MaxReconnectDelayMs。
     /// </summary>
     private async Task ConnectLoop(CancellationToken cancellationToken) {
+        Logger.Info($"ConnectLoop started, _isRunning={_isRunning}, cancelled={cancellationToken.IsCancellationRequested}");
         while (_isRunning && !cancellationToken.IsCancellationRequested) {
             try {
                 var connectUri = BuildConnectUri(_wsUri);
                 Logger.Info($"connecting to {connectUri}");
                 _webSocket = new ClientWebSocket();
-                await _webSocket.ConnectAsync(new Uri(connectUri), cancellationToken);
+
+                using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                cts.CancelAfter(ConnectTimeoutMs);
+
+                await _webSocket.ConnectAsync(new Uri(connectUri), cts.Token);
 
                 Logger.Info("connected");
                 SetConnected(true);
                 _reconnectAttempts = 0;
 
-                // 同时运行心跳和接收循环，任一结束则触发重连
                 var heartbeatTask = HeartbeatLoop(cancellationToken);
                 var receiveTask = ReceiveLoop(cancellationToken);
 
                 await Task.WhenAny(heartbeatTask, receiveTask);
             } catch (OperationCanceledException) {
-                break;
+                if (cancellationToken.IsCancellationRequested) {
+                    break;
+                }
+                Logger.Warning($"connection timeout after {ConnectTimeoutMs}ms");
             } catch (WebSocketException ex) {
                 Logger.Warning($"connection error: {GetWsErrorDesc(ex)}");
             } catch (Exception ex) {
@@ -142,7 +157,6 @@ public class WebSocketClient : IDisposable {
 
             SetConnected(false);
 
-            // 清理旧连接
             if (_webSocket != null) {
                 try {
                     _webSocket.Dispose();
@@ -150,7 +164,6 @@ public class WebSocketClient : IDisposable {
                 _webSocket = null;
             }
 
-            // 计算重连延迟（指数退避）
             if (_isRunning && !cancellationToken.IsCancellationRequested) {
                 _reconnectAttempts++;
                 var delay = Math.Min(ReconnectDelayMs * _reconnectAttempts, MaxReconnectDelayMs);
