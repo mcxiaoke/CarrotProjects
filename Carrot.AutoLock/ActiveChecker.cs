@@ -263,25 +263,18 @@ public class ActiveChecker : IDisposable {
                 var offlineSeconds = OfflineSeconds;
                 var inactiveSeconds = GetInactiveSeconds();
 
-                // 只在离线时间达到阈值时才检测豁免进程
-                bool hasExemptProcess = false;
-                if (offlineSeconds >= _offlineThreshold && _exemptProcesses.Count > 0) {
-                    hasExemptProcess = ProcessChecker.IsAnyProcessRunning(_exemptProcesses);
+                if (inactiveSeconds > _inactiveThreshold
+                    && offlineSeconds >= _offlineThreshold) {
+                    // 检查是否有豁免锁屏的进程在运行
+                    var hasExemptProcess = ProcessChecker.IsProcRunning(_exemptProcesses);
+                    // 条件2：设备离线 + 用户无操作
                     if (hasExemptProcess) {
-                        if ((DateTime.Now - _lastExemptProcessLogTime).TotalMinutes >= 3) {
-                            Logger.ConsoleInfo("Exempt process running, skipping lock check");
-                            _lastExemptProcessLogTime = DateTime.Now;
-                        }
-                    }
-                }
-
-                if (!hasExemptProcess) {
-                    if (inactiveSeconds > _inactiveThreshold
-                        && offlineSeconds >= _offlineThreshold) {
-                        // 条件2：设备离线 + 用户无操作
-                        Logger.Warning($"Device offline {offlineSeconds:F0}s and " +
-                            $"user inactive {inactiveSeconds:F1}s, " +
-                            $"locking workstation...");
+                        Logger.Info($"Exempt process found, skip lock workstation");
+                        // 豁免进程存在时重置离线时间，避免误锁
+                        _offlineStartTime = null;
+                    } else {
+                        Logger.Info($"No exempt process found, lock workstation");
+                        // 无豁免进程，执行锁屏
                         LockWorkStation();
                     }
                 }
@@ -391,6 +384,7 @@ public class ActiveChecker : IDisposable {
             var deviceInfo = string.IsNullOrEmpty(_targetBluetoothName) ? _targetIP : $"{_targetIP} / {_targetBluetoothName}";
             var reason = $"设备离线 {OfflineSeconds:F0}秒，用户无活动 {GetInactiveSeconds():F0}秒";
             _notificationManager.SendLockNotification(deviceInfo, reason);
+            Logger.Warning($"LockWorkStation reason: {reason}");
         } catch (Exception ex) {
             Logger.Error("Failed to send lock notification", ex);
         }
@@ -400,7 +394,7 @@ public class ActiveChecker : IDisposable {
             bool result = LockWorkStationInternal();
             if (!result) {
                 int errorCode = Marshal.GetLastWin32Error();
-                Logger.Warning($"Failed to lock workstation. Error code: {errorCode}");
+                Logger.Warning($"LockWorkStation failed. Error code: {errorCode}");
             }
             _isScreenLocked = true;
         } catch (Exception ex) {

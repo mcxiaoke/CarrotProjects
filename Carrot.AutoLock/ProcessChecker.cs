@@ -22,7 +22,7 @@ public class ProcessChecker {
     /// </summary>
     /// <param name="processNames">进程名称列表（自动处理 .exe 后缀）</param>
     /// <returns>如果有任何进程正在运行则返回 true</returns>
-    public static bool IsAnyProcessRunning(IEnumerable<string> processNames) {
+    public static bool IsProcRunning(IEnumerable<string> processNames) {
         if (processNames == null || !processNames.Any()) {
             return false;
         }
