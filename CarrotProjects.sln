@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
-VisualStudioVersion = 18.3.11505.172 d18.3
+VisualStudioVersion = 18.3.11505.172
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Carrot.Common", "CarrotCommon\Carrot.Common.csproj", "{45CC2DC5-60B2-4989-815E-5E9869E36743}"
 EndProject
@@ -25,6 +25,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CarrotWOL", "CarrotWOL\CarrotWOL.csproj", "{12D8D499-B3A5-47A0-9C44-675BF2FEA7CD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Carrot.AutoLock", "Carrot.AutoLock\Carrot.AutoLock.csproj", "{E7E7BC55-18D9-4D72-9B55-5C486776861E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MuteMe", "MuteMe\MuteMe.csproj", "{34E097B8-EA6E-464B-BA5C-CECAF23E696D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -144,6 +146,18 @@ Global
 		{E7E7BC55-18D9-4D72-9B55-5C486776861E}.Release|x64.Build.0 = Release|Any CPU
 		{E7E7BC55-18D9-4D72-9B55-5C486776861E}.Release|x86.ActiveCfg = Release|Any CPU
 		{E7E7BC55-18D9-4D72-9B55-5C486776861E}.Release|x86.Build.0 = Release|Any CPU
+		{34E097B8-EA6E-464B-BA5C-CECAF23E696D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{34E097B8-EA6E-464B-BA5C-CECAF23E696D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{34E097B8-EA6E-464B-BA5C-CECAF23E696D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{34E097B8-EA6E-464B-BA5C-CECAF23E696D}.Debug|x64.Build.0 = Debug|Any CPU
+		{34E097B8-EA6E-464B-BA5C-CECAF23E696D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{34E097B8-EA6E-464B-BA5C-CECAF23E696D}.Debug|x86.Build.0 = Debug|Any CPU
+		{34E097B8-EA6E-464B-BA5C-CECAF23E696D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{34E097B8-EA6E-464B-BA5C-CECAF23E696D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{34E097B8-EA6E-464B-BA5C-CECAF23E696D}.Release|x64.ActiveCfg = Release|Any CPU
+		{34E097B8-EA6E-464B-BA5C-CECAF23E696D}.Release|x64.Build.0 = Release|Any CPU
+		{34E097B8-EA6E-464B-BA5C-CECAF23E696D}.Release|x86.ActiveCfg = Release|Any CPU
+		{34E097B8-EA6E-464B-BA5C-CECAF23E696D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
