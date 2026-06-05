@@ -11,7 +11,7 @@ namespace MonitorControlTray;
 /// 显示器亮度控制托盘应用程序
 /// <para>支持游戏/日常模式切换、根据时间自动调整亮度对比度、全局快捷键、睡眠唤醒自动恢复</para>
 /// </summary>
-file static class Program {
+internal static class Program {
     /// <summary>
     /// 日志文件所在目录
     /// </summary>
@@ -170,14 +170,9 @@ public class HotkeyConfig {
 }
 
 /// <summary>
-/// 应用配置，包含 ddccli 路径、模式设置和快捷键
+/// 应用配置，包含模式设置和快捷键
 /// </summary>
 public class AppConfig {
-    /// <summary>
-    /// ddccli.exe 路径（支持绝对路径和相对路径）
-    /// </summary>
-    public string? DdccliPath { get; set; }
-
     /// <summary>
     /// 模式配置（键：模式名称，值：时间段设置列表）
     /// </summary>
@@ -300,49 +295,6 @@ public class TrayApplicationContext : ApplicationContext {
 
         Program.Log("未找到自定义图标，使用系统默认图标");
         return SystemIcons.Application;
-    }
-
-    /// <summary>
-    /// 查找 ddccli.exe，优先级：配置路径 → 当前目录 → PATH 环境变量
-    /// </summary>
-    /// <returns>ddccli.exe 的完整路径；未找到时返回 <c>null</c></returns>
-    private string? FindDdccli() {
-        if (config is null) return null;
-
-        // 1. 配置路径
-        if (!string.IsNullOrWhiteSpace(config.DdccliPath)) {
-            string configuredPath = config.DdccliPath;
-            string resolvedPath = Path.IsPathRooted(configuredPath)
-                ? configuredPath
-                : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, configuredPath);
-
-            if (File.Exists(resolvedPath)) {
-                Program.Log($"使用配置路径: {resolvedPath}");
-                return resolvedPath;
-            }
-        }
-
-        // 2. 当前目录
-        string localDdccli = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ddccli.exe");
-        if (File.Exists(localDdccli)) {
-            Program.Log($"在当前目录找到 ddccli.exe: {localDdccli}");
-            return localDdccli;
-        }
-
-        // 3. PATH 环境变量
-        string? pathEnv = Environment.GetEnvironmentVariable("PATH");
-        if (!string.IsNullOrEmpty(pathEnv)) {
-            foreach (string dir in pathEnv.Split(';')) {
-                if (string.IsNullOrWhiteSpace(dir)) continue;
-                string ddccliInPath = Path.Combine(dir.Trim(), "ddccli.exe");
-                if (File.Exists(ddccliInPath)) {
-                    Program.Log($"在 PATH 中找到 ddccli.exe: {ddccliInPath}");
-                    return ddccliInPath;
-                }
-            }
-        }
-
-        return null;
     }
 
     #endregion
@@ -539,61 +491,33 @@ public class TrayApplicationContext : ApplicationContext {
             lastAppliedSetting.Brightness != activeSetting.Brightness ||
             lastAppliedSetting.Contrast != activeSetting.Contrast) {
             lastAppliedSetting = activeSetting;
-            ExecuteDdccliAsync(activeSetting.Brightness, activeSetting.Contrast);
+            ApplyBrightnessAndContrastAsync(activeSetting.Brightness, activeSetting.Contrast);
             UpdateTooltip();
         }
     }
 
     /// <summary>
-    /// 异步执行 ddccli 命令设置显示器亮度和对比度
+    /// 异步设置显示器亮度和对比度（使用 DDC/CI API）
     /// </summary>
     /// <param name="brightness">亮度值（0-100）</param>
     /// <param name="contrast">对比度值（0-100）</param>
-    private async void ExecuteDdccliAsync(int brightness, int contrast) {
+    private async void ApplyBrightnessAndContrastAsync(int brightness, int contrast) {
         if (trayIcon is null || isExecuting) return;
         isExecuting = true;
 
-        string? ddccliPath = FindDdccli();
-        if (string.IsNullOrEmpty(ddccliPath)) {
-            const string errorMsg = "找不到 ddccli.exe（搜索了当前目录和 PATH）";
-            Program.Log(errorMsg);
-            trayIcon.ShowBalloonTip(3000, "错误", errorMsg, ToolTipIcon.Error);
-            isExecuting = false;
-            return;
-        }
-
         try {
-            using var process = Process.Start(new ProcessStartInfo {
-                FileName = ddccliPath,
-                Arguments = $"-b {brightness} -c {contrast}",
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true
-            });
+            int successCount = await Task.Run(() => DdcService.SetBrightnessAndContrast(brightness, contrast));
 
-            if (process is null) {
-                Program.Log("无法启动 ddccli 进程");
-                trayIcon.ShowBalloonTip(3000, "错误", "无法启动 ddccli 进程", ToolTipIcon.Error);
-                return;
-            }
-
-            await process.WaitForExitAsync();
-
-            if (process.ExitCode != 0) {
-                string? errorOutput = await process.StandardError.ReadToEndAsync();
-                string errorMsg = $"ddccli 执行失败 (ExitCode: {process.ExitCode})";
-                if (!string.IsNullOrWhiteSpace(errorOutput))
-                    errorMsg += $": {errorOutput}";
-
+            if (successCount > 0) {
+                Program.Log($"已应用设置 - 亮度: {brightness}, 对比度: {contrast} ({successCount} 个显示器)");
+            } else {
+                const string errorMsg = "DDC/CI 通信失败，请检查显示器 OSD 菜单中是否已开启 DDC/CI 功能";
                 Program.Log(errorMsg);
                 trayIcon.ShowBalloonTip(3000, "错误", errorMsg, ToolTipIcon.Error);
-            } else {
-                Program.Log($"已应用设置 - 亮度: {brightness}, 对比度: {contrast}");
             }
         } catch (Exception ex) {
-            Program.Log($"执行 ddccli 失败: {ex.Message}");
-            trayIcon.ShowBalloonTip(3000, "错误", $"执行 ddccli 失败: {ex.Message}", ToolTipIcon.Error);
+            Program.Log($"设置显示器失败: {ex.Message}");
+            trayIcon.ShowBalloonTip(3000, "错误", $"设置显示器失败: {ex.Message}", ToolTipIcon.Error);
         } finally {
             isExecuting = false;
         }
@@ -613,7 +537,7 @@ public class TrayApplicationContext : ApplicationContext {
         int newBrightness = Math.Clamp(activeSetting.Brightness + delta, 0, 100);
 
         lastAppliedSetting = null;
-        ExecuteDdccliAsync(newBrightness, activeSetting.Contrast);
+        ApplyBrightnessAndContrastAsync(newBrightness, activeSetting.Contrast);
 
         trayIcon.ShowBalloonTip(2000, "提示", $"亮度已调整为 {newBrightness}", ToolTipIcon.Info);
         Program.Log($"手动调整亮度: {activeSetting.Brightness} -> {newBrightness}");

@@ -17,6 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Management" Version="9.*" />
+  </ItemGroup>
+
+  <ItemGroup>
        <None Update="config.json">
          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
        </None>
