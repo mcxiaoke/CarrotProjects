@@ -12,6 +12,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- 排除 temp 目录下的所有代码 -->
+    <Compile Remove="temp\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
        <None Update="config.json">
          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
        </None>

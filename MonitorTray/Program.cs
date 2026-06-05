@@ -199,15 +199,7 @@ public class TrayApplicationContext : ApplicationContext {
     private System.Windows.Forms.Timer? timer;
     private TimeSetting? lastAppliedSetting;
     private int refreshIntervalMinutes = 1;
-    private System.Windows.Forms.Timer? retryTimer;
-    private int retryCount;
     private bool isExecuting;
-
-    /// <summary>最大重试次数</summary>
-    private const int MaxRetries = 3;
-
-    /// <summary>重试间隔（毫秒）</summary>
-    private const int RetryDelayMs = 5000;
 
     /// <summary>亮度调整步长</summary>
     private const int BrightnessStep = 5;
@@ -280,9 +272,6 @@ public class TrayApplicationContext : ApplicationContext {
         };
         timer.Tick += (_, _) => ApplySettings();
         timer.Start();
-
-        // 监听系统睡眠/唤醒事件
-        SystemEvents.PowerModeChanged += OnPowerModeChanged;
 
         ApplySettings(force: true);
         Program.Log("托盘应用初始化完成");
@@ -586,7 +575,6 @@ public class TrayApplicationContext : ApplicationContext {
             if (process is null) {
                 Program.Log("无法启动 ddccli 进程");
                 trayIcon.ShowBalloonTip(3000, "错误", "无法启动 ddccli 进程", ToolTipIcon.Error);
-                OnExecuteFailed();
                 return;
             }
 
@@ -600,15 +588,12 @@ public class TrayApplicationContext : ApplicationContext {
 
                 Program.Log(errorMsg);
                 trayIcon.ShowBalloonTip(3000, "错误", errorMsg, ToolTipIcon.Error);
-                OnExecuteFailed();
             } else {
                 Program.Log($"已应用设置 - 亮度: {brightness}, 对比度: {contrast}");
-                StopRetry();
             }
         } catch (Exception ex) {
             Program.Log($"执行 ddccli 失败: {ex.Message}");
             trayIcon.ShowBalloonTip(3000, "错误", $"执行 ddccli 失败: {ex.Message}", ToolTipIcon.Error);
-            OnExecuteFailed();
         } finally {
             isExecuting = false;
         }
@@ -632,69 +617,6 @@ public class TrayApplicationContext : ApplicationContext {
 
         trayIcon.ShowBalloonTip(2000, "提示", $"亮度已调整为 {newBrightness}", ToolTipIcon.Info);
         Program.Log($"手动调整亮度: {activeSetting.Brightness} -> {newBrightness}");
-    }
-
-    #endregion
-
-    #region 睡眠唤醒与重试
-
-    /// <summary>
-    /// 系统电源模式变化处理：唤醒后延迟重试应用设置
-    /// </summary>
-    private void OnPowerModeChanged(object sender, PowerModeChangedEventArgs e) {
-        if (e.Mode == PowerModes.Resume) {
-            Program.Log("系统从睡眠中唤醒，延迟后重新应用设置");
-            ScheduleRetry();
-        }
-    }
-
-    /// <summary>
-    /// 安排延迟重试：重置计数器，每隔 <see cref="RetryDelayMs"/> 毫秒重试一次
-    /// </summary>
-    private void ScheduleRetry() {
-        retryCount = 0;
-        lastAppliedSetting = null; // 强制重新应用
-
-        retryTimer?.Dispose();
-        retryTimer = new System.Windows.Forms.Timer { Interval = RetryDelayMs };
-        retryTimer.Tick += OnRetryTick;
-        retryTimer.Start();
-    }
-
-    /// <summary>
-    /// 重试定时器回调：应用设置，达到 <see cref="MaxRetries"/> 后停止
-    /// </summary>
-    private void OnRetryTick(object? sender, EventArgs e) {
-        retryCount++;
-        Program.Log($"重试应用设置 (第 {retryCount}/{MaxRetries} 次)");
-
-        ApplySettings(force: true);
-
-        if (retryCount >= MaxRetries) {
-            retryTimer?.Stop();
-            retryTimer?.Dispose();
-            retryTimer = null;
-        }
-    }
-
-    /// <summary>
-    /// ddccli 执行失败时安排重试（已在重试中则跳过）
-    /// </summary>
-    private void OnExecuteFailed() {
-        if (retryTimer is not null && retryTimer.Enabled) return;
-        ScheduleRetry();
-    }
-
-    /// <summary>
-    /// 停止重试定时器并重置计数
-    /// </summary>
-    private void StopRetry() {
-        if (retryTimer is not null) {
-            retryTimer.Stop();
-            retryTimer.Dispose();
-            retryTimer = null;
-        }
-        retryCount = 0;
     }
 
     #endregion
@@ -1024,8 +946,6 @@ public class TrayApplicationContext : ApplicationContext {
     /// </summary>
     private void Exit() {
         UnregisterAllHotkeys();
-        SystemEvents.PowerModeChanged -= OnPowerModeChanged;
-        StopRetry();
 
         if (timer is not null) {
             timer.Stop();
@@ -1047,8 +967,6 @@ public class TrayApplicationContext : ApplicationContext {
     protected override void Dispose(bool disposing) {
         if (disposing) {
             UnregisterAllHotkeys();
-            SystemEvents.PowerModeChanged -= OnPowerModeChanged;
-            StopRetry();
             timer?.Dispose();
             trayIcon?.Dispose();
             hotkeyWindow?.DestroyHandle();
