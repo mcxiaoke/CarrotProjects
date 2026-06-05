@@ -6,6 +6,7 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>14.0</LangVersion>
     <!-- EXE 文件图标 -->
     <ApplicationIcon>assets\icon.ico</ApplicationIcon>
   </PropertyGroup>
