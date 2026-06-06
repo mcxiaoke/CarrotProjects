@@ -193,14 +193,11 @@ public class TrayApplicationContext : ApplicationContext {
     private string currentMode = "Daily";
     private System.Windows.Forms.Timer? timer;
     private TimeSetting? lastAppliedSetting;
-    private int refreshIntervalMinutes = 1;
     private bool isExecuting;
+    private bool _forceNextCheck;
 
     /// <summary>亮度调整步长</summary>
     private const int BrightnessStep = 5;
-
-    /// <summary>可选的刷新间隔（分钟）</summary>
-    private static readonly int[] RefreshIntervals = [1, 2, 5, 10];
 
     /// <summary>托盘提示文本最大长度（NotifyIcon 限制 128 字符）</summary>
     private const int MaxTooltipLength = 127;
@@ -262,13 +259,16 @@ public class TrayApplicationContext : ApplicationContext {
         BuildMenu();
         RegisterHotkeys();
 
-        timer = new System.Windows.Forms.Timer {
-            Interval = refreshIntervalMinutes * 60000
-        };
-        timer.Tick += (_, _) => ApplySettings();
+        timer = new System.Windows.Forms.Timer();
+        timer.Tick += OnTimerTick;
+
+        SystemEvents.PowerModeChanged += OnPowerModeChanged;
+
+        // 启动后30秒首次检查
+        _forceNextCheck = true;
+        timer.Interval = 30000;
         timer.Start();
 
-        ApplySettings(force: true);
         Program.Log("托盘应用初始化完成");
     }
 
@@ -424,6 +424,7 @@ public class TrayApplicationContext : ApplicationContext {
             BuildMenu();
             RegisterHotkeys();
             UpdateTooltip();
+            ScheduleNextCheck();
 
             Program.Log("配置文件已重载");
             trayIcon.ShowBalloonTip(2000, "提示", "配置文件已重载", ToolTipIcon.Info);
@@ -573,14 +574,6 @@ public class TrayApplicationContext : ApplicationContext {
         // 操作
         menu.Items.Add("手动刷新", null, (_, _) => ApplySettings(force: true));
         menu.Items.Add("重载配置", null, (_, _) => ReloadConfig());
-
-        // 刷新间隔
-        var intervalMenuItem = new ToolStripMenuItem("刷新间隔");
-        foreach (int interval in RefreshIntervals) {
-            intervalMenuItem.DropDownItems.Add(new ToolStripMenuItem(
-                $"{interval} 分钟", null, (_, _) => SetRefreshInterval(interval)) { Checked = refreshIntervalMinutes == interval });
-        }
-        menu.Items.Add(intervalMenuItem);
         menu.Items.Add(new ToolStripSeparator());
 
         // 开机自启
@@ -634,21 +627,81 @@ public class TrayApplicationContext : ApplicationContext {
         BuildMenu();
         ApplySettings(force: true);
         UpdateTooltip();
+        // 切换模式后重新调度检查时间
+        ScheduleNextCheck();
         Program.Log($"切换到 {newMode} 模式");
     }
 
     /// <summary>
-    /// 设置定时刷新间隔
+    /// 定时器回调：应用设置后动态计算下次检查间隔
     /// </summary>
-    /// <param name="minutes">间隔分钟数</param>
-    private void SetRefreshInterval(int minutes) {
-        refreshIntervalMinutes = minutes;
-        if (timer is not null)
-            timer.Interval = minutes * 60000;
+    private void OnTimerTick(object? sender, EventArgs e) {
+        ApplySettings(force: _forceNextCheck);
+        _forceNextCheck = false;
+        ScheduleNextCheck();
+    }
 
-        BuildMenu();
-        Program.Log($"刷新间隔已设置为 {minutes} 分钟");
-        trayIcon?.ShowBalloonTip(2000, "提示", $"刷新间隔已设置为 {minutes} 分钟", ToolTipIcon.Info);
+    /// <summary>
+    /// 根据当前时间动态计算下次检查的间隔
+    /// <para>切换时间点前后30分钟窗口内每分钟检查一次，窗口外调度到下一个窗口开始</para>
+    /// </summary>
+    private void ScheduleNextCheck() {
+        if (timer is null) return;
+
+        var settings = config?.Modes?.GetValueOrDefault(currentMode);
+        if (settings is null || settings.Count == 0) {
+            timer.Interval = 60000;
+            return;
+        }
+
+        var now = DateTime.Now;
+        var nowTime = now.TimeOfDay;
+        TimeSpan? nextWindowStart = null;
+
+        foreach (var setting in settings) {
+            var switchTime = setting.ToTimeSpan();
+            var windowStart = switchTime - TimeSpan.FromMinutes(30);
+            var windowEnd = switchTime + TimeSpan.FromMinutes(30);
+
+            if (nowTime >= windowStart && nowTime <= windowEnd) {
+                // 窗口内每5分钟检查一次
+                timer.Interval = 5 * 60000;
+                return;
+            }
+
+            if (windowStart > nowTime && (nextWindowStart is null || windowStart < nextWindowStart)) {
+                nextWindowStart = windowStart;
+            }
+        }
+
+        if (nextWindowStart is not null) {
+            var nextCheck = DateTime.Today.Add(nextWindowStart.Value);
+            var ms = (int)(nextCheck - now).TotalMilliseconds;
+            timer.Interval = Math.Max(ms, 1000);
+        } else {
+            // 今天没有更多窗口，计算明天的第一个窗口
+            var firstTime = settings.Min(s => s.ToTimeSpan());
+            var windowStart = firstTime - TimeSpan.FromMinutes(30);
+            if (windowStart < TimeSpan.Zero) windowStart = TimeSpan.Zero;
+            var nextCheck = DateTime.Today.AddDays(1).Add(windowStart);
+            var ms = (int)(nextCheck - now).TotalMilliseconds;
+            timer.Interval = Math.Max(ms, 1000);
+        }
+    }
+
+    /// <summary>
+    /// 系统电源模式变化事件处理：睡眠恢复后30秒检查设置
+    /// </summary>
+    private void OnPowerModeChanged(object sender, PowerModeChangedEventArgs e) {
+        if (e.Mode == PowerModes.Resume) {
+            Program.Log("系统从睡眠恢复，30秒后检查设置");
+            if (timer is not null) {
+                timer.Stop();
+                _forceNextCheck = true;
+                timer.Interval = 30000;
+                timer.Start();
+            }
+        }
     }
 
     #endregion
@@ -890,6 +943,7 @@ public class TrayApplicationContext : ApplicationContext {
     /// </summary>
     protected override void Dispose(bool disposing) {
         if (disposing) {
+            SystemEvents.PowerModeChanged -= OnPowerModeChanged;
             UnregisterAllHotkeys();
             timer?.Dispose();
             trayIcon?.Dispose();
