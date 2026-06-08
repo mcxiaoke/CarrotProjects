@@ -195,6 +195,7 @@ public class TrayApplicationContext : ApplicationContext {
     private TimeSetting? lastAppliedSetting;
     private bool isExecuting;
     private bool _forceNextCheck;
+    private bool _isLocked;
 
     /// <summary>亮度调整步长</summary>
     private const int BrightnessStep = 5;
@@ -263,6 +264,7 @@ public class TrayApplicationContext : ApplicationContext {
         timer.Tick += OnTimerTick;
 
         SystemEvents.PowerModeChanged += OnPowerModeChanged;
+        SystemEvents.SessionSwitch += OnSessionSwitch;
 
         // 启动后30秒首次检查
         _forceNextCheck = true;
@@ -504,9 +506,21 @@ public class TrayApplicationContext : ApplicationContext {
     /// <param name="contrast">对比度值（0-100）</param>
     private async void ApplyBrightnessAndContrastAsync(int brightness, int contrast) {
         if (trayIcon is null || isExecuting) return;
+        if (_isLocked) {
+            Program.Log("系统已锁定，跳过 DDC/CI 调用");
+            return;
+        }
         isExecuting = true;
 
         try {
+            // 先读取当前亮度对比度，如果已经匹配则跳过设置
+            int curBrightness = 0, curContrast = 0;
+            bool currentOk = await Task.Run(() => DdcService.GetBrightnessAndContrast(out curBrightness, out curContrast));
+            if (currentOk && curBrightness == brightness && curContrast == contrast) {
+                Program.Log($"设置已匹配，跳过 - 亮度: {brightness}, 对比度: {contrast}");
+                return;
+            }
+
             int successCount = await Task.Run(() => DdcService.SetBrightnessAndContrast(brightness, contrast));
 
             if (successCount > 0) {
@@ -701,6 +715,28 @@ public class TrayApplicationContext : ApplicationContext {
                 timer.Interval = 30000;
                 timer.Start();
             }
+        }
+    }
+
+    /// <summary>
+    /// 系统会话切换事件处理：跟踪锁定/解锁状态
+    /// </summary>
+    private void OnSessionSwitch(object sender, SessionSwitchEventArgs e) {
+        switch (e.Reason) {
+            case SessionSwitchReason.SessionLock:
+                _isLocked = true;
+                Program.Log("系统已锁定");
+                break;
+            case SessionSwitchReason.SessionUnlock:
+                _isLocked = false;
+                Program.Log("系统已解锁，30秒后检查设置");
+                if (timer is not null) {
+                    timer.Stop();
+                    _forceNextCheck = true;
+                    timer.Interval = 30000;
+                    timer.Start();
+                }
+                break;
         }
     }
 
@@ -944,6 +980,7 @@ public class TrayApplicationContext : ApplicationContext {
     protected override void Dispose(bool disposing) {
         if (disposing) {
             SystemEvents.PowerModeChanged -= OnPowerModeChanged;
+            SystemEvents.SessionSwitch -= OnSessionSwitch;
             UnregisterAllHotkeys();
             timer?.Dispose();
             trayIcon?.Dispose();
