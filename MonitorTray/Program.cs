@@ -252,7 +252,7 @@ public class TrayApplicationContext : ApplicationContext {
             Text = BuildTooltipText()
         };
 
-        trayIcon.DoubleClick += (_, _) => ApplySettings(force: true);
+        trayIcon.DoubleClick += (_, _) => OpenSettingsEditor();
 
         // 创建隐藏窗口用于接收 WM_HOTKEY 消息
         hotkeyWindow = new HotkeyWindow(hotkeyActions);
@@ -588,6 +588,7 @@ public class TrayApplicationContext : ApplicationContext {
         // 操作
         menu.Items.Add("手动刷新", null, (_, _) => ApplySettings(force: true));
         menu.Items.Add("重载配置", null, (_, _) => ReloadConfig());
+        menu.Items.Add("编辑配置", null, (_, _) => OpenSettingsEditor());
         menu.Items.Add(new ToolStripSeparator());
 
         // 开机自启
@@ -628,6 +629,38 @@ public class TrayApplicationContext : ApplicationContext {
     private void UpdateTooltip() {
         if (trayIcon is not null)
             trayIcon.Text = BuildTooltipText();
+    }
+
+    /// <summary>
+    /// 打开配置编辑器（使用系统默认编辑器打开 config.json）
+    /// </summary>
+    private void OpenSettingsEditor() {
+        string configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json");
+        if (!File.Exists(configPath)) {
+            trayIcon?.ShowBalloonTip(3000, "错误", "找不到 config.json", ToolTipIcon.Error);
+            return;
+        }
+
+        try {
+            using var process = Process.Start(new ProcessStartInfo {
+                FileName = configPath,
+                UseShellExecute = true
+            });
+
+            if (process is not null) {
+                // 编辑器关闭后自动重载配置
+                process.EnableRaisingEvents = true;
+                process.Exited += (_, _) => {
+                    if (trayIcon is not null) {
+                        // 需要在 UI 线程执行
+                        trayIcon.ContextMenuStrip?.BeginInvoke(() => ReloadConfig());
+                    }
+                };
+            }
+        } catch (Exception ex) {
+            Program.Log($"打开配置文件失败: {ex.Message}");
+            trayIcon?.ShowBalloonTip(3000, "错误", $"打开配置文件失败: {ex.Message}", ToolTipIcon.Error);
+        }
     }
 
     /// <summary>
