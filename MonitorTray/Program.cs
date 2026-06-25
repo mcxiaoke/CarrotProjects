@@ -632,7 +632,7 @@ public class TrayApplicationContext : ApplicationContext {
     }
 
     /// <summary>
-    /// 打开配置编辑器（使用系统默认编辑器打开 config.json）
+    /// 打开配置编辑器窗口
     /// </summary>
     private void OpenSettingsEditor() {
         string configPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json");
@@ -642,24 +642,12 @@ public class TrayApplicationContext : ApplicationContext {
         }
 
         try {
-            using var process = Process.Start(new ProcessStartInfo {
-                FileName = configPath,
-                UseShellExecute = true
-            });
-
-            if (process is not null) {
-                // 编辑器关闭后自动重载配置
-                process.EnableRaisingEvents = true;
-                process.Exited += (_, _) => {
-                    if (trayIcon is not null) {
-                        // 需要在 UI 线程执行
-                        trayIcon.ContextMenuStrip?.BeginInvoke(() => ReloadConfig());
-                    }
-                };
-            }
+            var editor = new ConfigEditorForm(configPath, config!, currentMode);
+            editor.FormClosed += (_, _) => ReloadConfig();
+            editor.Show();
         } catch (Exception ex) {
-            Program.Log($"打开配置文件失败: {ex.Message}");
-            trayIcon?.ShowBalloonTip(3000, "错误", $"打开配置文件失败: {ex.Message}", ToolTipIcon.Error);
+            Program.Log($"打开配置编辑器失败: {ex.Message}");
+            trayIcon?.ShowBalloonTip(3000, "错误", $"打开配置编辑器失败: {ex.Message}", ToolTipIcon.Error);
         }
     }
 

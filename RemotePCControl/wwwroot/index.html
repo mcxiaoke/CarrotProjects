@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>远程电脑控制台 | RemotePCControl</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --panel: #1e293b;
+    --panel-2: #334155;
+    --accent: #3b82f6;
+    --accent-hover: #2563eb;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --border: #334155;
+    --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 28px; background: var(--panel);
+    border-radius: 14px; box-shadow: var(--shadow);
+    margin-bottom: 20px;
+  }
+  header h1 { font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
+  .status-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--success); box-shadow: 0 0 10px var(--success);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+  .status-box { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 0.875rem; }
+
+  .grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); margin-bottom: 20px; }
+  .card {
+    background: var(--panel); border-radius: 14px; padding: 24px;
+    box-shadow: var(--shadow); border: 1px solid var(--border);
+  }
+  .card h2 { font-size: 1.1rem; margin-bottom: 16px; color: var(--accent); }
+
+  .btn-row { display: grid; gap: 10px; grid-template-columns: 1fr 1fr; }
+  button {
+    padding: 14px 16px; border: none; border-radius: 10px; cursor: pointer;
+    font-size: 0.95rem; font-weight: 600; color: #fff;
+    transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+  button:active { transform: translateY(0); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .btn-primary { background: var(--accent); }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-success { background: var(--success); }
+  .btn-warning { background: var(--warning); color: #1a1a1a; }
+  .btn-danger { background: var(--danger); }
+  .btn-neutral { background: var(--panel-2); }
+
+  .full { grid-column: 1 / -1; }
+
+  input[type=text], input[type=number], textarea, select {
+    width: 100%; padding: 11px 14px; background: var(--panel-2);
+    border: 1px solid var(--border); border-radius: 8px; color: var(--text);
+    font-size: 0.95rem; font-family: inherit; margin-bottom: 10px;
+  }
+  input:focus, textarea:focus, select:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+  .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.9rem; }
+  .status-grid .item { background: var(--panel-2); padding: 10px 14px; border-radius: 8px; }
+  .status-grid .label { color: var(--muted); font-size: 0.75rem; display: block; margin-bottom: 4px; }
+  .status-grid .value { font-weight: 600; }
+
+  .log-panel {
+    background: #0a0f1a; border-radius: 10px; padding: 16px;
+    height: 220px; overflow-y: auto; font-family: "Cascadia Code", "Consolas", monospace;
+    font-size: 0.85rem; line-height: 1.7;
+  }
+  .log-item { padding: 4px 0; border-bottom: 1px dashed #1e293b; }
+  .log-item:last-child { border-bottom: none; }
+  .log-time { color: var(--muted); margin-right: 8px; }
+  .log-success { color: var(--success); }
+  .log-error { color: var(--danger); }
+  .log-info { color: var(--text); }
+
+  .tag { display: inline-block; padding: 3px 10px; border-radius: 12px; background: var(--panel-2); font-size: 0.8rem; }
+
+  .token-prompt {
+    background: var(--panel); padding: 40px; border-radius: 14px;
+    max-width: 500px; margin: 100px auto; text-align: center; box-shadow: var(--shadow);
+  }
+  .token-prompt input { margin-top: 16px; margin-bottom: 16px; text-align: center; letter-spacing: 2px; }
+
+  .switch-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .switch-row:last-child { border-bottom: none; }
+  .switch { position: relative; width: 50px; height: 28px; background: var(--panel-2); border-radius: 14px; cursor: pointer; transition: background 0.2s; }
+  .switch.on { background: var(--success); }
+  .switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; background: white; border-radius: 50%; transition: transform 0.2s; }
+  .switch.on::after { transform: translateX(22px); }
+
+  @media (max-width: 600px) {
+    .btn-row { grid-template-columns: 1fr; }
+    .status-grid { grid-template-columns: 1fr; }
+    header { flex-direction: column; gap: 10px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+<div id="tokenGate" class="token-prompt" style="display:none">
+  <h1 style="margin-bottom:10px">🔐 需要访问令牌</h1>
+  <p style="color:var(--muted)">请输入在托盘程序中配置的 AccessToken</p>
+  <input type="text" id="tokenInput" placeholder="例如: REPLACE_WITH_YOUR_TOKEN_16CH" />
+  <button class="btn-primary" onclick="saveToken()" style="width:100%">确认并进入</button>
+</div>
+
+<div id="mainUI" style="display:none">
+  <div class="container">
+    <header>
+      <h1><span class="status-dot"></span> 远程电脑控制台</h1>
+      <div class="status-box">
+        <span class="tag" id="machineName">加载中...</span>
+        <span class="tag" id="uptime">运行中</span>
+      </div>
+    </header>
+
+    <div class="grid">
+      <div class="card">
+        <h2>⚡ 快速操作</h2>
+        <div class="btn-row">
+          <button class="btn-danger" onclick="sendCmd('lock')">🔒 锁定屏幕</button>
+          <button class="btn-warning" onclick="sendCmd('sleep')">😴 进入睡眠</button>
+          <button class="btn-warning" onclick="sendCmd('hibernate')">💤 休眠</button>
+          <button class="btn-warning" onclick="sendCmd('logout')">🚪 注销</button>
+          <button class="btn-danger" onclick="sendCmd('shutdown')">⏻ 关机 (60s)</button>
+          <button class="btn-danger" onclick="sendCmd('restart')">🔄 重启 (60s)</button>
+          <button class="btn-success full" onclick="sendCmd('cancel')">✋ 取消已计划的关机</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>⚙️ 电源策略</h2>
+        <div class="switch-row">
+          <span>自动睡眠</span>
+          <div class="switch" id="autoSleepSwitch" onclick="toggleAutoSleep()"></div>
+        </div>
+        <div style="margin-top:16px">
+          <label style="display:block; color:var(--muted); font-size:0.8rem; margin-bottom:6px">显示器超时 (分钟)</label>
+          <input type="number" id="monitorTimeout" min="0" placeholder="例如 15" />
+          <button class="btn-primary" onclick="setMonitorTimeout()" style="width:100%">应用</button>
+        </div>
+        <div style="margin-top:10px">
+          <label style="display:block; color:var(--muted); font-size:0.8rem; margin-bottom:6px">系统睡眠超时 (分钟)</label>
+          <input type="number" id="sleepTimeout" min="0" placeholder="例如 30" />
+          <button class="btn-primary" onclick="setSleepTimeout()" style="width:100%">应用</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h2>💬 自定义命令</h2>
+        <input type="text" id="customCmd" placeholder="输入命令，例如 'message 记得保存' 或 'status'" />
+        <button class="btn-primary full" onclick="sendCustom()">执行命令</button>
+        <div style="margin-top:14px; font-size:0.85rem; color:var(--muted)">
+          <details>
+            <summary style="cursor:pointer; color:var(--accent)">查看全部命令</summary>
+            <pre id="helpText" style="white-space:pre-wrap; margin-top:10px; color:var(--text); background:var(--panel-2); padding:12px; border-radius:8px; font-size:0.82rem"></pre>
+          </details>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>📊 系统状态</h2>
+        <div class="status-grid">
+          <div class="item"><span class="label">主机名</span><span class="value" id="stMachine">—</span></div>
+          <div class="item"><span class="label">IP</span><span class="value" id="stIp">—</span></div>
+          <div class="item"><span class="label">系统</span><span class="value" id="stOs">—</span></div>
+          <div class="item"><span class="label">版本</span><span class="value" id="stVer">—</span></div>
+          <div class="item"><span class="label">内存 (MB)</span><span class="value" id="stMem">—</span></div>
+          <div class="item"><span class="label">自动睡眠</span><span class="value" id="stAuto">—</span></div>
+        </div>
+        <button class="btn-neutral" onclick="loadStatus()" style="margin-top:16px; width:100%">🔄 刷新状态</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📜 操作日志</h2>
+      <div class="log-panel" id="logPanel"></div>
+    </div>
+
+    <footer style="text-align:center; color:var(--muted); margin: 30px 0 20px; font-size:0.85rem">
+      RemotePCControl v1.0.0 | .NET 10 | 通过局域网访问本页面
+    </footer>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'rpc_token';
+let apiToken = '';
+
+function apiUrl(path) {
+  const sep = path.includes('?') ? '&' : '?';
+  return `/api/control${path}${sep}token=${encodeURIComponent(apiToken)}`;
+}
+
+function init() {
+  apiToken = localStorage.getItem(STORAGE_KEY) || '';
+  if (!apiToken) {
+    document.getElementById('tokenGate').style.display = 'block';
+    return;
+  }
+  showMain();
+}
+
+function saveToken() {
+  const t = document.getElementById('tokenInput').value.trim();
+  if (!t) { alert('请输入令牌'); return; }
+  apiToken = t;
+  localStorage.setItem(STORAGE_KEY, t);
+  showMain();
+}
+
+function showMain() {
+  document.getElementById('tokenGate').style.display = 'none';
+  document.getElementById('mainUI').style.display = 'block';
+  log('已连接到控制台', 'info');
+  loadStatus();
+  loadHelp();
+}
+
+async function sendCmd(cmd) {
+  if (!confirm(`确认执行: ${cmd} ?`)) return;
+  try {
+    const resp = await fetch(apiUrl('/command'), {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Token': apiToken },
+      body: JSON.stringify({ command: cmd, token: apiToken })
+    });
+    const data = await resp.json();
+    log(`${cmd} → ${data.message}`, data.success ? 'success' : 'error');
+  } catch (e) {
+    log(`请求失败: ${e.message}`, 'error');
+  }
+}
+
+function sendCustom() {
+  const cmd = document.getElementById('customCmd').value.trim();
+  if (!cmd) return;
+  document.getElementById('customCmd').value = '';
+  sendCmd(cmd);
+}
+
+async function loadStatus() {
+  try {
+    const resp = await fetch(apiUrl('/status'));
+    if (resp.status === 401) { localStorage.removeItem(STORAGE_KEY); location.reload(); return; }
+    const s = await resp.json();
+    document.getElementById('machineName').textContent = s.machineName;
+    document.getElementById('stMachine').textContent = s.machineName;
+    document.getElementById('stIp').textContent = s.localIp;
+    document.getElementById('stOs').textContent = s.osName;
+    document.getElementById('stVer').textContent = s.osVersion;
+    document.getElementById('stMem').textContent = `${s.memoryUsedMb} / ${s.memoryTotalMb}`;
+    document.getElementById('stAuto').textContent = s.autoSleepEnabled ? '启用' : '关闭';
+    const sw = document.getElementById('autoSleepSwitch');
+    if (s.autoSleepEnabled) sw.classList.add('on'); else sw.classList.remove('on');
+    log(`状态已刷新 (${s.machineName})`, 'success');
+  } catch (e) { log(`获取状态失败: ${e.message}`, 'error'); }
+}
+
+async function loadHelp() {
+  try {
+    const resp = await fetch(apiUrl('/help'));
+    document.getElementById('helpText').textContent = await resp.text();
+  } catch {}
+}
+
+function toggleAutoSleep() {
+  const sw = document.getElementById('autoSleepSwitch');
+  const nowOn = !sw.classList.contains('on');
+  sendCmd('autosleep ' + (nowOn ? 'on' : 'off'));
+}
+
+function setMonitorTimeout() {
+  const v = document.getElementById('monitorTimeout').value;
+  if (v === '' || +v < 0) { alert('请输入有效分钟数'); return; }
+  sendCmd('monitor ' + v);
+}
+
+function setSleepTimeout() {
+  const v = document.getElementById('sleepTimeout').value;
+  if (v === '' || +v < 0) { alert('请输入有效分钟数'); return; }
+  sendCmd('sleeptime ' + v);
+}
+
+function log(text, level) {
+  const p = document.getElementById('logPanel');
+  const el = document.createElement('div');
+  el.className = 'log-item';
+  const t = new Date().toLocaleTimeString('zh-CN');
+  el.innerHTML = `<span class="log-time">[${t}]</span><span class="log-${level || 'info'}">${text}</span>`;
+  p.prepend(el);
+}
+
+document.getElementById('customCmd')?.addEventListener('keydown', e => { if (e.key === 'Enter') sendCustom(); });
+init();
+</script>
+</body>
+</html>
