@@ -93,6 +93,9 @@ public class ActiveChecker : IDisposable {
     // 上次检测到豁免进程的时间（用于日志去重）
     private DateTime _lastExemptProcessLogTime = DateTime.MinValue;
 
+    // 是否启用空闲自动锁屏（可在运行时动态切换，与监控服务启停独立）
+    private volatile bool _autoLockEnabled = true;
+
     /// <summary>
     /// Status update callback.
     /// 状态回调函数。
@@ -176,6 +179,23 @@ public class ActiveChecker : IDisposable {
             Logger.Info($"Exempt processes configured: {string.Join(", ", _exemptProcesses)}");
         }
     }
+
+    /// <summary>
+    /// 设置是否启用空闲自动锁屏
+    /// Set whether auto-lock is enabled when device is offline and user is inactive.
+    /// 可在监控服务运行期间动态切换，不影响设备状态检测和通知推送
+    /// </summary>
+    public void SetAutoLockEnabled(bool enabled) {
+        if (_autoLockEnabled != enabled) {
+            Logger.Info($"AutoLockEnabled set to {enabled}");
+        }
+        _autoLockEnabled = enabled;
+    }
+
+    /// <summary>
+    /// 获取当前是否启用空闲自动锁屏
+    /// </summary>
+    public bool IsAutoLockEnabled() => _autoLockEnabled;
 
     /// <summary>
     /// 设置 WebSocket 服务端 URI
@@ -305,6 +325,10 @@ public class ActiveChecker : IDisposable {
                         Logger.Info($"Exempt process found, skip lock workstation");
                         // 豁免进程存在时重置离线时间，避免误锁
                         _offlineStartTime = null;
+                    } else if (!_autoLockEnabled) {
+                        // 自动锁屏被关闭：只记录日志，不执行锁屏动作
+                        // 仍会推送通知（如已配置），便于用户事后查看
+                        Logger.Info($"AutoLock disabled, skip lock workstation");
                     } else {
                         Logger.Info($"No exempt process found, lock workstation");
                         // 无豁免进程，执行锁屏

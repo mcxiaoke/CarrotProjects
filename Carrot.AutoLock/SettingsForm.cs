@@ -91,12 +91,15 @@ public partial class SettingsForm : Form {
             _appConfig.Data.TelegramChatId = textTelegramChatId.Text.Trim();
             _appConfig.Data.WebSocketUri = uri;
 
-            var exemptProcessesText = textExemptProcesses.Text.Trim();
+            var exemptProcessesText = textExemptProcesses.Text;
             if (!string.IsNullOrWhiteSpace(exemptProcessesText)) {
+                // 只用逗号/分号作为分隔符，保留进程名内部的空格（如 "My App"）
+                // 仅移除末尾的 .exe 后缀，避免误伤名称中含 .exe 子串的进程
                 _appConfig.Data.ExemptProcesses = exemptProcessesText
-                    .Split(new[] { ',', ';', ' ' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(p => p.Trim().Replace(".exe", "", StringComparison.OrdinalIgnoreCase))
+                    .Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(p => p.Trim())
                     .Where(p => !string.IsNullOrWhiteSpace(p))
+                    .Select(p => p.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) ? p[..^4] : p)
                     .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToList();
             } else {

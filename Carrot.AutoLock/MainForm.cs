@@ -50,6 +50,7 @@ public partial class MainForm : Form {
         _appConfig.Load();
 
         cbAutoStart.Checked = _appConfig.Data.AutoStartEnabled;
+        cbAutoLock.Checked = _appConfig.Data.AutoLockEnabled;
 
         UpdateConfigDisplay();
         UpdateUI();
@@ -148,6 +149,8 @@ public partial class MainForm : Form {
             _checker.SetTimeoutSecs(_appConfig.Data.OfflineTimeoutSeconds, _appConfig.Data.InactiveTimeoutSeconds);
             _checker.SetExemptProcesses(_appConfig.Data.ExemptProcesses);
             _checker.SetWebSocketUri(_appConfig.Data.WebSocketUri);
+            // 同步自动锁屏开关：与"启动"按钮独立，可在运行时通过 cbAutoLock 切换
+            _checker.SetAutoLockEnabled(_appConfig.Data.AutoLockEnabled);
 
             ConfigureNotifiers();
 
@@ -188,7 +191,7 @@ public partial class MainForm : Form {
             $"路由器密码: {(!string.IsNullOrEmpty(_appConfig.Data.RouterPassword) ? "已配置" : "未配置")}",
             $"企业微信: {(!string.IsNullOrEmpty(_appConfig.Data.WeChatWebhookKey) ? "已配置" : "未配置")} | Telegram: {(!string.IsNullOrEmpty(_appConfig.Data.TelegramBotToken) ? "已配置" : "未配置")}",
             $"WebSocket: {(!string.IsNullOrEmpty(_appConfig.Data.WebSocketUri) ? _appConfig.Data.WebSocketUri : "未配置")}",
-            $"豁免进程: {(_appConfig.Data.ExemptProcesses.Count > 0 ? string.Join(", ", _appConfig.Data.ExemptProcesses) : "无")}"
+            $"自动锁屏: {(_appConfig.Data.AutoLockEnabled ? "开启" : "关闭")} | 豁免进程: {(_appConfig.Data.ExemptProcesses.Count > 0 ? string.Join(", ", _appConfig.Data.ExemptProcesses) : "无")}"
         };
 
         ConfigText.Text = string.Join("\r\n", lines);
@@ -199,7 +202,7 @@ public partial class MainForm : Form {
 
         var running = _checker.IsRunning();
 
-        btnStart.Text = running ? "停止" : "启动";
+        btnStart.Text = running ? "停止服务" : "启动";
         btnSettings.Enabled = !running;
 
         var textLines = new List<string> {
@@ -217,6 +220,13 @@ public partial class MainForm : Form {
     private void CbAutoStart_CheckedChanged(object? sender, EventArgs e) {
         _appConfig.Data.AutoStartEnabled = cbAutoStart.Checked;
         SetAutoStart(cbAutoStart.Checked, Application.ProductName ?? NAME, Application.ExecutablePath ?? string.Empty);
+    }
+
+    private void CbAutoLock_CheckedChanged(object? sender, EventArgs e) {
+        _appConfig.Data.AutoLockEnabled = cbAutoLock.Checked;
+        // 实时同步到监控器：即使服务正在运行也可立即生效
+        // 关闭=只监控不锁屏；开启=满足条件时执行锁屏
+        _checker.SetAutoLockEnabled(cbAutoLock.Checked);
     }
 
     private static void SetAutoStart(bool enable, string appName, string appPath) {

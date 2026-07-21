@@ -16,6 +16,7 @@ namespace Carrot.AutoLock {
             btnStart = new Button();
             btnExit = new Button();
             cbAutoStart = new CheckBox();
+            cbAutoLock = new CheckBox();
             btnViewLog = new Button();
             InfoText = new TextBox();
             ConfigText = new TextBox();
@@ -28,9 +29,9 @@ namespace Carrot.AutoLock {
             btnStart.Location = new Point(22, 253);
             btnStart.Margin = new Padding(4);
             btnStart.Name = "btnStart";
-            btnStart.Size = new Size(120, 40);
+            btnStart.Size = new Size(162, 40);
             btnStart.TabIndex = 0;
-            btnStart.Text = "启动";
+            btnStart.Text = "启动服务";
             btnStart.UseVisualStyleBackColor = true;
             btnStart.Click += BtnStart_Click;
             // 
@@ -60,10 +61,23 @@ namespace Carrot.AutoLock {
             cbAutoStart.UseVisualStyleBackColor = true;
             cbAutoStart.CheckedChanged += CbAutoStart_CheckedChanged;
             // 
+            // cbAutoLock
+            // 
+            cbAutoLock.AutoSize = true;
+            cbAutoLock.Font = new Font("Microsoft YaHei UI", 10F);
+            cbAutoLock.Location = new Point(170, 301);
+            cbAutoLock.Margin = new Padding(4);
+            cbAutoLock.Name = "cbAutoLock";
+            cbAutoLock.Size = new Size(118, 31);
+            cbAutoLock.TabIndex = 7;
+            cbAutoLock.Text = "自动锁屏";
+            cbAutoLock.UseVisualStyleBackColor = true;
+            cbAutoLock.CheckedChanged += CbAutoLock_CheckedChanged;
+            // 
             // btnViewLog
             // 
             btnViewLog.Font = new Font("Microsoft YaHei UI", 11F);
-            btnViewLog.Location = new Point(161, 253);
+            btnViewLog.Location = new Point(192, 253);
             btnViewLog.Margin = new Padding(4);
             btnViewLog.Name = "btnViewLog";
             btnViewLog.Size = new Size(120, 40);
@@ -102,7 +116,7 @@ namespace Carrot.AutoLock {
             // btnSettings
             // 
             btnSettings.Font = new Font("Microsoft YaHei UI", 11F);
-            btnSettings.Location = new Point(301, 253);
+            btnSettings.Location = new Point(320, 253);
             btnSettings.Margin = new Padding(4);
             btnSettings.Name = "btnSettings";
             btnSettings.Size = new Size(120, 40);
@@ -120,6 +134,7 @@ namespace Carrot.AutoLock {
             Controls.Add(ConfigText);
             Controls.Add(InfoText);
             Controls.Add(btnViewLog);
+            Controls.Add(cbAutoLock);
             Controls.Add(cbAutoStart);
             Controls.Add(btnExit);
             Controls.Add(btnStart);
@@ -140,6 +155,7 @@ namespace Carrot.AutoLock {
 
         private Button btnStart;
         private CheckBox cbAutoStart;
+        private CheckBox cbAutoLock;
         private Button btnExit;
         private Button btnViewLog;
         private TextBox InfoText;

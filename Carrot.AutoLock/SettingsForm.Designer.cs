@@ -229,7 +229,7 @@ namespace Carrot.AutoLock {
             labelExempt.Name = "labelExempt";
             labelExempt.Size = new Size(220, 27);
             labelExempt.TabIndex = 18;
-            labelExempt.Text = "豁免进程（逗号分隔）";
+            labelExempt.Text = "豁免进程（逗号或分号分隔，名称可含空格）";
             // 
             // textExemptProcesses
             // 
